@@ -1,21 +1,21 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { isEmail, isMobilePhone } from "class-validator";
-import { Request, Response } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Request, Response } from "express";
 import { REQUEST } from "@nestjs/core";
+import { Repository } from "typeorm";
+import { randomInt } from "crypto";
 
 import { AuthDto } from "./dto/auth.dto";
-import { AuthMethod } from "./enums/method.enum";
-import { UserEntity } from "../user/entities/user.entity";
-import { ProfileEntity } from "../user/entities/profile.entity";
-import { AuthMessage, BadRequestMessage, PublicMessage } from "src/common/enums/message.enum";
-import { CookiesOptionsToken } from "src/common/utils/cookie.util";
-import { CookieKeys } from "src/common/enums/cookie.enum";
 import { AuthResponse } from "./types/response";
-import { randomInt } from "crypto";
-import { OtpEntity } from "../user/entities/otp.entity";
 import { TokenService } from "./tokens.service";
+import { AuthMethod } from "./enums/method.enum";
+import { OtpEntity } from "../user/entities/otp.entity";
+import { UserEntity } from "../user/entities/user.entity";
+import { CookieKeys } from "src/common/enums/cookie.enum";
+import { ProfileEntity } from "../user/entities/profile.entity";
+import { CookiesOptionsToken } from "src/common/utils/cookie.util";
+import { AuthMessage, BadRequestMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class AuthService {

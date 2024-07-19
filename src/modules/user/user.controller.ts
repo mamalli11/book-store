@@ -15,7 +15,6 @@ import { Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 
-import { UpdateUserDto, ChangeEmailDto, ChangePhoneDto } from "./dto/profile.dto";
 import { UserService } from "./user.service";
 import { CheckOtpDto } from "../auth/dto/auth.dto";
 import { AuthGuard } from "../auth/guards/auth.guard";
@@ -24,6 +23,7 @@ import { multerStorage } from "src/common/utils/multer.util";
 import { PublicMessage } from "src/common/enums/message.enum";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
+import { UpdateUserDto, ChangeEmailDto, ChangePhoneDto } from "./dto/profile.dto";
 import { UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
 
 @Controller("user")

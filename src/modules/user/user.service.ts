@@ -19,16 +19,16 @@ import {
 	NotFoundMessage,
 	BadRequestMessage,
 } from "src/common/enums/message.enum";
+import { UpdateUserDto } from "./dto/profile.dto";
+import { GenderType } from "./enums/profile.enum";
 import { OtpEntity } from "./entities/otp.entity";
 import { AuthService } from "../auth/auth.service";
 import { UserEntity } from "./entities/user.entity";
+import { TokenService } from "../auth/tokens.service";
 import { AuthMethod } from "../auth/enums/method.enum";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { ProfileEntity } from "./entities/profile.entity";
 import { EntityName } from "src/common/enums/entity.enum";
-import { UpdateUserDto } from "./dto/profile.dto";
-import { GenderType } from "./enums/profile.enum";
-import { TokenService } from "../auth/tokens.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -166,7 +166,7 @@ export class UserService {
 				profile: true,
 			},
 			select: {
-				profile: { fname: true,lname: true, profile_picture: true, bio: true, website: true },
+				profile: { fname: true, lname: true, profile_picture: true, bio: true, website: true },
 				id: true,
 				is_verified: true,
 				created_at: true,

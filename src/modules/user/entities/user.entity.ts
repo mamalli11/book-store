@@ -65,7 +65,7 @@ export class UserEntity extends BaseEntity {
 
 	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
 	// book_bookmarks: BookBookmarkEntity[];
-	
+
 	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
 	// book_wantToRead: BookBookmarkEntity[];
 
