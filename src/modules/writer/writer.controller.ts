@@ -6,30 +6,31 @@ import {
 	Param,
 	Delete,
 	UseInterceptors,
-	UseGuards,
 	Query,
 	Put,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { WriterService } from "./writer.service";
-import { AuthGuard } from "../auth/guards/auth.guard";
+import { Roles } from "src/common/enums/role.enum";
 import { CreateWriterDto } from "./dto/create-writer.dto";
 import { UpdateWriterDto } from "./dto/update-writer.dto";
 import { multerStorage } from "src/common/utils/multer.util";
+import { PaginationDto } from "src/common/dtos/pagination.dto";
+import { CanAccess } from "src/common/decorators/role.decorator";
+import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 import { UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
-import { PaginationDto } from "src/common/dtos/pagination.dto";
 
 @Controller("writer")
 @ApiTags("Writer")
-@ApiBearerAuth("Authorization")
-@UseGuards(AuthGuard)
+@AuthDecorator()
 export class WriterController {
 	constructor(private readonly writerService: WriterService) {}
 
 	@Post()
+	@CanAccess(Roles.Admin)
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	create(
@@ -50,6 +51,7 @@ export class WriterController {
 	}
 
 	@Put(":id")
+	@CanAccess(Roles.Admin)
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	update(
@@ -61,6 +63,7 @@ export class WriterController {
 	}
 
 	@Delete(":id")
+	@CanAccess(Roles.Admin)
 	remove(@Param("id") id: string) {
 		return this.writerService.remove(+id);
 	}
