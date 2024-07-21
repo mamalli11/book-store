@@ -1,8 +1,8 @@
 export enum EntityName {
 	Otp = "otp",
 	User = "user",
-	Post = "post",
-	Media = "media",
+	Books = "books",
+	Writer = "writer",
 	Album = "album",
 	Story = "story",
 	Block = "block",

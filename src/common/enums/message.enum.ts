@@ -15,7 +15,7 @@ export enum AuthMessage {
 }
 export enum NotFoundMessage {
 	NotFound = "موردی یافت نشد",
-	NotFoundHashtag = "هشتگ یافت نشد",
+	NotFoundWriter = "نویسنده یافت نشد",
 	NotFoundPost = "پست یافت نشد",
 	NotFoundUser = "کاربری یافت نشد",
 	NotFoundStory = "استوری یافت نشد",
@@ -42,14 +42,7 @@ export enum PublicMessage {
 	UnBookmark = " پست از لیست پست ها ذخیره شده برداشته شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
 	Successfuly = "درخواست باموفقیت انجام شد",
-	Followed = "با موفقیت دنبال شد",
-	ReqFollow = "درخواست دونبال کردن باموفقیت ارسال شد",
-	ReqUnFollow = "درخواست دونبال کردن لغو شد",
-	ReqFollowRejected = "درخواست دونبال کردن رد شد",
-	ReqFollowAccepted = "درخواست دونبال کردن قبول شد",
-	UnFollow = "از لیست دنبال شوندگان حذف شد",
-	Blocked = "حساب کاربری با موفقیت مسدود شد",
-	UnBlocked = "حساب کاربری از حالت مسدود خارج شد",
+	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
 	Nothing = "هیچ کاری انجام نشد",
 }
 export enum ConflictMessage {
