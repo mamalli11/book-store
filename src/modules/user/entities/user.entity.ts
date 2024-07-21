@@ -27,8 +27,8 @@ export class UserEntity extends BaseEntity {
 	@Column({ unique: true, nullable: true })
 	phone: string;
 
-	@Column({ default: "user", enum: ["user", "admin", "writer"] })
-	uType: string;
+	@Column({ default: "user", enum: ["user", "admin"] })
+	role: string;
 
 	@Column({ nullable: true })
 	new_email: string;
