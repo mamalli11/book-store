@@ -5,9 +5,9 @@ import { BooksService } from "./books.service";
 import { Roles } from "src/common/enums/role.enum";
 import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
-import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
-import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { CanAccess } from "src/common/decorators/role.decorator";
+import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 
 @Controller("books")
 @ApiTags("Books")
