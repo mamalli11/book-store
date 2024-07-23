@@ -62,9 +62,3 @@ export class ChangePhoneDto {
 	@IsMobilePhone("fa-IR", {}, { message: ValidationMessage.InvalidPhoneFormat })
 	phone: string;
 }
-export class ChangeUsernameDto {
-	@ApiProperty()
-	@IsString()
-	@Length(4, 30)
-	username: string;
-}

@@ -1,13 +1,13 @@
 import {
-	Controller,
 	Get,
+	Put,
 	Post,
 	Body,
+	Query,
 	Param,
 	Delete,
+	Controller,
 	UseInterceptors,
-	Query,
-	Put,
 } from "@nestjs/common";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -41,11 +41,13 @@ export class WriterController {
 	}
 
 	@Get()
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findAll(@Query() paginationDto: PaginationDto) {
 		return this.writerService.findAll(paginationDto);
 	}
 
 	@Get(":id")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id") id: string) {
 		return this.writerService.findOne(+id);
 	}
@@ -64,6 +66,7 @@ export class WriterController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.writerService.remove(+id);
 	}

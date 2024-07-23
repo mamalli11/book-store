@@ -17,29 +17,33 @@ export class BooksController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
-	@ApiConsumes(SwaggerConsumes.UrlEncoded)
+	@ApiConsumes(SwaggerConsumes.MultipartData)
 	create(@Body() createBookDto: CreateBookDto) {
 		return this.booksService.create(createBookDto);
 	}
 
 	@Get()
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findAll() {
 		return this.booksService.findAll();
 	}
 
 	@Get(":id")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id") id: string) {
 		return this.booksService.findOne(+id);
 	}
 
 	@Patch(":id")
 	@CanAccess(Roles.Admin)
+	@ApiConsumes(SwaggerConsumes.MultipartData)
 	update(@Param("id") id: string, @Body() updateBookDto: UpdateBookDto) {
 		return this.booksService.update(+id, updateBookDto);
 	}
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.booksService.remove(+id);
 	}
