@@ -6,8 +6,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "../auth/auth.module";
 import { UserModule } from "../user/user.module";
 import { BooksModule } from "../books/books.module";
-import { TypeOrmConfig } from "src/config/typeorm.config";
 import { WriterModule } from "../writer/writer.module";
+import { TypeOrmConfig } from "src/config/typeorm.config";
+import { CategoryModule } from "../category/category.module";
 
 @Module({
 	imports: [
@@ -19,7 +20,8 @@ import { WriterModule } from "../writer/writer.module";
 		AuthModule,
 		UserModule,
 		BooksModule,
-		WriterModule
+		WriterModule,
+		CategoryModule
 	],
 	controllers: [],
 	providers: [],
