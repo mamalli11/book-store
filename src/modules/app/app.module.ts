@@ -21,7 +21,7 @@ import { CategoryModule } from "../category/category.module";
 		UserModule,
 		BooksModule,
 		WriterModule,
-		CategoryModule
+		CategoryModule,
 	],
 	controllers: [],
 	providers: [],

@@ -10,8 +10,10 @@ export function UploadedOptionalFile() {
 }
 
 export function UploadedOptionalFiles() {
-    return UploadedFiles(new ParseFilePipe({
-        fileIsRequired: false,
-        validators: []
-    }))
+	return UploadedFiles(
+		new ParseFilePipe({
+			fileIsRequired: false,
+			validators: [],
+		}),
+	);
 }

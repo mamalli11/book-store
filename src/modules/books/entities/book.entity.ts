@@ -14,7 +14,7 @@ export class BookEntity extends BaseEntity {
 	@Column({})
 	introduction: string;
 
-	@Column({ })
+	@Column({})
 	ISBN: number;
 
 	@Column({ length: 15 })
