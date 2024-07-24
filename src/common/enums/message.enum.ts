@@ -31,17 +31,19 @@ export enum PublicMessage {
 	Deleted = "با موفقیت حذف شد",
 	Inserted = "با موفقیت درج شد",
 	Updated = "با موفقیت به روز رسانی شد",
+
+	Nothing = "هیچ کاری انجام نشد",
+	Successfuly = "درخواست باموفقیت انجام شد",
 	SentOtp = "کد یکبار مصرف با موفقیت ارسال شد",
 	LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
-	LikeComment = "کامنت با موفقیت لایک شد",
-	DisLikeComment = "لایک شما از کامنت برداشته شد",
+	
 	Bookmark = "پست با موفقیت ذخیره شد",
-	UnBookmark = " پست از لیست پست ها ذخیره شده برداشته شد",
-	Successfuly = "درخواست باموفقیت انجام شد",
+	LikeComment = "کامنت با موفقیت لایک شد",
 	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
+	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",
-	Nothing = "هیچ کاری انجام نشد",
+	UnBookmark = " پست از لیست پست ها ذخیره شده برداشته شد",
 }
 export enum ConflictMessage {
 	Email = "ایمیل توسط شخص دیگری استفاده شده",

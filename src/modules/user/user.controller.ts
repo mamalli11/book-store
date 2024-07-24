@@ -41,8 +41,8 @@ export class UserController {
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("profile_picture", { storage: multerStorage("user-profile") }))
 	updateInfo(
-		@UploadedOptionalFile() files: Express.Multer.File,
 		@Body() updateUserDto: UpdateUserDto,
+		@UploadedOptionalFile() files: Express.Multer.File,
 	) {
 		return this.userService.updateInfo(files, updateUserDto);
 	}

@@ -1,14 +1,14 @@
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import {
-	Controller,
 	Get,
 	Post,
 	Body,
 	Patch,
 	Param,
-	Delete,
-	UseInterceptors,
 	Query,
+	Delete,
+	Controller,
+	UseInterceptors,
 } from "@nestjs/common";
 
 import { Roles } from "src/common/enums/role.enum";
@@ -17,12 +17,12 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { multerStorage } from "src/common/utils/multer.util";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { Pagination } from "src/common/decorators/pagination.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 import { UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
-import { PaginationDto } from "src/common/dtos/pagination.dto";
-import { Pagination } from "src/common/decorators/pagination.decorator";
 
 @Controller("category")
 @ApiTags("Category")
@@ -35,8 +35,8 @@ export class CategoryController {
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("cate-image") }))
 	create(
-		@UploadedOptionalFile() file: Express.Multer.File,
 		@Body() createCategoryDto: CreateCategoryDto,
+		@UploadedOptionalFile() file: Express.Multer.File,
 	) {
 		return this.categoryService.create(file, createCategoryDto);
 	}
@@ -59,9 +59,9 @@ export class CategoryController {
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("cate-image") }))
 	update(
-		@UploadedOptionalFile() file: Express.Multer.File,
 		@Param("id") id: string,
 		@Body() updateCategoryDto: UpdateCategoryDto,
+		@UploadedOptionalFile() file: Express.Multer.File,
 	) {
 		return this.categoryService.update(+id, updateCategoryDto, file);
 	}

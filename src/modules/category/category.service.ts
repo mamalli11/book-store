@@ -5,9 +5,9 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import { CategoryEntity } from "./entities/category.entity";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { ConflictMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
+import { ConflictMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class CategoryService {
@@ -72,8 +72,6 @@ export class CategoryService {
 
 		const enCategory = await this.categoryRepository.findOneBy({ enTitle });
 		if (enCategory) throw new ConflictException("enTitle " + ConflictMessage.CategoryTitle);
-		console.log({ category, enCategory });
-		console.log({ title, enTitle });
 
 		return enTitle;
 	}

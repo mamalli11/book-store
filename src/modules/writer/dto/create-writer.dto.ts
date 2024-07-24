@@ -1,13 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-	IsEmail,
-	IsEmpty,
-	IsMobilePhone,
-	IsOptional,
-	IsString,
-	IsUrl,
-	Length,
-} from "class-validator";
+import { IsUrl, Length, IsEmail, IsString, IsOptional, IsMobilePhone } from "class-validator";
 
 export class CreateWriterDto {
 	@ApiProperty({ example: "" })
@@ -21,6 +13,7 @@ export class CreateWriterDto {
 	enFullName: string;
 
 	@ApiPropertyOptional({ format: "binary" })
+	@IsOptional()
 	image: string;
 
 	@ApiProperty({ example: "" })
@@ -29,22 +22,27 @@ export class CreateWriterDto {
 	bio: string;
 
 	@ApiPropertyOptional({ example: "1996-02-22T12:01:26.487Z" })
+	@IsOptional()
 	birthday: Date;
 
 	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsEmail()
 	email: string;
 
 	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsMobilePhone("fa-IR", {}, { message: "your phone number format is incorrect" })
 	phone: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
+	@IsOptional()
 	instagram: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
+	@IsOptional()
 	telegram: string;
 
 	@ApiPropertyOptional({ example: "", nullable: true })

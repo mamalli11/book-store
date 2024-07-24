@@ -2,10 +2,10 @@ import { JwtService } from "@nestjs/jwt";
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 
 import {
-	AccessTokenPayload,
 	CookiePayload,
 	EmailTokenPayload,
 	PhoneTokenPayload,
+	AccessTokenPayload,
 } from "./types/payload";
 import { AuthMessage, BadRequestMessage } from "src/common/enums/message.enum";
 

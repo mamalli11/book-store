@@ -1,11 +1,11 @@
 export enum BookCoverType {
-	shameez = "شُمیز",
 	paper = "کاغذی",
-	hardcover = "گالینگور",
+	shameez = "شُمیز",
 	leather = "چرمی",
 	cloth = "پارچه ای",
-	turning_edge = "لبه گردان",
 	goldsmith = "زر کوب",
+	hardcover = "گالینگور",
+	turning_edge = "لبه گردان",
 }
 
 export enum StatusBook {
@@ -17,7 +17,7 @@ export enum StatusBook {
 }
 
 export enum TypeBook {
-	Ebook = "e-book",
 	Book = "book",
+	Ebook = "e-book",
 	Journal = "journal",
 }

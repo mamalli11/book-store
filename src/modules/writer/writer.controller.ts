@@ -34,8 +34,8 @@ export class WriterController {
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	create(
-		@UploadedOptionalFile() files: Express.Multer.File,
 		@Body() createWriterDto: CreateWriterDto,
+		@UploadedOptionalFile() files: Express.Multer.File,
 	) {
 		return this.writerService.create(files, createWriterDto);
 	}
@@ -57,9 +57,9 @@ export class WriterController {
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	update(
-		@UploadedOptionalFile() files: Express.Multer.File,
 		@Param("id") id: string,
 		@Body() updateWriterDto: UpdateWriterDto,
+		@UploadedOptionalFile() files: Express.Multer.File,
 	) {
 		return this.writerService.update(files, +id, updateWriterDto);
 	}
