@@ -3,7 +3,7 @@ import {
 	Column,
 	OneToMany,
 	AfterLoad,
-	JoinColumn,
+	ManyToOne,
 	CreateDateColumn,
 	UpdateDateColumn,
 } from "typeorm";
@@ -16,17 +16,21 @@ export class CategoryEntity extends BaseEntity {
 	@Column({ length: 50 })
 	title: string;
 
-	@Column({ length: 50 })
-	enTitle: string;
+	@Column({ unique: true, length: 50 })
+	slug: string;
 
-	@Column({ nullable: true })
+	@Column({ default: null })
 	image: string;
+
+	@Column({ default: true })
+	show: boolean;
 
 	@Column({ nullable: true })
 	parentId: number;
-	@OneToMany(() => CategoryEntity, (cat) => cat.parentId)
-	@JoinColumn({ name: "parentId" })
-	parent: CategoryEntity[];
+	@ManyToOne(() => CategoryEntity, (category) => category.children, { onDelete: "CASCADE" })
+	parent: CategoryEntity;
+	@OneToMany(() => CategoryEntity, (category) => category.parent)
+	children: CategoryEntity[];
 
 	@CreateDateColumn()
 	created_at: Date;
@@ -36,7 +40,7 @@ export class CategoryEntity extends BaseEntity {
 
 	@AfterLoad()
 	map() {
-		if (this.image != "") {
+		if (this.image != null && this.image != "") {
 			const url = this.image.replaceAll("\\", "/");
 			this.image = `${process.env.URL}/${url}`;
 		}

@@ -17,9 +17,9 @@ export class CategoryService {
 
 	async create(file: Express.Multer.File, createCategoryDto: CreateCategoryDto) {
 		if (file) createCategoryDto.image = file?.path?.slice(7);
-		const { enTitle, title } = createCategoryDto;
+		const { slug, title } = createCategoryDto;
 
-		await this.checkExistAndResolveTitle(title, enTitle);
+		await this.checkExistAndResolveTitle(title, slug);
 
 		await this.categoryRepository.insert({ ...createCategoryDto });
 
@@ -30,8 +30,18 @@ export class CategoryService {
 		const { limit, page, skip } = paginationSolver(paginationDto);
 		const [categories, count] = await this.categoryRepository.findAndCount({
 			where: {},
+			relations: {
+				parent: true,
+			},
+			select: {
+				parent: {
+					title: true,
+					id: true,
+				},
+			},
 			skip,
 			take: limit,
+			// order: { id: "DESC" },
 		});
 		return {
 			pagination: paginationGenerator(count, page, limit),
@@ -39,20 +49,37 @@ export class CategoryService {
 		};
 	}
 
-	async findOne(id: number) {
+	async findOneById(id: number) {
 		const category = await this.categoryRepository.findOneBy({ id });
-		if (!category) throw new NotFoundException(NotFoundMessage.NotFoundCategory);
+		if (!category) throw new NotFoundException("category not found");
 		return category;
+	}
+
+	async findOneBySlug(slug: string) {
+		return await this.categoryRepository.findOneBy({ slug });
+	}
+
+	async findBySlug(slug: string) {
+		const category = await this.categoryRepository.findOne({
+			where: { slug },
+			relations: {
+				children: true,
+			},
+		});
+		if (!category) throw new NotFoundException("not found this category slug ");
+		return {
+			category,
+		};
 	}
 
 	async update(id: number, updateCategoryDto: UpdateCategoryDto, file: Express.Multer.File) {
 		if (file) updateCategoryDto.image = file?.path?.slice(7);
 
-		const category = await this.findOne(id);
-		const { enTitle, title, parentId, image } = updateCategoryDto;
+		const category = await this.findOneById(id);
+		const { slug, title, parentId, image } = updateCategoryDto;
 
 		if (title) category.title = title;
-		if (enTitle) category.enTitle = enTitle;
+		if (slug) category.slug = slug;
 		if (parentId) category.parentId = parentId;
 		if (image) category.image = image;
 
@@ -61,18 +88,18 @@ export class CategoryService {
 	}
 
 	async remove(id: number) {
-		await this.findOne(id);
+		await this.findOneById(id);
 		await this.categoryRepository.delete({ id });
 		return { message: PublicMessage.Deleted };
 	}
 
-	async checkExistAndResolveTitle(title: string, enTitle: string) {
+	async checkExistAndResolveTitle(title: string, slug: string) {
 		const category = await this.categoryRepository.findOneBy({ title });
 		if (category) throw new ConflictException(ConflictMessage.CategoryTitle);
 
-		const enCategory = await this.categoryRepository.findOneBy({ enTitle });
+		const enCategory = await this.categoryRepository.findOneBy({ slug });
 		if (enCategory) throw new ConflictException("enTitle " + ConflictMessage.CategoryTitle);
 
-		return enTitle;
+		return slug;
 	}
 }

@@ -51,7 +51,12 @@ export class CategoryController {
 	@Get(":id")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id") id: string) {
-		return this.categoryService.findOne(+id);
+		return this.categoryService.findOneById(+id);
+	}
+
+	@Get("/by-slug/:slug")
+	findBySlug(@Param("slug") slug: string) {
+		return this.categoryService.findBySlug(slug);
 	}
 
 	@Patch(":id")

@@ -10,14 +10,15 @@ export class CreateCategoryDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	enTitle: string;
+	slug: string;
 
-	@ApiPropertyOptional({ example: "" })
-	@IsNumberString()
-	@IsOptional()
+	@ApiPropertyOptional({ nullable: true })
 	parentId: number;
 
 	@ApiPropertyOptional({ nullable: true, format: "binary" })
 	@IsOptional()
 	image: string;
+
+	@ApiProperty({ type: "boolean" })
+	show: boolean;
 }
