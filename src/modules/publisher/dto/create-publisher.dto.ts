@@ -7,12 +7,12 @@ export class CreatePublisherDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	title: string;
+	name: string;
 
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	enTitle: string;
+	enName: string;
 
 	@ApiProperty({ format: "binary" })
 	logo: string;
@@ -31,29 +31,29 @@ export class CreatePublisherDto {
 	@ApiPropertyOptional({ example: "" })
 	@IsMobilePhone("fa-IR", {}, { message: ValidationMessage.InvalidPhoneFormat })
 	@Length(11, 11)
-	phone: number;
+	phone: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
 	@IsOptional()
 	@Length(10)
-	address: number;
+	address: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
 	@IsOptional()
 	@Length(4, 50)
-	email: number;
+	email: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
 	@IsOptional()
 	@Length(4, 50)
-	instagram: number;
+	instagram: string;
 
 	@ApiPropertyOptional({ example: "" })
 	@IsString()
 	@IsOptional()
 	@Length(4, 50)
-	telegram: number;
+	telegram: string;
 }

@@ -46,8 +46,6 @@ export class UserService {
 			.createQueryBuilder(EntityName.User)
 			.where({ id })
 			.leftJoinAndSelect("user.profile", "profile")
-			.loadRelationCountAndMap("user.followers", "user.followers")
-			.loadRelationCountAndMap("user.following", "user.following")
 			.getOne();
 	}
 	async updateInfo(file: Express.Multer.File, updateUserDto: UpdateUserDto) {
