@@ -1,4 +1,4 @@
-import { Column, Entity } from "typeorm";
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
@@ -29,4 +29,10 @@ export class TranslatorEntity extends BaseEntity {
 
 	@Column({ nullable: true })
 	instagram: string;
+
+	@CreateDateColumn()
+	created_at: Date;
+
+	@UpdateDateColumn()
+	updated_at: Date;
 }
