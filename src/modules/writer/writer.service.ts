@@ -17,19 +17,17 @@ export class WriterService {
 		@InjectRepository(WriterEntity) private writerRepository: Repository<WriterEntity>,
 	) {}
 
-	async create(file: Express.Multer.File, createWriterDto: CreateWriterDto) {
+	async create(createWriterDto: CreateWriterDto, file: Express.Multer.File) {
 		if (file) createWriterDto.image = file?.path?.slice(7);
 
-		await this.writerRepository.insert({
-			...createWriterDto,
-		});
+		await this.writerRepository.insert({ ...createWriterDto	});
 
 		return { message: PublicMessage.CreatedWriter };
 	}
 
 	async findAll(paginationDto: PaginationDto) {
 		const { limit, page, skip } = paginationSolver(paginationDto);
-		const [categories, count] = await this.writerRepository.findAndCount({
+		const [writer, count] = await this.writerRepository.findAndCount({
 			where: {},
 			skip,
 			take: limit,
@@ -37,7 +35,7 @@ export class WriterService {
 
 		return {
 			pagination: paginationGenerator(count, page, limit),
-			categories,
+			writer,
 		};
 	}
 
@@ -47,7 +45,7 @@ export class WriterService {
 		return writer;
 	}
 
-	async update(file: Express.Multer.File, id: number, updateWriterDto: UpdateWriterDto) {
+	async update(id: number, updateWriterDto: UpdateWriterDto, file: Express.Multer.File) {
 		const writer = await this.findOne(id);
 		console.log("image ", writer.image);
 
@@ -57,7 +55,6 @@ export class WriterService {
 			if (writer.image.startsWith(baseUrl)) {
 				const oldImagePath = writer.image.replace(baseUrl, "");
 				const oldImageFullPath = join(__dirname, "..", "..", "..", "public", oldImagePath);
-				console.log("oldImage ", oldImageFullPath);
 
 				// حذف تصویر قدیمی
 				unlink(oldImageFullPath, (err) => {
@@ -104,7 +101,6 @@ export class WriterService {
 		if (writer.image.startsWith(baseUrl)) {
 			const oldImagePath = writer.image.replace(baseUrl, "");
 			const oldImageFullPath = join(__dirname, "..", "..", "..", "public", oldImagePath);
-			console.log("oldImage ", oldImageFullPath);
 
 			unlink(oldImageFullPath, (err) => {
 				if (err) {

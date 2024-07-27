@@ -18,6 +18,7 @@ export enum NotFoundMessage {
 	NotFoundPost = "پست یافت نشد",
 	NotFoundUser = "کاربری یافت نشد",
 	NotFoundWriter = "نویسنده یافت نشد",
+	NotFoundPublisher = "ناشر یافت نشد",
 	NotFoundCategory = "دسته بندی یافت نشد",
 }
 export enum ValidationMessage {
@@ -40,6 +41,7 @@ export enum PublicMessage {
 	Bookmark = "پست با موفقیت ذخیره شد",
 	LikeComment = "کامنت با موفقیت لایک شد",
 	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
+	CreatedPublisher = "ناشر باموفقیت ایجاد شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
 	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",

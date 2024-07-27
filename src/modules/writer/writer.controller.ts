@@ -35,9 +35,9 @@ export class WriterController {
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	create(
 		@Body() createWriterDto: CreateWriterDto,
-		@UploadedOptionalFile() files: Express.Multer.File,
+		@UploadedOptionalFile() file: Express.Multer.File,
 	) {
-		return this.writerService.create(files, createWriterDto);
+		return this.writerService.create(createWriterDto, file);
 	}
 
 	@Get()
@@ -59,9 +59,9 @@ export class WriterController {
 	update(
 		@Param("id") id: string,
 		@Body() updateWriterDto: UpdateWriterDto,
-		@UploadedOptionalFile() files: Express.Multer.File,
+		@UploadedOptionalFile() file: Express.Multer.File,
 	) {
-		return this.writerService.update(files, +id, updateWriterDto);
+		return this.writerService.update(+id, updateWriterDto, file);
 	}
 
 	@Delete(":id")

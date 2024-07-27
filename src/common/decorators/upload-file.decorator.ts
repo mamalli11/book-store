@@ -1,5 +1,14 @@
 import { MaxFileSizeValidator, ParseFilePipe, UploadedFile, UploadedFiles } from "@nestjs/common";
 
+export function Uploaded_File() {
+	return UploadedFile(
+		new ParseFilePipe({
+			fileIsRequired: true,
+			validators: [new MaxFileSizeValidator({ maxSize: 3000000 })],
+		}),
+	);
+}
+
 export function UploadedOptionalFile() {
 	return UploadedFile(
 		new ParseFilePipe({
