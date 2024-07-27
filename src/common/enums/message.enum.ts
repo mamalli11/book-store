@@ -43,6 +43,7 @@ export enum PublicMessage {
 	LikeComment = "کامنت با موفقیت لایک شد",
 	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
 	CreatedPublisher = "ناشر باموفقیت ایجاد شد",
+	CreatedTranslator = "مترجم باموفقیت ایجاد شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
 	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",
