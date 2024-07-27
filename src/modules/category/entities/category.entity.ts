@@ -10,6 +10,7 @@ import {
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
+import { DefaultPath } from "src/common/enums/default-path.enum";
 
 @Entity(EntityName.Category)
 export class CategoryEntity extends BaseEntity {
@@ -19,7 +20,7 @@ export class CategoryEntity extends BaseEntity {
 	@Column({ unique: true, length: 50 })
 	slug: string;
 
-	@Column({ default: null })
+	@Column({ default: DefaultPath.CategoryImage })
 	image: string;
 
 	@Column({ default: true })

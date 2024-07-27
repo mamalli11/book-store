@@ -20,6 +20,7 @@ export enum NotFoundMessage {
 	NotFoundWriter = "نویسنده یافت نشد",
 	NotFoundPublisher = "ناشر یافت نشد",
 	NotFoundCategory = "دسته بندی یافت نشد",
+	NotFoundTranslator = "مترجم یافت نشد"
 }
 export enum ValidationMessage {
 	InvalidEmailFormat = "ایمیل وارد شده صحیح نمیباشد",

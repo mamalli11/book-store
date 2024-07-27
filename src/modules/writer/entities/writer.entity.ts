@@ -2,6 +2,7 @@ import { AfterLoad, Column, CreateDateColumn, Entity, UpdateDateColumn } from "t
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
+import { DefaultPath } from "src/common/enums/default-path.enum";
 
 @Entity(EntityName.Writer)
 export class WriterEntity extends BaseEntity {
@@ -11,7 +12,7 @@ export class WriterEntity extends BaseEntity {
 	@Column({ length: 50 })
 	enFullName: string;
 
-	@Column({ default: "/default/avatar-default.png" })
+	@Column({ default: DefaultPath.UserProfile })
 	image: string;
 
 	@Column({ length: 200 })
