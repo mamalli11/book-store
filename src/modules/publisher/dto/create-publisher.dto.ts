@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsMobilePhone, IsOptional, IsPhoneNumber, IsString, IsUrl, Length } from "class-validator";
+import { IsEmail, IsMobilePhone, IsOptional, IsString, IsUrl, Length } from "class-validator";
 
 import { ValidationMessage } from "src/common/enums/message.enum";
 
@@ -18,42 +18,36 @@ export class CreatePublisherDto {
 	logo: string;
 
 	@ApiProperty({ example: "" })
-	@IsString()
-	@Length(3, 50)
 	@IsUrl()
 	website: string;
 
 	@ApiProperty({ example: "" })
-	@IsPhoneNumber("IR", { message: ValidationMessage.InvalidWorkPhoneFormat })
-	@Length(11, 11)
 	work_phone: string;
 
 	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsMobilePhone("fa-IR", {}, { message: ValidationMessage.InvalidPhoneFormat })
-	@Length(11, 11)
 	phone: string;
 
 	@ApiPropertyOptional({ example: "" })
-	@IsString()
 	@IsOptional()
-	@Length(10)
+	@IsString()
 	address: string;
 
 	@ApiPropertyOptional({ example: "" })
-	@IsString()
 	@IsOptional()
-	@Length(4, 50)
+	@IsEmail({}, { message: ValidationMessage.InvalidEmailFormat })
 	email: string;
 
 	@ApiPropertyOptional({ example: "" })
-	@IsString()
 	@IsOptional()
-	@Length(4, 50)
+	@IsString()
+	@Length(1, 50)
 	instagram: string;
 
 	@ApiPropertyOptional({ example: "" })
-	@IsString()
 	@IsOptional()
-	@Length(4, 50)
+	@IsString()
+	@Length(1, 50)
 	telegram: string;
 }

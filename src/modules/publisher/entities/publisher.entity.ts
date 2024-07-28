@@ -1,4 +1,4 @@
-import { AfterLoad, Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
 
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { EntityName } from "src/common/enums/entity.enum";
@@ -17,16 +17,16 @@ export class PublisherEntity extends BaseEntity {
 	@Column({})
 	website: string;
 
-	@Column({ nullable: true, length: 11 })
-	phone: string;
-
 	@Column({ length: 11 })
 	work_phone: string;
+
+	@Column({ nullable: true, length: 11 })
+	phone: string;
 
 	@Column({ nullable: true })
 	address: string;
 
-	@Column({ nullable: true, length: 50 })
+	@Column({ nullable: true })
 	email: string;
 
 	@Column({ nullable: true, length: 50 })
@@ -40,10 +40,4 @@ export class PublisherEntity extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
-
-	@AfterLoad()
-	map() {
-		const url = this.logo.replaceAll("\\", "/");
-		this.logo = `${process.env.URL}/${url}`;
-	}
 }

@@ -24,7 +24,7 @@ import { TranslatorModule } from "../translator/translator.module";
 		BooksModule,
 		WriterModule,
 		CategoryModule,
-		PublisherModule,
+		// PublisherModule,
 		TranslatorModule
 	],
 	controllers: [],
