@@ -6,6 +6,7 @@ export enum EntityName {
 	Editor = "editor",
 	Profile = "profile",
 	Category = "category",
+	Discount = "discount",
 	Publisher = "publisher",
 	Translator = "translator",
 	BookComment = "book_comment",

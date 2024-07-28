@@ -22,6 +22,7 @@ export enum NotFoundMessage {
 	NotFoundPublisher = "ناشر یافت نشد",
 	NotFoundTranslator = "مترجم یافت نشد",
 	NotFoundCategory = "دسته بندی یافت نشد",
+	NotFoundDiscount = "کد تخفیف یافت نشد",
 }
 export enum ValidationMessage {
 	InvalidEmailFormat = "ایمیل وارد شده صحیح نمیباشد",
@@ -46,6 +47,7 @@ export enum PublicMessage {
 	CreatedPublisher = "ناشر باموفقیت ایجاد شد",
 	CreatedTranslator = "مترجم باموفقیت ایجاد شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
+	CreatedDiscount = "کد تخفیف با موفقیت ایجاد شد",
 	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",
 	UnBookmark = " پست از لیست پست ها ذخیره شده برداشته شد",
