@@ -1,4 +1,3 @@
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import {
 	Get,
 	Post,
@@ -10,6 +9,7 @@ import {
 	Controller,
 	UseInterceptors,
 } from "@nestjs/common";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "src/common/enums/role.enum";
 import { CategoryService } from "./category.service";
@@ -32,6 +32,7 @@ export class CategoryController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("cate-image") }))
 	create(
@@ -61,6 +62,7 @@ export class CategoryController {
 
 	@Patch(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("cate-image") }))
 	update(
@@ -73,6 +75,7 @@ export class CategoryController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.categoryService.remove(+id);

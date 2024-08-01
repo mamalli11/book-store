@@ -10,8 +10,8 @@ import {
 	UseInterceptors,
 	UploadedFile,
 } from "@nestjs/common";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "src/common/enums/role.enum";
 import { PublisherService } from "./publisher.service";
@@ -32,6 +32,7 @@ export class PublisherController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("publisher-image") }))
 	create(
@@ -55,6 +56,7 @@ export class PublisherController {
 
 	@Put(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("publisher-image") }))
 	update(
@@ -67,6 +69,7 @@ export class PublisherController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.publisherService.remove(+id);

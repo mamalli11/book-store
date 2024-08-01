@@ -10,7 +10,7 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "src/common/enums/role.enum";
 import { TranslatorService } from "./translator.service";
@@ -31,6 +31,7 @@ export class TranslatorController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("translator-image") }))
 	create(
@@ -54,6 +55,7 @@ export class TranslatorController {
 
 	@Put(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("translator-image") }))
 	update(
@@ -66,6 +68,7 @@ export class TranslatorController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.translatorService.remove(+id);

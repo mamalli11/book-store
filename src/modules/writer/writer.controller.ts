@@ -9,8 +9,8 @@ import {
 	Controller,
 	UseInterceptors,
 } from "@nestjs/common";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { WriterService } from "./writer.service";
 import { Roles } from "src/common/enums/role.enum";
@@ -31,6 +31,7 @@ export class WriterController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	create(
@@ -54,6 +55,7 @@ export class WriterController {
 
 	@Put(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("writer-image") }))
 	update(
@@ -66,6 +68,7 @@ export class WriterController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.writerService.remove(+id);

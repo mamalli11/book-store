@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from "@nestjs/common";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { BooksService } from "./books.service";
 import { Roles } from "src/common/enums/role.enum";
@@ -17,6 +17,7 @@ export class BooksController {
 
 	@Post()
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	create(@Body() createBookDto: CreateBookDto) {
 		return this.booksService.create(createBookDto);
@@ -36,6 +37,7 @@ export class BooksController {
 
 	@Patch(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
 	update(@Param("id") id: string, @Body() updateBookDto: UpdateBookDto) {
 		return this.booksService.update(+id, updateBookDto);
@@ -43,6 +45,7 @@ export class BooksController {
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id") id: string) {
 		return this.booksService.remove(+id);
