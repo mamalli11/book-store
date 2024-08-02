@@ -4,6 +4,7 @@ export enum EntityName {
 	Books = "books",
 	Writer = "writer",
 	Editor = "editor",
+	Basket = "basket",
 	Profile = "profile",
 	Category = "category",
 	Discount = "discount",
