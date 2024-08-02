@@ -20,7 +20,7 @@ export class ProfileEntity extends BaseEntity {
 	profile_picture: string;
 
 	@Column({ nullable: true })
-	website: string;
+	imageKey: string;
 
 	@Column({ default: "other", enum: ["male", "female", "other"] })
 	gender: string;
@@ -31,7 +31,7 @@ export class ProfileEntity extends BaseEntity {
 	@Column({ default: "fa" })
 	language: string;
 
-	@Column({ default: "ایران" })
+	@Column({ default: "iran" })
 	country: string;
 
 	@Column({ nullable: true })

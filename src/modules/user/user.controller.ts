@@ -8,20 +8,20 @@ import {
 	Param,
 	Delete,
 	Controller,
+	ParseIntPipe,
 	UseInterceptors,
 } from "@nestjs/common";
 import { Response } from "express";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { UserService } from "./user.service";
 import { CheckOtpDto } from "../auth/dto/auth.dto";
 import { CookieKeys } from "src/common/enums/cookie.enum";
-import { multerStorage } from "src/common/utils/multer.util";
 import { PublicMessage } from "src/common/enums/message.enum";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
+import { UploadFileS3 } from "src/common/interceptors/upload-file.interceptor";
 import { UpdateUserDto, ChangeEmailDto, ChangePhoneDto } from "./dto/profile.dto";
 import { UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
 
@@ -39,12 +39,12 @@ export class UserController {
 
 	@Put("/profile")
 	@ApiConsumes(SwaggerConsumes.MultipartData)
-	@UseInterceptors(FileInterceptor("profile_picture", { storage: multerStorage("user-profile") }))
+	@UseInterceptors(UploadFileS3("profile_picture"))
 	updateInfo(
 		@Body() updateUserDto: UpdateUserDto,
 		@UploadedOptionalFile() files: Express.Multer.File,
 	) {
-		return this.userService.updateInfo(files, updateUserDto);
+		return this.userService.updateInfo(updateUserDto, files);
 	}
 
 	@Delete()
@@ -86,7 +86,7 @@ export class UserController {
 
 	@Get("/userProfile/:userId")
 	@ApiParam({ name: "userId" })
-	userProfile(@Param("userId") userId: number) {
+	userProfile(@Param("userId", ParseIntPipe) userId: number) {
 		return this.userService.userProfile(userId);
 	}
 }

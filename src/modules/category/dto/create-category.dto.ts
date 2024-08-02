@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumber, IsNumberString, IsOptional, IsString, Length } from "class-validator";
+import { IsNumber, IsNumberString, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class CreateCategoryDto {
 	@ApiProperty({ example: "" })
@@ -10,6 +10,7 @@ export class CreateCategoryDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
+	@Matches(/^[a-zA-Z]+$/, { message: "enName values ​​must be entered in English" })
 	slug: string;
 
 	@ApiPropertyOptional({ nullable: true })

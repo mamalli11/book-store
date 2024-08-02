@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsMobilePhone, IsOptional, IsString, Length } from "class-validator";
+import { IsMobilePhone, IsOptional, IsString, Length, Matches } from "class-validator";
 
 import { ValidationMessage } from "src/common/enums/message.enum";
 
 export class CreateEditorDto {
-    @ApiProperty({ example: "" })
+	@ApiProperty({ example: "" })
 	@Length(1, 50)
 	@IsString()
 	name: string;
@@ -12,6 +12,7 @@ export class CreateEditorDto {
 	@ApiProperty({ example: "" })
 	@Length(1, 50)
 	@IsString()
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
 	enName: string;
 
 	@ApiPropertyOptional({ format: "binary" })

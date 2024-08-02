@@ -13,17 +13,17 @@ import { GenderType } from "../enums/profile.enum";
 import { ValidationMessage } from "src/common/enums/message.enum";
 
 export class UpdateUserDto {
-	@ApiPropertyOptional({ nullable: true })
+	@ApiPropertyOptional({ nullable: true, example: "" })
 	@IsOptional()
 	@IsString()
 	@Length(3, 50)
 	fname: string;
-	@ApiPropertyOptional({ nullable: true })
+	@ApiPropertyOptional({ nullable: true, example: "" })
 	@IsOptional()
 	@IsString()
 	@Length(3, 50)
 	lname: string;
-	@ApiPropertyOptional({ nullable: true })
+	@ApiPropertyOptional({ nullable: true, example: "" })
 	@IsOptional()
 	@IsString()
 	@Length(0, 50)
@@ -31,10 +31,7 @@ export class UpdateUserDto {
 	@ApiPropertyOptional({ nullable: true, format: "binary" })
 	@IsOptional()
 	profile_picture: string;
-	@ApiPropertyOptional({ nullable: true })
-	@IsOptional()
-	@IsUrl()
-	website: string;
+
 	@ApiPropertyOptional({ nullable: true, example: "1999-02-22T12:01:26.487Z" })
 	@IsOptional()
 	birthday: Date;
@@ -42,11 +39,11 @@ export class UpdateUserDto {
 	@IsOptional()
 	@IsEnum(GenderType)
 	gender: GenderType;
-	@ApiPropertyOptional({ nullable: true })
+	@ApiPropertyOptional({ nullable: true, example: "iran" })
 	@IsOptional()
 	@IsString()
 	country: string;
-	@ApiPropertyOptional({ nullable: true })
+	@ApiPropertyOptional({ nullable: true, example: "fa-ir" })
 	@IsOptional()
 	@IsString()
 	@Length(0, 5)

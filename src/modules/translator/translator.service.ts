@@ -71,7 +71,7 @@ export class TranslatorService {
 		if (telegram) updateObject["telegram"] = telegram;
 		if (instagram) updateObject["instagram"] = instagram;
 
-		await this.translatorRepository.save(translator);
+		await this.translatorRepository.update({ id }, updateObject);
 		return { message: PublicMessage.Updated };
 	}
 

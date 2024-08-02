@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsUrl, Length, IsEmail, IsString, IsOptional, IsMobilePhone } from "class-validator";
+import {
+	IsUrl,
+	Length,
+	IsEmail,
+	Matches,
+	IsString,
+	IsOptional,
+	IsMobilePhone,
+} from "class-validator";
 
 export class CreateWriterDto {
 	@ApiProperty({ example: "" })
@@ -10,6 +18,7 @@ export class CreateWriterDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
 	enName: string;
 
 	@ApiPropertyOptional({ format: "binary" })

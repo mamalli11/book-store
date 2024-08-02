@@ -7,9 +7,9 @@ import {
 	BadRequestException,
 } from "@nestjs/common";
 import { Request } from "express";
-import { Repository } from "typeorm";
 import { REQUEST } from "@nestjs/core";
 import { isDate } from "class-validator";
+import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import {
@@ -19,6 +19,7 @@ import {
 	NotFoundMessage,
 	BadRequestMessage,
 } from "src/common/enums/message.enum";
+import { S3Service } from "../s3/s3.service";
 import { UpdateUserDto } from "./dto/profile.dto";
 import { GenderType } from "./enums/profile.enum";
 import { OtpEntity } from "./entities/otp.entity";
@@ -39,7 +40,9 @@ export class UserService {
 		@Inject(REQUEST) private request: Request,
 		private authService: AuthService,
 		private tokenService: TokenService,
+		private s3Service: S3Service,
 	) {}
+
 	profile() {
 		const { id } = this.request.user;
 		return this.userRepository
@@ -48,32 +51,40 @@ export class UserService {
 			.leftJoinAndSelect("user.profile", "profile")
 			.getOne();
 	}
-	async updateInfo(file: Express.Multer.File, updateUserDto: UpdateUserDto) {
-		if (file) updateUserDto.profile_picture = file?.path?.slice(7);
 
+	async updateInfo(updateUserDto: UpdateUserDto, file: Express.Multer.File) {
 		const { id: userId, profileId } = this.request.user;
 		let profile = await this.profileRepository.findOneBy({ userId });
-		let user = await this.userRepository.findOneBy({ id: userId });
 
-		const { bio, birthday, gender, profile_picture, fname, lname, website, country, language } =
-			updateUserDto;
+		const profileUpdateObject: DeepPartial<ProfileEntity> = {};
+
+		if (file) {
+			const { Location, Key } = await this.s3Service.uploadFile(file, "user");
+			if (Location) {
+				profileUpdateObject["profile_picture"] = Location;
+				profileUpdateObject["imageKey"] = Key;
+				if (profile?.imageKey) await this.s3Service.deleteFile(profile?.imageKey);
+			}
+		}
+
+		const { bio, birthday, gender, fname, lname, country, language } = updateUserDto;
 
 		if (profile) {
-			if (fname) profile.fname = fname;
-			if (lname) profile.lname = lname;
-			if (bio) profile.bio = bio;
-			if (website) profile.website = website;
-			if (birthday && isDate(new Date(birthday))) profile.birthday = new Date(birthday);
-			if (gender && Object.values(GenderType as any).includes(gender)) profile.gender = gender;
-			if (country) profile.country = country;
-			if (language) profile.language = language;
-			if (profile_picture) profile.profile_picture = profile_picture;
+			if (bio) profileUpdateObject["bio"] = bio;
+			if (fname) profileUpdateObject["fname"] = fname;
+			if (lname) profileUpdateObject["lname"] = lname;
+			if (country) profileUpdateObject["country"] = country;
+			if (language) profileUpdateObject["language"] = language;
+			if (gender && Object.values(GenderType as any).includes(gender))
+				profileUpdateObject["gender"] = gender;
+			if (birthday && isDate(new Date(birthday)))
+				profileUpdateObject["birthday"] = new Date(birthday);
 
-			profile = await this.profileRepository.save(profile);
+			await this.profileRepository.update({ id: profileId }, profileUpdateObject);
 		}
-		if (!profileId) {
-			await this.userRepository.update({ id: userId }, { profileId: profile.id });
-		}
+
+		if (!profileId) await this.userRepository.update({ id: userId }, { profileId: profile.id });
+
 		return { message: PublicMessage.Updated };
 	}
 	async removeAccount() {
@@ -164,7 +175,7 @@ export class UserService {
 				profile: true,
 			},
 			select: {
-				profile: { fname: true, lname: true, profile_picture: true, bio: true, website: true },
+				profile: { fname: true, lname: true, profile_picture: true, bio: true },
 				id: true,
 				is_verified: true,
 				created_at: true,
