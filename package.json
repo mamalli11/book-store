@@ -29,6 +29,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/multer": "^1.4.11",
+    "aws-sdk": "^2.1666.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
