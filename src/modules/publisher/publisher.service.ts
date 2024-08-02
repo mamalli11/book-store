@@ -1,9 +1,8 @@
-import { join } from "path";
-import { unlink } from "fs";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { S3Service } from "../s3/s3.service";
 import { PublisherEntity } from "./entities/publisher.entity";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { UpdatePublisherDto } from "./dto/update-publisher.dto";
@@ -15,15 +14,18 @@ import { paginationGenerator, paginationSolver } from "src/common/utils/paginati
 export class PublisherService {
 	constructor(
 		@InjectRepository(PublisherEntity) private publisherRepository: Repository<PublisherEntity>,
+		private s3Service: S3Service,
 	) {}
 
 	async create(createPublisherDto: CreatePublisherDto, file: Express.Multer.File) {
-		if (file) {
-			const path = file?.path?.slice(7);
-			createPublisherDto.logo = path.replaceAll("\\", "/");
-		}
+		let s3Data = null;
+		if (file) s3Data = await this.s3Service.uploadFile(file, "publisher");
 
-		await this.publisherRepository.insert({ ...createPublisherDto });
+		await this.publisherRepository.insert({
+			...createPublisherDto,
+			logo: s3Data?.Location ? s3Data.Location : null,
+			logoKey: s3Data?.Key ? s3Data.Key : null,
+		});
 
 		return { message: PublicMessage.CreatedPublisher };
 	}
@@ -36,10 +38,7 @@ export class PublisherService {
 			take: limit,
 		});
 
-		return {
-			pagination: paginationGenerator(count, page, limit),
-			publisher,
-		};
+		return { pagination: paginationGenerator(count, page, limit), publisher };
 	}
 
 	async findOne(id: number) {
@@ -50,55 +49,37 @@ export class PublisherService {
 
 	async update(id: number, updatePublisherDto: UpdatePublisherDto, file: Express.Multer.File) {
 		const publisher = await this.findOne(id);
+		const updateObject: DeepPartial<PublisherEntity> = {};
 
 		if (file) {
-			const imageFullPath = join(__dirname, "..", "..", "..", "public", publisher.logo);
-			unlink(imageFullPath, (err) => {
-				if (err) {
-					console.error("Error deleting old image:", err);
-				}
-			});
-			updatePublisherDto.logo = file?.path?.slice(7);
+			const { Location, Key } = await this.s3Service.uploadFile(file, "category");
+			if (Location) {
+				updateObject["logo"] = Location;
+				updateObject["logoKey"] = Key;
+				if (publisher.logoKey) await this.s3Service.deleteFile(publisher.logoKey);
+			}
 		}
 
-		const {
-			name,
-			logo,
-			email,
-			phone,
-			enName,
-			address,
-			website,
-			telegram,
-			instagram,
-			work_phone,
-		} = updatePublisherDto;
+		const { name, email, phone, enName, address, website, telegram, instagram, work_phone } =
+			updatePublisherDto;
 
-		if (name) publisher.name = name;
-		if (logo) publisher.logo = logo;
-		if (email) publisher.email = email;
-		if (phone) publisher.phone = phone;
-		if (enName) publisher.enName = enName;
-		if (website) publisher.website = website;
-		if (address) publisher.address = address;
-		if (telegram) publisher.telegram = telegram;
-		if (instagram) publisher.instagram = instagram;
-		if (work_phone) publisher.work_phone = work_phone;
+		if (name) updateObject["name"] = name;
+		if (email) updateObject["email"] = email;
+		if (phone) updateObject["phone"] = phone;
+		if (enName) updateObject["enName"] = enName;
+		if (address) updateObject["address"] = address;
+		if (website) updateObject["website"] = website;
+		if (telegram) updateObject["telegram"] = telegram;
+		if (instagram) updateObject["instagram"] = instagram;
+		if (work_phone) updateObject["work_phone"] = work_phone;
 
-		await this.publisherRepository.save(publisher);
+		await this.publisherRepository.update({ id }, updateObject);
 		return { message: PublicMessage.Updated };
 	}
 
 	async remove(id: number) {
 		const publisher = await this.findOne(id);
-
-		const imageFullPath = join(__dirname, "..", "..", "..", "public", publisher.logo);
-		unlink(imageFullPath, (err) => {
-			if (err) {
-				console.error("Error deleting old image:", err);
-			}
-		});
-
+		await this.s3Service.deleteFile(publisher.logoKey);
 		await this.publisherRepository.delete({ id });
 		return { message: PublicMessage.Deleted };
 	}

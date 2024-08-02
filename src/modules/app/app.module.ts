@@ -27,7 +27,7 @@ import { TranslatorModule } from "../translator/translator.module";
 		WriterModule,
 		EditorModule,
 		CategoryModule,
-		// PublisherModule,
+		PublisherModule,
 		TranslatorModule,
 		DiscountModule
 	],

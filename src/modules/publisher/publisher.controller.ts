@@ -7,21 +7,20 @@ import {
 	Param,
 	Delete,
 	Controller,
+	ParseIntPipe,
 	UseInterceptors,
-	UploadedFile,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "src/common/enums/role.enum";
 import { PublisherService } from "./publisher.service";
-import { multerStorage } from "src/common/utils/multer.util";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CreatePublisherDto } from "./dto/create-publisher.dto";
 import { UpdatePublisherDto } from "./dto/update-publisher.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
+import { UploadFileS3 } from "src/common/interceptors/upload-file.interceptor";
 import { Uploaded_File, UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
 
 @Controller("publisher")
@@ -34,10 +33,10 @@ export class PublisherController {
 	@CanAccess(Roles.Admin)
 	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
-	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("publisher-image") }))
+	@UseInterceptors(UploadFileS3("logo"))
 	create(
 		@Body() createPublisherDto: CreatePublisherDto,
-		@UploadedFile() file: Express.Multer.File,
+		@Uploaded_File() file: Express.Multer.File,
 	) {
 		return this.publisherService.create(createPublisherDto, file);
 	}
@@ -50,28 +49,28 @@ export class PublisherController {
 
 	@Get(":id")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	findOne(@Param("id") id: string) {
-		return this.publisherService.findOne(+id);
+	findOne(@Param("id", ParseIntPipe) id: number) {
+		return this.publisherService.findOne(id);
 	}
 
 	@Put(":id")
 	@CanAccess(Roles.Admin)
 	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
-	@UseInterceptors(FileInterceptor("image", { storage: multerStorage("publisher-image") }))
+	@UseInterceptors(UploadFileS3("logo"))
 	update(
-		@Param("id") id: string,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() updatePublisherDto: UpdatePublisherDto,
 		@UploadedOptionalFile() file: Express.Multer.File,
 	) {
-		return this.publisherService.update(+id, updatePublisherDto, file);
+		return this.publisherService.update(id, updatePublisherDto, file);
 	}
 
 	@Delete(":id")
 	@CanAccess(Roles.Admin)
 	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	remove(@Param("id") id: string) {
-		return this.publisherService.remove(+id);
+	remove(@Param("id", ParseIntPipe) id: number) {
+		return this.publisherService.remove(id);
 	}
 }

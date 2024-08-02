@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsMobilePhone, IsOptional, IsString, IsUrl, Length } from "class-validator";
+import {
+	IsUrl,
+	Length,
+	Matches,
+	IsEmail,
+	IsString,
+	IsOptional,
+	IsMobilePhone,
+} from "class-validator";
 
 import { ValidationMessage } from "src/common/enums/message.enum";
 
@@ -11,6 +19,7 @@ export class CreatePublisherDto {
 
 	@ApiProperty({ example: "" })
 	@IsString()
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
 	@Length(1, 50)
 	enName: string;
 

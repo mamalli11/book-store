@@ -15,6 +15,9 @@ export class PublisherEntity extends BaseEntity {
 	logo: string;
 
 	@Column({})
+	logoKey: string;
+
+	@Column({})
 	website: string;
 
 	@Column({ length: 11 })
