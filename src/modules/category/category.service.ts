@@ -28,13 +28,13 @@ export class CategoryService {
 
 		if (isBoolean(show)) createCategoryDto.show = toBoolean(show);
 
-		const category = await this.categoryRepository.insert({
+		await this.categoryRepository.insert({
 			...createCategoryDto,
 			image: s3Data?.Location ? s3Data.Location : null,
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
-		return { message: PublicMessage.CreatedCategory, category };
+		return { message: PublicMessage.CreatedCategory };
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -74,9 +74,7 @@ export class CategoryService {
 			relations: { children: true },
 		});
 		if (!category) throw new NotFoundException("not found this category slug ");
-		return {
-			category,
-		};
+		return { category };
 	}
 
 	async update(id: number, updateCategoryDto: UpdateCategoryDto, file: Express.Multer.File) {

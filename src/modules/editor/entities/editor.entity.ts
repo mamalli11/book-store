@@ -15,6 +15,9 @@ export class EditorEntity extends BaseEntity {
 	@Column({ default: DefaultPath.UserProfile })
 	image: string;
 
+	@Column({ nullable: true })
+	imageKey: string;
+
 	@Column({ length: 11, nullable: true })
 	phone: string;
 

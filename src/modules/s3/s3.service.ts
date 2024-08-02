@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { randomInt } from "crypto";
 import { extname } from "path";
 import { S3 } from "aws-sdk";
 
@@ -20,7 +21,7 @@ export class S3Service {
 		return await this.s3
 			.upload({
 				Bucket: process.env.S3_BUCKET_NAME,
-				Key: `${folderName}/${Date.now()}${ext}`,
+				Key: `${folderName}/${randomInt(9999999)}${Date.now()}${ext}`,
 				Body: file.buffer,
 			})
 			.promise();
