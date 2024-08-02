@@ -1,16 +1,7 @@
-import {
-	Entity,
-	Column,
-	OneToMany,
-	AfterLoad,
-	ManyToOne,
-	CreateDateColumn,
-	UpdateDateColumn,
-} from "typeorm";
+import { Entity, Column, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
-import { DefaultPath } from "src/common/enums/default-path.enum";
 
 @Entity(EntityName.Category)
 export class CategoryEntity extends BaseEntity {
@@ -20,8 +11,11 @@ export class CategoryEntity extends BaseEntity {
 	@Column({ unique: true, length: 50 })
 	slug: string;
 
-	@Column({ default: DefaultPath.CategoryImage })
+	@Column({ nullable: true })
 	image: string;
+
+	@Column({ nullable: true })
+	imageKey: string;
 
 	@Column({ default: true })
 	show: boolean;
@@ -30,6 +24,7 @@ export class CategoryEntity extends BaseEntity {
 	parentId: number;
 	@ManyToOne(() => CategoryEntity, (category) => category.children, { onDelete: "CASCADE" })
 	parent: CategoryEntity;
+
 	@OneToMany(() => CategoryEntity, (category) => category.parent)
 	children: CategoryEntity[];
 
@@ -38,12 +33,4 @@ export class CategoryEntity extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
-
-	@AfterLoad()
-	map() {
-		if (this.image != null && this.image != "") {
-			const url = this.image.replaceAll("\\", "/");
-			this.image = `${process.env.URL}/${url}`;
-		}
-	}
 }

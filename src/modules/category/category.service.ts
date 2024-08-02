@@ -1,11 +1,13 @@
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 
+import { S3Service } from "../s3/s3.service";
 import { CategoryEntity } from "./entities/category.entity";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
+import { toBoolean, isBoolean } from "src/common/utils/function.utils";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 import { ConflictMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
@@ -13,26 +15,33 @@ import { ConflictMessage, NotFoundMessage, PublicMessage } from "src/common/enum
 export class CategoryService {
 	constructor(
 		@InjectRepository(CategoryEntity) private categoryRepository: Repository<CategoryEntity>,
+		private s3Service: S3Service,
 	) {}
 
-	async create(file: Express.Multer.File, createCategoryDto: CreateCategoryDto) {
-		if (file) createCategoryDto.image = file?.path?.slice(7);
-		const { slug, title } = createCategoryDto;
+	async create(createCategoryDto: CreateCategoryDto, file: Express.Multer.File) {
+		let s3Data = null;
+		if (file) s3Data = await this.s3Service.uploadFile(file, "category");
+
+		let { slug, title, show } = createCategoryDto;
 
 		await this.checkExistAndResolveTitle(title, slug);
 
-		await this.categoryRepository.insert({ ...createCategoryDto });
+		if (isBoolean(show)) createCategoryDto.show = toBoolean(show);
 
-		return { message: PublicMessage.CreatedCategory };
+		const category = await this.categoryRepository.insert({
+			...createCategoryDto,
+			image: s3Data?.Location ? s3Data.Location : null,
+			imageKey: s3Data?.Key ? s3Data.Key : null,
+		});
+
+		return { message: PublicMessage.CreatedCategory, category };
 	}
 
 	async findAll(paginationDto: PaginationDto) {
 		const { limit, page, skip } = paginationSolver(paginationDto);
 		const [categories, count] = await this.categoryRepository.findAndCount({
 			where: {},
-			relations: {
-				parent: true,
-			},
+			relations: { parent: true },
 			select: {
 				parent: {
 					title: true,
@@ -41,7 +50,7 @@ export class CategoryService {
 			},
 			skip,
 			take: limit,
-			// order: { id: "DESC" },
+			order: { id: "ASC" },
 		});
 		return {
 			pagination: paginationGenerator(count, page, limit),
@@ -51,7 +60,7 @@ export class CategoryService {
 
 	async findOneById(id: number) {
 		const category = await this.categoryRepository.findOneBy({ id });
-		if (!category) throw new NotFoundException("category not found");
+		if (!category) throw new NotFoundException(NotFoundMessage.NotFoundCategory);
 		return category;
 	}
 
@@ -62,9 +71,7 @@ export class CategoryService {
 	async findBySlug(slug: string) {
 		const category = await this.categoryRepository.findOne({
 			where: { slug },
-			relations: {
-				children: true,
-			},
+			relations: { children: true },
 		});
 		if (!category) throw new NotFoundException("not found this category slug ");
 		return {
@@ -73,22 +80,39 @@ export class CategoryService {
 	}
 
 	async update(id: number, updateCategoryDto: UpdateCategoryDto, file: Express.Multer.File) {
-		if (file) updateCategoryDto.image = file?.path?.slice(7);
-
 		const category = await this.findOneById(id);
-		const { slug, title, parentId, image } = updateCategoryDto;
+		const { slug, title, parentId, show } = updateCategoryDto;
 
-		if (title) category.title = title;
-		if (slug) category.slug = slug;
-		if (parentId) category.parentId = parentId;
-		if (image) category.image = image;
+		const updateObject: DeepPartial<CategoryEntity> = {};
+		if (file) {
+			const { Location, Key } = await this.s3Service.uploadFile(file, "category");
+			if (Location) {
+				updateObject["image"] = Location;
+				updateObject["imageKey"] = Key;
+				if (category?.imageKey) await this.s3Service.deleteFile(category?.imageKey);
+			}
+		}
+		if (title) updateObject["title"] = title;
+		if (show && isBoolean(show)) updateObject["show"] = toBoolean(show);
+		if (parentId && !isNaN(parseInt(parentId.toString()))) {
+			const category = await this.findOneById(+parentId);
+			if (!category) throw new NotFoundException("not found category parent");
+			updateObject["parentId"] = category.id;
+		}
+		if (slug) {
+			const category = await this.categoryRepository.findOneBy({ slug });
+			if (category && category.id !== id)
+				throw new ConflictException(ConflictMessage.CategorySlug);
+			updateObject["slug"] = slug;
+		}
 
-		await this.categoryRepository.save(category);
+		await this.categoryRepository.update({ id }, updateObject);
 		return { message: PublicMessage.Updated };
 	}
 
 	async remove(id: number) {
-		await this.findOneById(id);
+		const category = await this.findOneById(id);
+		if (category.imageKey) await this.s3Service.deleteFile(category.imageKey);
 		await this.categoryRepository.delete({ id });
 		return { message: PublicMessage.Deleted };
 	}

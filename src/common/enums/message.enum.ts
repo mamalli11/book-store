@@ -57,4 +57,5 @@ export enum ConflictMessage {
 	Phone = "موبایل توسط شخص دیگری استفاده شده",
 	Username = "تام کاربری توسط شخص دیگری استفاده شده",
 	CategoryTitle = "عنوان دسته بندی قبلا ثبت شده است",
+	CategorySlug = "slug دسته بندی قبلا ثبت شده است",
 }
