@@ -1,9 +1,8 @@
-import { join } from "path";
-import { unlink } from "fs";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { S3Service } from "../s3/s3.service";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { TranslatorEntity } from "./entities/translator.entity";
 import { DefaultPath } from "src/common/enums/default-path.enum";
@@ -17,15 +16,18 @@ export class TranslatorService {
 	constructor(
 		@InjectRepository(TranslatorEntity)
 		private translatorRepository: Repository<TranslatorEntity>,
+		private s3Service: S3Service,
 	) {}
 
 	async create(createTranslatorDto: CreateTranslatorDto, file: Express.Multer.File) {
-		if (file) {
-			const path = file?.path?.slice(7);
-			createTranslatorDto.image = path.replaceAll("\\", "/");
-		}
+		let s3Data = null;
+		if (file) s3Data = await this.s3Service.uploadFile(file, "translator");
 
-		await this.translatorRepository.insert({ ...createTranslatorDto });
+		await this.translatorRepository.insert({
+			...createTranslatorDto,
+			image: s3Data?.Location ? s3Data.Location : DefaultPath.UserProfile,
+			imageKey: s3Data?.Key ? s3Data.Key : null,
+		});
 
 		return { message: PublicMessage.CreatedTranslator };
 	}
@@ -38,10 +40,7 @@ export class TranslatorService {
 			take: limit,
 		});
 
-		return {
-			pagination: paginationGenerator(count, page, limit),
-			translator,
-		};
+		return { pagination: paginationGenerator(count, page, limit), translator };
 	}
 
 	async findOne(id: number) {
@@ -52,30 +51,26 @@ export class TranslatorService {
 
 	async update(id: number, updateTranslatorDto: UpdateTranslatorDto, file: Express.Multer.File) {
 		const translator = await this.findOne(id);
+		const updateObject: DeepPartial<TranslatorEntity> = {};
 
-		if (translator.image !== DefaultPath.UserProfile) {
-			const imageFullPath = join(__dirname, "..", "..", "..", "public", translator.image);
-
-			unlink(imageFullPath, (err) => {
-				if (err) {
-					console.error("Error deleting old image:", err);
-				} else {
-					console.log("Old image deleted successfully");
-				}
-			});
+		if (file) {
+			const { Location, Key } = await this.s3Service.uploadFile(file, "category");
+			if (Location) {
+				updateObject["image"] = Location;
+				updateObject["imageKey"] = Key;
+				if (translator?.imageKey) await this.s3Service.deleteFile(translator?.imageKey);
+			}
 		}
 
-		const { eName, name, image, instagram, phone, telegram, website, email } =
-			updateTranslatorDto;
+		const { enName, name, instagram, phone, telegram, website, email } = updateTranslatorDto;
 
-		if (eName) translator.eName = eName;
-		if (name) translator.name = name;
-		if (email) translator.email = email;
-		if (instagram) translator.instagram = instagram;
-		if (phone) translator.phone = phone;
-		if (telegram) translator.telegram = telegram;
-		if (website) translator.website = website;
-		if (image) translator.image = image;
+		if (name) updateObject["name"] = name;
+		if (phone) updateObject["phone"] = phone;
+		if (email) updateObject["email"] = email;
+		if (enName) updateObject["enName"] = enName;
+		if (website) updateObject["website"] = website;
+		if (telegram) updateObject["telegram"] = telegram;
+		if (instagram) updateObject["instagram"] = instagram;
 
 		await this.translatorRepository.save(translator);
 		return { message: PublicMessage.Updated };
@@ -83,18 +78,7 @@ export class TranslatorService {
 
 	async remove(id: number) {
 		const translator = await this.findOne(id);
-
-		if (translator.image !== DefaultPath.UserProfile) {
-			const imageFullPath = join(__dirname, "..", "..", "..", "public", translator.image);
-
-			unlink(imageFullPath, (err) => {
-				if (err) {
-					console.error("Error deleting old image:", err);
-				} else {
-					console.log("Old image deleted successfully");
-				}
-			});
-		}
+		if (translator.imageKey) await this.s3Service.deleteFile(translator.imageKey);
 		await this.translatorRepository.delete({ id });
 		return { message: PublicMessage.Deleted };
 	}

@@ -10,10 +10,13 @@ export class TranslatorEntity extends BaseEntity {
 	name: string;
 
 	@Column({ length: 50 })
-	eName: string;
+	enName: string;
 
 	@Column({ default: DefaultPath.UserProfile })
 	image: string;
+	
+	@Column({ nullable: true })
+	imageKey: string;
 
 	@Column({ length: 11, nullable: true })
 	phone: string;

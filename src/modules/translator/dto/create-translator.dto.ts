@@ -12,7 +12,7 @@ export class CreateTranslatorDto {
 	@ApiProperty({ example: "" })
 	@Length(1, 50)
 	@IsString()
-	eName: string;
+	enName: string;
 
 	@ApiPropertyOptional({ format: "binary" })
 	@IsOptional()

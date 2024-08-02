@@ -9,6 +9,7 @@ import { UpdateEditorDto } from "./dto/update-editor.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
+import { DefaultPath } from "src/common/enums/default-path.enum";
 
 @Injectable()
 export class EditorService {
@@ -23,7 +24,7 @@ export class EditorService {
 
 		await this.editorRepository.insert({
 			...createEditorDto,
-			image: s3Data?.Location ? s3Data.Location : null,
+			image: s3Data?.Location ? s3Data.Location : DefaultPath.UserProfile,
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
@@ -60,10 +61,9 @@ export class EditorService {
 			}
 		}
 
-		const { enName, name, image, instagram, phone, telegram, website, email } = updateEditorDto;
+		const { enName, name, instagram, phone, telegram, website, email } = updateEditorDto;
 
 		if (name) updateObject["name"] = name;
-		if (image) updateObject["image"] = image;
 		if (phone) updateObject["phone"] = phone;
 		if (email) updateObject["email"] = email;
 		if (enName) updateObject["enName"] = enName;
