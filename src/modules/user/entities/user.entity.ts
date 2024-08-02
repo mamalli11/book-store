@@ -12,6 +12,7 @@ import { OtpEntity } from "./otp.entity";
 import { ProfileEntity } from "./profile.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
+import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 
 // import { PostEntity } from "src/modules/post/entities/post.entity";
 // import { PostLikeEntity } from "src/modules/post/entities/postLike.entity";
@@ -60,6 +61,9 @@ export class UserEntity extends BaseEntity {
 	@JoinColumn({ name: "profileId" })
 	profile: ProfileEntity;
 
+	@OneToMany(() => BasketEntity, (basket) => basket.user)
+	basket: BasketEntity[];
+
 	// @OneToMany(() => BookCommentLikeEntity, (like) => like.user)
 	// book_comment_likes: BookCommentLikeEntity[];
 
@@ -72,9 +76,9 @@ export class UserEntity extends BaseEntity {
 	// @OneToMany(() => BookCommentEntity, (comment) => comment.user)
 	// book_comments: BookCommentEntity[];
 
-	@CreateDateColumn()
+	@CreateDateColumn({ type: "time with time zone" })
 	created_at: Date;
 
-	@UpdateDateColumn()
+	@UpdateDateColumn({ type: "time with time zone" })
 	updated_at: Date;
 }

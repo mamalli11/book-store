@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { EntityName } from "src/common/enums/entity.enum";
+import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 
 @Entity(EntityName.Books)
 export class BookEntity extends BaseEntity {
@@ -59,6 +60,9 @@ export class BookEntity extends BaseEntity {
 	})
 	status: string;
 
+	@Column({ default: true })
+	is_active: boolean;
+
 	@Column({})
 	writerId: string;
 
@@ -85,4 +89,7 @@ export class BookEntity extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@OneToMany(() => BasketEntity, (basket) => basket.book)
+	baskets: BasketEntity[];
 }
