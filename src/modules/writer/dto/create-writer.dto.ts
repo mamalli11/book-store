@@ -5,12 +5,12 @@ export class CreateWriterDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	fullname: string;
+	name: string;
 
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	enFullName: string;
+	enName: string;
 
 	@ApiPropertyOptional({ format: "binary" })
 	@IsOptional()

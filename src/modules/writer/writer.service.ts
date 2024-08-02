@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { unlink } from "fs";
-import { join } from "path";
+import { DeepPartial, Repository } from "typeorm";
 
+import { S3Service } from "../s3/s3.service";
 import { WriterEntity } from "./entities/writer.entity";
 import { CreateWriterDto } from "./dto/create-writer.dto";
 import { UpdateWriterDto } from "./dto/update-writer.dto";
@@ -15,12 +14,18 @@ import { paginationGenerator, paginationSolver } from "src/common/utils/paginati
 export class WriterService {
 	constructor(
 		@InjectRepository(WriterEntity) private writerRepository: Repository<WriterEntity>,
+		private s3Service: S3Service,
 	) {}
 
 	async create(createWriterDto: CreateWriterDto, file: Express.Multer.File) {
-		if (file) createWriterDto.image = file?.path?.slice(7);
+		let s3Data = null;
+		if (file) s3Data = await this.s3Service.uploadFile(file, "translator");
 
-		await this.writerRepository.insert({ ...createWriterDto	});
+		await this.writerRepository.insert({
+			...createWriterDto,
+			image: s3Data?.Location ? s3Data.Location : undefined,
+			imageKey: s3Data?.Key ? s3Data.Key : null,
+		});
 
 		return { message: PublicMessage.CreatedWriter };
 	}
@@ -47,49 +52,29 @@ export class WriterService {
 
 	async update(id: number, updateWriterDto: UpdateWriterDto, file: Express.Multer.File) {
 		const writer = await this.findOne(id);
-		console.log("image ", writer.image);
+		const updateObject: DeepPartial<WriterEntity> = {};
 
 		if (file) {
-			// حذف قسمت http://localhost:3000/ از آدرس
-			const baseUrl = "http://localhost:3000/";
-			if (writer.image.startsWith(baseUrl)) {
-				const oldImagePath = writer.image.replace(baseUrl, "");
-				const oldImageFullPath = join(__dirname, "..", "..", "..", "public", oldImagePath);
-
-				// حذف تصویر قدیمی
-				unlink(oldImageFullPath, (err) => {
-					if (err) {
-						console.error("Error deleting old image:", err);
-					} else {
-						console.log("Old image deleted successfully");
-					}
-				});
+			const { Location, Key } = await this.s3Service.uploadFile(file, "category");
+			if (Location) {
+				updateObject["image"] = Location;
+				updateObject["imageKey"] = Key;
+				if (writer?.imageKey) await this.s3Service.deleteFile(writer?.imageKey);
 			}
 		}
 
-		const {
-			bio,
-			birthday,
-			email,
-			enFullName,
-			fullname,
-			image,
-			instagram,
-			phone,
-			telegram,
-			website,
-		} = updateWriterDto;
+		const { bio, birthday, email, enName, name, instagram, phone, telegram, website } =
+			updateWriterDto;
 
-		if (fullname) writer.fullname = fullname;
-		if (enFullName) writer.enFullName = enFullName;
-		if (bio) writer.bio = bio;
-		if (birthday) writer.birthday = birthday;
-		if (email) writer.email = email;
-		if (instagram) writer.instagram = instagram;
-		if (phone) writer.phone = phone;
-		if (telegram) writer.telegram = telegram;
-		if (website) writer.website = website;
-		if (image) writer.image = image;
+		if (bio) updateObject["bio"] = bio;
+		if (name) updateObject["name"] = name;
+		if (phone) updateObject["phone"] = phone;
+		if (email) updateObject["email"] = email;
+		if (enName) updateObject["enName"] = enName;
+		if (website) updateObject["website"] = website;
+		if (telegram) updateObject["telegram"] = telegram;
+		if (birthday) updateObject["birthday"] = birthday;
+		if (instagram) updateObject["instagram"] = instagram;
 
 		await this.writerRepository.save(writer);
 		return { message: PublicMessage.Updated };
@@ -97,19 +82,7 @@ export class WriterService {
 
 	async remove(id: number) {
 		const writer = await this.findOne(id);
-		const baseUrl = "http://localhost:3000/";
-		if (writer.image.startsWith(baseUrl)) {
-			const oldImagePath = writer.image.replace(baseUrl, "");
-			const oldImageFullPath = join(__dirname, "..", "..", "..", "public", oldImagePath);
-
-			unlink(oldImageFullPath, (err) => {
-				if (err) {
-					console.error("Error deleting old image:", err);
-				} else {
-					console.log("Old image deleted successfully");
-				}
-			});
-		}
+		if (writer.imageKey) await this.s3Service.deleteFile(writer.imageKey);
 		await this.writerRepository.delete({ id });
 		return { message: PublicMessage.Deleted };
 	}

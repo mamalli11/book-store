@@ -7,13 +7,16 @@ import { DefaultPath } from "src/common/enums/default-path.enum";
 @Entity(EntityName.Writer)
 export class WriterEntity extends BaseEntity {
 	@Column({ length: 50 })
-	fullname: string;
+	name: string;
 
 	@Column({ length: 50 })
-	enFullName: string;
+	enName: string;
 
 	@Column({ default: DefaultPath.UserProfile })
 	image: string;
+	
+	@Column({ nullable: true })
+	imageKey: string;
 
 	@Column({ length: 200 })
 	bio: string;

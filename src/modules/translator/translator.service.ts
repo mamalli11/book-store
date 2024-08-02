@@ -5,7 +5,6 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { S3Service } from "../s3/s3.service";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { TranslatorEntity } from "./entities/translator.entity";
-import { DefaultPath } from "src/common/enums/default-path.enum";
 import { CreateTranslatorDto } from "./dto/create-translator.dto";
 import { UpdateTranslatorDto } from "./dto/update-translator.dto";
 import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
@@ -25,7 +24,7 @@ export class TranslatorService {
 
 		await this.translatorRepository.insert({
 			...createTranslatorDto,
-			image: s3Data?.Location ? s3Data.Location : DefaultPath.UserProfile,
+			image: s3Data?.Location ? s3Data.Location : undefined,
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
