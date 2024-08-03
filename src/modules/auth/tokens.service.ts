@@ -33,7 +33,7 @@ export class TokenService {
 			expiresIn: "1w",
 		});
 		const refreshToken = this.jwtService.sign(payload, {
-			secret: process.env.OTP_TOKEN_SECRET,
+			secret: process.env.REFRESH_TOKEN_SECRET,
 			expiresIn: "30d",
 		});
 		return { token, refreshToken };
@@ -43,6 +43,13 @@ export class TokenService {
 			return this.jwtService.verify(token, { secret: process.env.ACCESS_TOKEN_SECRET });
 		} catch (error) {
 			throw new UnauthorizedException(AuthMessage.LoginAgain);
+		}
+	}
+	verifyRefreshToken(token: string): AccessTokenPayload {
+		try {
+			return this.jwtService.verify(token, { secret: process.env.REFRESH_TOKEN_SECRET });
+		} catch (error) {
+			throw new UnauthorizedException(AuthMessage.ExpiredToken);
 		}
 	}
 	createEmailToken(payload: EmailTokenPayload) {

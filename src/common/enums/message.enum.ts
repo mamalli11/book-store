@@ -6,6 +6,8 @@ export enum BadRequestMessage {
 export enum AuthMessage {
 	TryAgain = "دوباره تلاش کنید",
 	NotFoundAccount = "حساب کاربری یافت نشد",
+	LogoutSuccessfully="خروج موفقیت آمیز بود",
+	ExpiredToken = "توکن منقصی شده تلاش نکنید.",
 	LoginAgain = "مجددا وارد حساب کاربری خود شوید",
 	LoginIsRequired = "وارد حساب کاربری خود شوید",
 	DeleteAccount = "حساب کاربری باموفقیت حذف شد",

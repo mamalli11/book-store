@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./guards/auth.guard";
-import { AuthDto, CheckOtpDto } from "./dto/auth.dto";
+import { AuthDto, CheckOtpDto, RefreshTokenDto } from "./dto/auth.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 
 @ApiTags("Auth")
@@ -14,14 +14,20 @@ export class AuthController {
 
 	@Post("login")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	userExistence(@Body() authDto: AuthDto, @Res() res: Response) {
-		return this.authService.login(authDto, res);
+	userExistence(@Body() authDto: AuthDto) {
+		return this.authService.login(authDto);
 	}
 
 	@Post("check-otp")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	checkOtp(@Body() checkOtpDto: CheckOtpDto) {
-		return this.authService.checkOtp(checkOtpDto.code);
+	checkOtp(@Body() checkOtpDto: CheckOtpDto, @Res() res: Response) {
+		return this.authService.checkOtp(checkOtpDto, res);
+	}
+
+	@Post("ref-token")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
+		return this.authService.refreshToken(refreshTokenDto, res);
 	}
 
 	@Get("check-login")
@@ -29,5 +35,12 @@ export class AuthController {
 	@UseGuards(AuthGuard)
 	checkLogin(@Req() req: Request) {
 		return req.user;
+	}
+
+	@Get("logout")
+	@ApiBearerAuth("Authorization")
+	@UseGuards(AuthGuard)
+	logout(@Res() res: Response, @Req() req: Request) {
+		return this.authService.logout(res, req);
 	}
 }

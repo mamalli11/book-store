@@ -18,6 +18,9 @@ export class OtpEntity extends BaseEntity {
 	@Column({ nullable: true })
 	method: string;
 
+	@Column({ nullable: true })
+	refreshToken: string;
+
 	@OneToOne(() => UserEntity, (user) => user.otp, { onDelete: "CASCADE" })
 	user: UserEntity;
 }

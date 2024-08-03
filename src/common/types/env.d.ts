@@ -15,6 +15,7 @@ namespace NodeJS {
 		EMAIL_TOKEN_SECRET: string;
 		PHONE_TOKEN_SECRET: string;
 		ACCESS_TOKEN_SECRET: string;
+		REFRESH_TOKEN_SECRET: string;
 		//s3
 		S3_ENDPOINT: string;
 		S3_ACCESS_KEY: string;

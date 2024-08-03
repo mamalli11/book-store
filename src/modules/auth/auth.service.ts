@@ -6,7 +6,6 @@ import { REQUEST } from "@nestjs/core";
 import { Repository } from "typeorm";
 import { randomInt } from "crypto";
 
-import { AuthDto } from "./dto/auth.dto";
 import { AuthResponse } from "./types/response";
 import { TokenService } from "./tokens.service";
 import { AuthMethod } from "./enums/method.enum";
@@ -15,6 +14,7 @@ import { UserEntity } from "../user/entities/user.entity";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { ProfileEntity } from "../user/entities/profile.entity";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
+import { AuthDto, CheckOtpDto, RefreshTokenDto } from "./dto/auth.dto";
 import { AuthMessage, BadRequestMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
@@ -27,7 +27,7 @@ export class AuthService {
 		private tokenService: TokenService,
 	) {}
 
-	async login(authDto: AuthDto, res: Response) {
+	async login(authDto: AuthDto) {
 		const { method, emailOrPhone } = authDto;
 		const validUsername = this.userValidator(method, emailOrPhone);
 		let user: UserEntity = await this.checkExistUser(method, validUsername);
@@ -43,7 +43,7 @@ export class AuthService {
 		const otp = await this.saveOtp(user.id, method);
 		const token = this.tokenService.createOtpToken({ userId: user.id });
 		const result = { token, code: otp.code };
-		return this.sendResponse(res, result);
+		return result;
 	}
 
 	userValidator(method: AuthMethod, username: string) {
@@ -80,10 +80,15 @@ export class AuthService {
 		}
 		return user;
 	}
-	async sendResponse(res: Response, result: AuthResponse) {
-		const { token, code } = result;
-		res.cookie(CookieKeys.OTP, token, CookiesOptionsToken());
-		return res.json({ message: PublicMessage.SentOtp, code });
+	async sendResponse(res: Response, result: AuthResponse, message: string) {
+		const { refreshToken, accessToken } = result;
+		return res
+			.cookie(
+				CookieKeys.OTP,
+				JSON.stringify({ accessToken, refreshToken }),
+				CookiesOptionsToken(),
+			)
+			.json({ message, accessToken, refreshToken });
 	}
 	async validateAccessToken(token: string) {
 		const { userId } = this.tokenService.verifyAccessToken(token);
@@ -92,7 +97,7 @@ export class AuthService {
 		return user;
 	}
 	async saveOtp(userId: number, method: AuthMethod) {
-		const code = randomInt(10000, 99999).toString();
+		const code = randomInt(100000, 999999).toString();
 		const expiresIn = new Date(Date.now() + 1000 * 60 * 2);
 		let otp = await this.otpRepository.findOneBy({ userId });
 		let existOtp = false;
@@ -110,8 +115,8 @@ export class AuthService {
 		}
 		return otp;
 	}
-	async checkOtp(code: string) {
-		const token = this.request.cookies?.[CookieKeys.OTP];
+	async checkOtp(checkOtpDto: CheckOtpDto, res: Response) {
+		const { code, token } = checkOtpDto;
 		if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
 		const { userId } = this.tokenService.verifyOtpToken(token);
 
@@ -135,7 +140,41 @@ export class AuthService {
 			}),
 		);
 		await this.userRepository.update({ id: userId }, { profileId: profile.id });
+		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		return { message: PublicMessage.LoggedIn, accessToken, refreshToken };
+		const result = { accessToken, refreshToken };
+		return this.sendResponse(res, result, PublicMessage.LoggedIn);
+	}
+	async refreshToken(refreshTokenDto: RefreshTokenDto, res: Response) {
+		const { userId } = this.tokenService.verifyRefreshToken(refreshTokenDto.refreshToken);
+		const user = await this.otpRepository.findOneBy({ userId });
+
+		if (!user) throw new UnauthorizedException(AuthMessage.ExpiredToken);
+
+		if (user.refreshToken !== refreshTokenDto.refreshToken)
+			throw new UnauthorizedException(AuthMessage.ExpiredToken);
+
+		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
+
+		await this.otpRepository.update({ id: userId }, { refreshToken });
+
+		return res
+			.clearCookie(CookieKeys.OTP)
+			.status(200)
+			.cookie(
+				CookieKeys.OTP,
+				JSON.stringify({ accessToken, refreshToken }),
+				CookiesOptionsToken(),
+			)
+			.json({ message: PublicMessage.LoggedIn, accessToken, refreshToken });
+	}
+	async logout(res: Response, req: Request) {
+		const { id } = req.user;
+
+		await this.otpRepository.update({ userId: id }, { refreshToken: null });
+
+		return res.clearCookie(CookieKeys.OTP).status(200).json({
+			message: AuthMessage.LogoutSuccessfully,
+		});
 	}
 }

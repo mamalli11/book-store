@@ -21,7 +21,7 @@ export class S3Service {
 		return await this.s3
 			.upload({
 				Bucket: process.env.S3_BUCKET_NAME,
-				Key: `${folderName}/${randomInt(9999999)}${Date.now()}${ext}`,
+				Key: `${folderName}/${randomInt(1000000, 9999999)}${Date.now()}${ext}`,
 				Body: file.buffer,
 			})
 			.promise();
