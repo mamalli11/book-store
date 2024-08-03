@@ -174,6 +174,8 @@ export class AuthService {
 	}
 	async logout(res: Response, req: Request) {
 		const { id } = req.user;
+		if (!this.request.cookies?.[CookieKeys.OTP])
+			throw new UnauthorizedException(AuthMessage.LoginAgain);
 
 		await this.otpRepository.update({ userId: id }, { refreshToken: null });
 
