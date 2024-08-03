@@ -25,10 +25,3 @@ export class CheckOtpDto {
 	@Length(6, 6)
 	code: string;
 }
-
-export class RefreshTokenDto {
-	@ApiProperty({ example: "" })
-	@IsString()
-	@IsJWT()
-	refreshToken: string;
-}

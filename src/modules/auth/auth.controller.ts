@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./guards/auth.guard";
-import { AuthDto, CheckOtpDto, RefreshTokenDto } from "./dto/auth.dto";
+import { AuthDto, CheckOtpDto } from "./dto/auth.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 
 @ApiTags("Auth")
@@ -24,10 +24,10 @@ export class AuthController {
 		return this.authService.checkOtp(checkOtpDto, res);
 	}
 
-	@Post("ref-token")
+	@Get("ref-token")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
-		return this.authService.refreshToken(refreshTokenDto, res);
+	refreshToken(@Res() res: Response) {
+		return this.authService.refreshToken(res);
 	}
 
 	@Get("check-login")

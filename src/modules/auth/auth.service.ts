@@ -9,12 +9,12 @@ import { randomInt } from "crypto";
 import { AuthResponse } from "./types/response";
 import { TokenService } from "./tokens.service";
 import { AuthMethod } from "./enums/method.enum";
+import { AuthDto, CheckOtpDto } from "./dto/auth.dto";
 import { OtpEntity } from "../user/entities/otp.entity";
 import { UserEntity } from "../user/entities/user.entity";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { ProfileEntity } from "../user/entities/profile.entity";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
-import { AuthDto, CheckOtpDto, RefreshTokenDto } from "./dto/auth.dto";
 import { AuthMessage, BadRequestMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
@@ -145,13 +145,17 @@ export class AuthService {
 		const result = { accessToken, refreshToken };
 		return this.sendResponse(res, result, PublicMessage.LoggedIn);
 	}
-	async refreshToken(refreshTokenDto: RefreshTokenDto, res: Response) {
-		const { userId } = this.tokenService.verifyRefreshToken(refreshTokenDto.refreshToken);
-		const user = await this.otpRepository.findOneBy({ userId });
+	async refreshToken(res: Response) {
+		if (!this.request.cookies?.[CookieKeys.OTP])
+			throw new UnauthorizedException(AuthMessage.LoginAgain);
 
+		let token: any = JSON.parse(this.request.cookies?.[CookieKeys.OTP]);
+
+		const { userId } = this.tokenService.verifyRefreshToken(token?.refreshToken);
+		const user = await this.otpRepository.findOneBy({ userId });
 		if (!user) throw new UnauthorizedException(AuthMessage.ExpiredToken);
 
-		if (user.refreshToken !== refreshTokenDto.refreshToken)
+		if (user.refreshToken !== token?.refreshToken)
 			throw new UnauthorizedException(AuthMessage.ExpiredToken);
 
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });

@@ -59,7 +59,7 @@ export class UserController {
 		if (message) return res.json({ message });
 
 		res.cookie(CookieKeys.EmailOTP, token, CookiesOptionsToken());
-		res.json({ message: PublicMessage.SentOtp, code });
+		res.json({ message: PublicMessage.SentOtp, code, token });
 	}
 
 	@Post("/verify-email-otp")
@@ -75,7 +75,7 @@ export class UserController {
 		if (message) return res.json({ message });
 
 		res.cookie(CookieKeys.PhoneOTP, token, CookiesOptionsToken());
-		res.json({ message: PublicMessage.SentOtp, code });
+		res.json({ message: PublicMessage.SentOtp, code, token });
 	}
 
 	@Post("/verify-phone-otp")
