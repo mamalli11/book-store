@@ -11,6 +11,11 @@ async function bootstrap() {
 	app.useStaticAssets("public");
 	app.useGlobalPipes(new ValidationPipe());
 	app.use(cookieParser(process.env.COOKIE_SECRET));
+	app.enableCors({
+		allowedHeaders: "*",
+		origin: "*",
+		credentials: true,
+	});
 	const { PORT } = process.env;
 	await app.listen(PORT, "0.0.0.0", () => {
 		console.log(`http://localhost:${PORT} ✅`);
