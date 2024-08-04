@@ -1,5 +1,8 @@
 export enum BadRequestMessage {
+	NotOwnerComment = "شما صاحب این نظر نیستید",
 	SomeThingWrong = "خطایی پیش آمده مجددا تلاش کنید",
+	AlreadyRejected = "نظر انتخاب شده قبلا رد شده است",
+	AlreadyAccepted = "نظر انتخاب شده قبلا تایید شده است",
 	InValidLoginData = "اطلاعات ارسال شده برای ورود صحیح نمیباشد",
 	InValidRegisterData = "اطلاعات ارسال شده برای ثبت نام صحیح نمیباشد",
 }
@@ -17,7 +20,7 @@ export enum AuthMessage {
 }
 export enum NotFoundMessage {
 	NotFound = "موردی یافت نشد",
-	NotFoundPost = "پست یافت نشد",
+	NotFoundBook = "کتاب یافت نشد",
 	NotFoundUser = "کاربری یافت نشد",
 	NotFoundWriter = "نویسنده یافت نشد",
 	NotFoundEditor = "ویرایشگر یافت نشد",
@@ -43,7 +46,7 @@ export enum PublicMessage {
 	SentOtp = "کد یکبار مصرف با موفقیت ارسال شد",
 	LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
 	
-	Bookmark = "پست با موفقیت ذخیره شد",
+	Bookmark = "کتاب با موفقیت ذخیره شد",
 	LikeComment = "کامنت با موفقیت لایک شد",
 	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
 	CreatedPublisher = "ناشر باموفقیت ایجاد شد",
@@ -52,7 +55,7 @@ export enum PublicMessage {
 	CreatedDiscount = "کد تخفیف با موفقیت ایجاد شد",
 	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",
-	UnBookmark = " پست از لیست پست ها ذخیره شده برداشته شد",
+	UnBookmark = " کتاب از لیست کتاب ها ذخیره شده برداشته شد",
 }
 export enum ConflictMessage {
 	Email = "ایمیل توسط شخص دیگری استفاده شده",

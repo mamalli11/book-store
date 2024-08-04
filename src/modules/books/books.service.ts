@@ -1,9 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Injectable, NotFoundException } from "@nestjs/common";
+
+import { BookEntity } from "./entities/book.entity";
 import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
+import { NotFoundMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class BooksService {
+	constructor(@InjectRepository(BookEntity) private bookRepository: Repository<BookEntity>) {}
 	create(createBookDto: CreateBookDto) {
 		return "This action adds a new book";
 	}
@@ -22,5 +28,10 @@ export class BooksService {
 
 	remove(id: number) {
 		return `This action removes a #${id} book`;
+	}
+	async checkExistBlogById(id: number) {
+		const book = await this.bookRepository.findOneBy({ id });
+		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		return book;
 	}
 }

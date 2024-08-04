@@ -1,8 +1,9 @@
 import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
-import { BaseEntity } from "src/common/abstracts/base.entity";
 import { EntityName } from "src/common/enums/entity.enum";
+import { BaseEntity } from "src/common/abstracts/base.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
+import { CommentEntity } from "src/modules/comments/entities/comment.entity";
 
 @Entity(EntityName.Books)
 export class BookEntity extends BaseEntity {
@@ -92,4 +93,7 @@ export class BookEntity extends BaseEntity {
 
 	@OneToMany(() => BasketEntity, (basket) => basket.book)
 	baskets: BasketEntity[];
+
+	@OneToMany(() => CommentEntity, (comment) => comment.book)
+	comments: CommentEntity[];
 }

@@ -13,12 +13,8 @@ import { ProfileEntity } from "./profile.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
-
-// import { PostEntity } from "src/modules/post/entities/post.entity";
-// import { PostLikeEntity } from "src/modules/post/entities/postLike.entity";
-// import { PostCommentEntity } from "src/modules/post/entities/comment.entity";
-// import { PostBookmarkEntity } from "src/modules/post/entities/bookmark.entity";
-// import { PostCommentLikeEntity } from "src/modules/post/entities/postCommentLike.entity";
+import { CommentEntity } from "src/modules/comments/entities/comment.entity";
+import { CommentLikeEntity } from "src/modules/comments/entities/commentLike.entity";
 
 @Entity(EntityName.User)
 export class UserEntity extends BaseEntity {
@@ -64,8 +60,8 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(() => BasketEntity, (basket) => basket.user)
 	basket: BasketEntity[];
 
-	// @OneToMany(() => BookCommentLikeEntity, (like) => like.user)
-	// book_comment_likes: BookCommentLikeEntity[];
+	@OneToMany(() => CommentLikeEntity, (like) => like.user)
+	comment_likes: CommentLikeEntity[];
 
 	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
 	// book_bookmarks: BookBookmarkEntity[];
@@ -73,8 +69,8 @@ export class UserEntity extends BaseEntity {
 	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
 	// book_wantToRead: BookBookmarkEntity[];
 
-	// @OneToMany(() => BookCommentEntity, (comment) => comment.user)
-	// book_comments: BookCommentEntity[];
+	@OneToMany(() => CommentEntity, (comment) => comment.user)
+	book_comments: CommentEntity[];
 
 	@CreateDateColumn({ type: "time with time zone" })
 	created_at: Date;

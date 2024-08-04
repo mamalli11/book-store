@@ -13,6 +13,7 @@ import { CategoryModule } from "../category/category.module";
 import { DiscountModule } from "../discount/discount.module";
 import { PublisherModule } from "../publisher/publisher.module";
 import { TranslatorModule } from "../translator/translator.module";
+import { CommentsModule } from "../comments/comments.module";
 
 @Module({
 	imports: [
@@ -27,9 +28,10 @@ import { TranslatorModule } from "../translator/translator.module";
 		WriterModule,
 		EditorModule,
 		CategoryModule,
+		DiscountModule,
+		CommentsModule,
 		PublisherModule,
 		TranslatorModule,
-		DiscountModule
 	],
 	controllers: [],
 	providers: [],
