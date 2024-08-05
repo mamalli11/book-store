@@ -10,7 +10,7 @@ async function bootstrap() {
 	app.use(cookieParser(process.env.COOKIE_SECRET));
 
 	app.enableCors({
-		origin: ["http://localhost:5173", "http://localhost:5174"],
+		origin: ["http://localhost:5173", "http://localhost:5174", "https://bookstoree.liara.run"],
 		credentials: true,
 		optionsSuccessStatus: 200,
 	});

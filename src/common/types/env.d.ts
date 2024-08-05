@@ -3,6 +3,7 @@ namespace NodeJS {
 		//Application
 		URL: string;
 		PORT: number;
+		NODE_ENV: string;
 		//Database
 		DB_HOST: string;
 		DB_PORT: number;
