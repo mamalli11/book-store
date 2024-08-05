@@ -11,7 +11,7 @@ async function bootstrap() {
 		allowedHeaders: "*",
 		origin: true,
 		methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
-		credentials: true,
+		credentials: false,
 	});
 	SwaggerConfigInit(app);
 	app.useStaticAssets("public");
