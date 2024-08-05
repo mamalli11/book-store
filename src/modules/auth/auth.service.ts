@@ -60,6 +60,7 @@ export class AuthService {
 				throw new UnauthorizedException("Email Or Phone is not valid");
 		}
 	}
+
 	async checkExistUser(method: AuthMethod, username: string) {
 		let user: UserEntity;
 		const filterData: object = {
@@ -80,22 +81,22 @@ export class AuthService {
 		}
 		return user;
 	}
+
 	async sendResponse(res: Response, result: AuthResponse, message: string) {
 		const { refreshToken, accessToken } = result;
 		return res
-			.cookie(
-				CookieKeys.OTP,
-				JSON.stringify({ accessToken, refreshToken }),
-				CookiesOptionsToken(),
-			)
+			.cookie(CookieKeys.OTP, accessToken, CookiesOptionsToken())
+			.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
 			.json({ message, accessToken, refreshToken });
 	}
+
 	async validateAccessToken(token: string) {
 		const { userId } = this.tokenService.verifyAccessToken(token);
 		const user = await this.userRepository.findOneBy({ id: userId });
 		if (!user) throw new UnauthorizedException(AuthMessage.LoginAgain);
 		return user;
 	}
+
 	async saveOtp(userId: number, method: AuthMethod) {
 		const code = randomInt(100000, 999999).toString();
 		const expiresIn = new Date(Date.now() + 1000 * 60 * 2);
@@ -115,6 +116,7 @@ export class AuthService {
 		}
 		return otp;
 	}
+
 	async checkOtp(checkOtpDto: CheckOtpDto, res: Response) {
 		const { code, token } = checkOtpDto;
 		if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
@@ -125,7 +127,7 @@ export class AuthService {
 
 		const now = new Date();
 		if (otp.expiresIn < now) throw new UnauthorizedException(AuthMessage.ExpiredCode);
-		if (otp.code !== code) throw new UnauthorizedException(AuthMessage.TryAgain);
+		if (otp.code !== code) throw new UnauthorizedException(AuthMessage.InvalidCode);
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
 
 		if (otp.method === AuthMethod.Email) {
@@ -134,44 +136,33 @@ export class AuthService {
 			await this.userRepository.update({ id: userId }, { verify_phone: true });
 		}
 
-		let profile = await this.profileRepository.save(
-			this.profileRepository.create({
-				userId,
-			}),
-		);
+		let profile = await this.profileRepository.save(this.profileRepository.create({ userId }));
 		await this.userRepository.update({ id: userId }, { profileId: profile.id });
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
 		const result = { accessToken, refreshToken };
 		return this.sendResponse(res, result, PublicMessage.LoggedIn);
 	}
+
 	async refreshToken(res: Response) {
-		if (!this.request.cookies?.[CookieKeys.OTP])
+		if (!this.request.cookies?.[CookieKeys.RefreshToken])
 			throw new UnauthorizedException(AuthMessage.LoginAgain);
 
-		let token: any = JSON.parse(this.request.cookies?.[CookieKeys.OTP]);
+		let token: any = this.request.cookies?.[CookieKeys.RefreshToken];
 
-		const { userId } = this.tokenService.verifyRefreshToken(token?.refreshToken);
+		const { userId } = this.tokenService.verifyRefreshToken(token);
 		const user = await this.otpRepository.findOneBy({ userId });
 		if (!user) throw new UnauthorizedException(AuthMessage.ExpiredToken);
 
-		if (user.refreshToken !== token?.refreshToken)
-			throw new UnauthorizedException(AuthMessage.ExpiredToken);
+		if (user.refreshToken !== token) throw new UnauthorizedException(AuthMessage.ExpiredToken);
 
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
 
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		return res
-			.clearCookie(CookieKeys.OTP)
-			.status(200)
-			.cookie(
-				CookieKeys.OTP,
-				JSON.stringify({ accessToken, refreshToken }),
-				CookiesOptionsToken(),
-			)
-			.json({ message: PublicMessage.LoggedIn, accessToken, refreshToken });
+		return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
 	}
+
 	async logout(res: Response, req: Request) {
 		const { id } = req.user;
 		if (!this.request.cookies?.[CookieKeys.OTP])
@@ -179,7 +170,7 @@ export class AuthService {
 
 		await this.otpRepository.update({ userId: id }, { refreshToken: null });
 
-		return res.clearCookie(CookieKeys.OTP).status(200).json({
+		return res.clearCookie(CookieKeys.OTP).clearCookie(CookieKeys.RefreshToken).status(200).json({
 			message: AuthMessage.LogoutSuccessfully,
 		});
 	}

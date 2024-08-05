@@ -7,16 +7,16 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	app.use(cookieParser(process.env.COOKIE_SECRET));
+
 	app.enableCors({
-		allowedHeaders: "*",
-		origin: true,
-		methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
-		credentials: false,
+		origin: ["http://localhost:5173", "http://localhost:5174"],
+		credentials: true,
+		optionsSuccessStatus: 200,
 	});
 	SwaggerConfigInit(app);
 	app.useStaticAssets("public");
 	app.useGlobalPipes(new ValidationPipe());
-	app.use(cookieParser(process.env.COOKIE_SECRET));
 	const { PORT } = process.env;
 	await app.listen(PORT, "0.0.0.0", () => {
 		console.log(`http://localhost:${PORT} ✅`);
