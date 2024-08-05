@@ -1,10 +1,13 @@
-export function CookiesOptionsToken() {
+import { CookieOptions } from "express";
+
+export function CookiesOptionsToken(): CookieOptions {
 	return {
-		secure: true,
 		signed: true,
+		secure: true,
 		httpOnly: true,
-		samesite: "lax",
-		maxAge: 1000 * 60 * 60 * 24 * 2, // would expire after 2 days
-		expires: new Date(Date.now() + 1000 * 60 * 2),
+		sameSite: "lax",
+		maxAge: 1000 * 60 * 60 * 2,
+		// domain: "bk-store.liara.run",
+		// expires: new Date(Date.now() + 1000 * 60 * 2),
 	};
 }
