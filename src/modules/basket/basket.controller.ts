@@ -12,8 +12,8 @@ import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 export class BasketController {
 	constructor(private readonly basketService: BasketService) {}
 
-  @Get()
-  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	@Get()
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	getBasket() {
 		return this.basketService.getBasket();
 	}

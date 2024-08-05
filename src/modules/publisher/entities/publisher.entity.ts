@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, UpdateDateColumn } from "typeorm";
 
-import { BaseEntity } from "src/common/abstracts/base.entity";
 import { EntityName } from "src/common/enums/entity.enum";
+import { BaseEntity } from "src/common/abstracts/base.entity";
+import { BookEntity } from "src/modules/books/entities/book.entity";
 
 @Entity(EntityName.Publisher)
 export class PublisherEntity extends BaseEntity {
@@ -43,4 +44,7 @@ export class PublisherEntity extends BaseEntity {
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@ManyToOne(() => BookEntity, (book) => book.publisher, { onDelete: "CASCADE" })
+	book: BookEntity;
 }

@@ -1,8 +1,9 @@
-import { AfterLoad, Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, UpdateDateColumn } from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { DefaultPath } from "src/common/enums/default-path.enum";
+import { BookEntity } from "src/modules/books/entities/book.entity";
 
 @Entity(EntityName.Writer)
 export class WriterEntity extends BaseEntity {
@@ -14,7 +15,7 @@ export class WriterEntity extends BaseEntity {
 
 	@Column({ default: DefaultPath.UserProfile })
 	image: string;
-	
+
 	@Column({ nullable: true })
 	imageKey: string;
 
@@ -45,9 +46,6 @@ export class WriterEntity extends BaseEntity {
 	@UpdateDateColumn()
 	updated_at: Date;
 
-	@AfterLoad()
-	map() {
-		const url = this.image.replaceAll("\\", "/");
-		this.image = `${process.env.URL}/${url}`;
-	}
+	@ManyToOne(() => BookEntity, (book) => book.writer, { onDelete: "CASCADE" })
+	book: BookEntity;
 }

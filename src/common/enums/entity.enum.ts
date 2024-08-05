@@ -11,6 +11,7 @@ export enum EntityName {
 	Discount = "discount",
 	Publisher = "publisher",
 	Translator = "translator",
+	ImagesBook = "images_book",
 	CommentLike = "comment_like",
 	BookBookmark = "book_bookmarks",
 }

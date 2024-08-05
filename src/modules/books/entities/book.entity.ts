@@ -1,9 +1,15 @@
 import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
+import { ImagesBookEntity } from "./images.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
+import { CategoryEntity } from "src/modules/category/entities/category.entity";
+import { EditorEntity } from "src/modules/editor/entities/editor.entity";
+import { PublisherEntity } from "src/modules/publisher/entities/publisher.entity";
+import { TranslatorEntity } from "src/modules/translator/entities/translator.entity";
+import { WriterEntity } from "src/modules/writer/entities/writer.entity";
 
 @Entity(EntityName.Books)
 export class BookEntity extends BaseEntity {
@@ -17,7 +23,7 @@ export class BookEntity extends BaseEntity {
 	introduction: string;
 
 	@Column({})
-	ISBN: number;
+	ISBN: string;
 
 	@Column({ length: 15 })
 	shabak: string;
@@ -37,8 +43,8 @@ export class BookEntity extends BaseEntity {
 	@Column({ default: 0, type: "float" })
 	rating: number;
 
-	@Column({ default: 0, type: "float" })
-	weightBook: number;
+	@Column({ default: "0" })
+	weightBook: string;
 
 	@Column({
 		default: "شُمیز",
@@ -49,8 +55,8 @@ export class BookEntity extends BaseEntity {
 	@Column({ default: 1 })
 	numberOfPage: number;
 
-	@Column({ length: 4 })
-	yearOfPublication: string;
+	@Column({})
+	yearOfPublication: number;
 
 	@Column({ default: "book", enum: ["e-book", "book", "journal"] })
 	type: string;
@@ -65,25 +71,22 @@ export class BookEntity extends BaseEntity {
 	is_active: boolean;
 
 	@Column({})
-	writerId: string;
+	writerId: number;
 
 	@Column({ nullable: true })
-	translatorId: string;
+	translatorId: number;
 
 	@Column({})
-	publisherId: string;
+	publisherId: number;
 
 	@Column({ nullable: true })
-	editorId: string;
+	editorId: number;
 
 	@Column({})
-	imagesId: string;
+	categoryId: number;
 
-	@Column({})
-	categoryId: string;
-
-	@Column({})
-	commentsId: string;
+	@Column({ nullable: true })
+	commentsId: number;
 
 	@CreateDateColumn()
 	created_at: Date;
@@ -96,4 +99,22 @@ export class BookEntity extends BaseEntity {
 
 	@OneToMany(() => CommentEntity, (comment) => comment.book)
 	comments: CommentEntity[];
+
+	@OneToMany(() => ImagesBookEntity, (image) => image.book)
+	images: ImagesBookEntity[];
+
+	@OneToMany(() => CategoryEntity, (cat) => cat.id)
+	category: CategoryEntity[];
+
+	@OneToMany(() => EditorEntity, (editor) => editor.book)
+	editor: EditorEntity[];
+
+	@OneToMany(() => PublisherEntity, (publisher) => publisher.book)
+	publisher: PublisherEntity[];
+
+	@OneToMany(() => TranslatorEntity, (translator) => translator.book)
+	translator: TranslatorEntity[];
+
+	@OneToMany(() => WriterEntity, (writer) => writer.book)
+	writer: WriterEntity[];
 }

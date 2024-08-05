@@ -9,7 +9,7 @@ export enum BadRequestMessage {
 export enum AuthMessage {
 	TryAgain = "دوباره تلاش کنید",
 	NotFoundAccount = "حساب کاربری یافت نشد",
-	LogoutSuccessfully="خروج موفقیت آمیز بود",
+	LogoutSuccessfully = "خروج موفقیت آمیز بود",
 	ExpiredToken = "توکن منقصی شده تلاش نکنید.",
 	LoginAgain = "مجددا وارد حساب کاربری خود شوید",
 	LoginIsRequired = "وارد حساب کاربری خود شوید",
@@ -45,17 +45,20 @@ export enum PublicMessage {
 	Successfuly = "درخواست باموفقیت انجام شد",
 	SentOtp = "کد یکبار مصرف با موفقیت ارسال شد",
 	LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
-	
+
 	Bookmark = "کتاب با موفقیت ذخیره شد",
+	UnBookmark = " کتاب از لیست کتاب ها ذخیره شده برداشته شد",
+
 	LikeComment = "کامنت با موفقیت لایک شد",
+	DisLikeComment = "لایک شما از کامنت برداشته شد",
+
+	CreatedBook = "کتاب باموفقیت ایجاد شد",
 	CreatedWriter = "نویسنده باموفقیت ایجاد شد",
 	CreatedPublisher = "ناشر باموفقیت ایجاد شد",
 	CreatedTranslator = "مترجم باموفقیت ایجاد شد",
 	CreatedComment = " نظر شما با موفقیت ثبت شد",
 	CreatedDiscount = "کد تخفیف با موفقیت ایجاد شد",
-	DisLikeComment = "لایک شما از کامنت برداشته شد",
 	CreatedCategory = "دسته بندی باموفقیت ایجاد شد",
-	UnBookmark = " کتاب از لیست کتاب ها ذخیره شده برداشته شد",
 }
 export enum ConflictMessage {
 	Email = "ایمیل توسط شخص دیگری استفاده شده",

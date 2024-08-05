@@ -25,5 +25,4 @@ export class CreateDiscountDto {
 
 	@ApiPropertyOptional({ example: "" })
 	limit: number;
-
 }

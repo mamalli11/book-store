@@ -6,74 +6,79 @@ import { BookCoverType, StatusBook, TypeBook } from "../enums/types.enum";
 export class CreateBookDto {
 	@ApiProperty({ example: "" })
 	@IsString()
-	@Length(1, 150)
+	@Length(2, 150)
 	name: string;
 
 	@ApiProperty({ example: "" })
 	@IsString()
-	@Length(1, 150)
+	@Length(2, 150)
 	enName: string;
 
 	@ApiProperty({ example: "", description: "درباره کتاب" })
 	@IsString()
-	@Length(20, 500)
+	@Length(15)
 	introduction: string;
 
-	@ApiProperty({ example: "" })
-	@IsNumber()
+	@ApiProperty({ example: 123456789111235 })
+	@IsNumberString()
 	@Length(15, 20)
-	ISBN: number;
+	ISBN: string;
 
 	@ApiProperty({ example: "" })
-	@IsNumber()
-	writerId: string;
+	@IsNumberString()
+	writerId: number;
+
 	@ApiPropertyOptional({ example: "" })
-	@IsString()
-	translatorId: string;
-	@ApiProperty({ example: "" })
-	@IsString()
-	publisherId: string;
-	@ApiPropertyOptional({ example: "" })
-	@IsString()
-	editorId: string;
-	@ApiProperty({ example: "" })
-	@IsString()
-	categoryId: string;
+	@IsNumberString()
+	translatorId: number;
 
 	@ApiProperty({ example: "" })
+	@IsNumberString()
+	publisherId: number;
+
+	@ApiPropertyOptional({ example: "" })
+	@IsNumberString()
+	editorId: number;
+
+	@ApiProperty({ example: "" })
+	@IsNumberString()
+	categoryId: number;
+
+	@ApiProperty({ example: "1234567891023" })
 	@IsString()
 	@Length(12, 15)
 	shabak: string;
 
-	@ApiProperty({ example: "", description: "National Bibliography Number" })
+	@ApiProperty({ example: "12345678", description: "National Bibliography Number" })
 	@IsString()
 	@Length(8, 10)
 	nbn: string;
 
 	@ApiProperty({ default: 0, description: "تعداد موجود کتاب" })
-	@IsNumber()
+	@IsNumberString()
 	stockCount: number;
 
 	@ApiProperty({})
-	@IsNumber()
+	@IsNumberString()
 	price: number;
 
-	@ApiProperty({ default: 0, description: "تخفیف" })
+	@ApiPropertyOptional({ example: "", description: "تخفیف" })
 	@IsNumber()
+	@IsOptional()
 	discount: number;
 
-	@ApiProperty({ default: 0, description: "وزن کتاب", type: "float" })
-	@IsNumber()
-	weightBook: number;
+	@ApiProperty({ default: "0", description: "وزن کتاب" })
+	@IsString()
+	weightBook: string;
 
 	@ApiProperty({ default: 1, description: "تعداد صفحات کتاب" })
-	@IsNumber()
+	@IsNumberString()
 	numberOfPage: number;
 
-	@ApiProperty({ example: "1403", description: "سال چاپ کتاب" })
-	@IsNumber()
-	@Length(3, 4)
-	yearOfPublication: string;
+	@ApiProperty({ example: 1403, description: "سال چاپ کتاب" })
+	@IsNumberString()
+	@Length(4, 4)
+	yearOfPublication: number;
 
 	@ApiProperty({ enum: BookCoverType, default: BookCoverType.shameez })
 	@IsEnum(BookCoverType)

@@ -127,7 +127,7 @@ export class BasketService {
 				name: book.name,
 				description: book.introduction,
 				count,
-				image: book.imagesId,
+				// image: book.imagesId,
 				price: book.price,
 				total_amount: book.price * count,
 				discount_amount,
