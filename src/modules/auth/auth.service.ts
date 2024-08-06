@@ -85,7 +85,7 @@ export class AuthService {
 	async sendResponse(res: Response, result: AuthResponse, message: string) {
 		const { refreshToken, accessToken } = result;
 		return res
-			.cookie(CookieKeys.OTP, accessToken, CookiesOptionsToken())
+			.cookie(CookieKeys.AccessToken, accessToken, CookiesOptionsToken())
 			.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
 			.json({ message, accessToken, refreshToken });
 	}
@@ -165,12 +165,12 @@ export class AuthService {
 
 	async logout(res: Response, req: Request) {
 		const { id } = req.user;
-		if (!this.request.cookies?.[CookieKeys.OTP])
+		if (!this.request.cookies?.[CookieKeys.AccessToken])
 			throw new UnauthorizedException(AuthMessage.LoginAgain);
 
 		await this.otpRepository.update({ userId: id }, { refreshToken: null });
 
-		return res.clearCookie(CookieKeys.OTP).clearCookie(CookieKeys.RefreshToken).status(200).json({
+		return res.clearCookie(CookieKeys.AccessToken).clearCookie(CookieKeys.RefreshToken).status(200).json({
 			message: AuthMessage.LogoutSuccessfully,
 		});
 	}

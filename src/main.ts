@@ -7,20 +7,22 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
-	app.use(cookieParser(process.env.COOKIE_SECRET));
+	const { PORT, NODE_ENV, COOKIE_SECRET, URL } = process.env;
 
 	app.enableCors({
 		origin: ["http://localhost:5173", "http://localhost:5174", "https://bookstoree.liara.run"],
 		credentials: true,
 		optionsSuccessStatus: 200,
 	});
+
 	SwaggerConfigInit(app);
 	app.useStaticAssets("public");
+	app.use(cookieParser(COOKIE_SECRET));
 	app.useGlobalPipes(new ValidationPipe());
-	const { PORT } = process.env;
+
 	await app.listen(PORT, "0.0.0.0", () => {
-		console.log(`http://localhost:${PORT} ✅`);
-		console.log(`swagger => http://localhost:${PORT}/swagger ✅`);
+		console.log(`Mode: ${NODE_ENV} | Runing : ${URL}:${PORT} ✅`);
+		console.log(`swagger => ${URL}:${PORT}/swagger ✅`);
 	});
 }
 bootstrap();

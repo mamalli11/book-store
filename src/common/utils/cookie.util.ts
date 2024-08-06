@@ -7,7 +7,7 @@ export function CookiesOptionsToken(): CookieOptions {
 		httpOnly: true,
 		sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 		maxAge: 1000 * 60 * 60 * 24 * 2, // 2 DAY
-		domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
+		// domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
 		// expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
 	};
 }
