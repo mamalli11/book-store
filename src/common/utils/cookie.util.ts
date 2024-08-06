@@ -7,7 +7,7 @@ export function CookiesOptionsToken(): CookieOptions {
 		httpOnly: true,
 		sameSite: "lax",
 		maxAge: 1000 * 60 * 60 * 2,
-		domain: process.env.NODE_ENV === "development" ? "localhost" : "bk-store.liara.run",
+		domain: process.env.NODE_ENV === "development" ? "localhost" : undefined,
 		// expires: new Date(Date.now() + 1000 * 60 * 2),
 	};
 }
