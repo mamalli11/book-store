@@ -5,9 +5,11 @@ export function CookiesOptionsToken(): CookieOptions {
 		signed: true,
 		secure: process.env.NODE_ENV === "production",
 		httpOnly: true,
-		sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-		maxAge: 1000 * 60 * 60 * 24 * 2, // 2 DAY
+		// sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+		sameSite: "lax",
+		// maxAge: 1000 * 60 * 60 * 24 * 2, // 2 DAY
 		// domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
-		// expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
+		domain: process.env.NODE_ENV === "development" ? "localhost" : "bookstoree.liara.run",
+		expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
 	};
 }
