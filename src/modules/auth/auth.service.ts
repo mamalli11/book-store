@@ -82,13 +82,13 @@ export class AuthService {
 		return user;
 	}
 
-	async sendResponse(res: Response, result: AuthResponse, message: string) {
-		const { refreshToken, accessToken } = result;
-		return res
-			.cookie(CookieKeys.AccessToken, accessToken, CookiesOptionsToken())
-			.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
-			.json({ message, accessToken, refreshToken });
-	}
+	// async sendResponse(res: Response, result: AuthResponse, message: string) {
+	// 	const { refreshToken, accessToken } = result;
+	// 	return res
+	// 		.cookie(CookieKeys.AccessToken, accessToken, CookiesOptionsToken())
+	// 		.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
+	// 		.json({ message, accessToken, refreshToken });
+	// }
 
 	async validateAccessToken(token: string) {
 		const { userId } = this.tokenService.verifyAccessToken(token);
@@ -140,8 +140,19 @@ export class AuthService {
 		await this.userRepository.update({ id: userId }, { profileId: profile.id });
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		const result = { accessToken, refreshToken };
-		return this.sendResponse(res, result, PublicMessage.LoggedIn);
+		// const result = { accessToken, refreshToken };
+		// return this.sendResponse(res, result, PublicMessage.LoggedIn);
+
+		return res
+			.cookie(CookieKeys.AccessToken, accessToken, {
+				signed: true,
+				httpOnly: true,
+				sameSite: "lax",
+				secure: process.env.NODE_ENV === "production",
+				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
+				domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
+			})
+			.json({ message: PublicMessage.LoggedIn, accessToken, refreshToken });
 	}
 
 	async refreshToken(res: Response) {
@@ -160,7 +171,7 @@ export class AuthService {
 
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
+		// return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
 	}
 
 	async logout(res: Response, req: Request) {
@@ -170,8 +181,12 @@ export class AuthService {
 
 		await this.otpRepository.update({ userId: id }, { refreshToken: null });
 
-		return res.clearCookie(CookieKeys.AccessToken).clearCookie(CookieKeys.RefreshToken).status(200).json({
-			message: AuthMessage.LogoutSuccessfully,
-		});
+		return res
+			.clearCookie(CookieKeys.AccessToken)
+			.clearCookie(CookieKeys.RefreshToken)
+			.status(200)
+			.json({
+				message: AuthMessage.LogoutSuccessfully,
+			});
 	}
 }

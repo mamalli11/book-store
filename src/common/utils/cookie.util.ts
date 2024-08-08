@@ -9,7 +9,7 @@ export function CookiesOptionsToken(): CookieOptions {
 		sameSite: "lax",
 		// maxAge: 1000 * 60 * 60 * 24 * 2, // 2 DAY
 		// domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
-		domain: process.env.NODE_ENV === "development" ? "localhost" : "bookstoree.liara.run",
+		// domain: process.env.NODE_ENV === "development" ? "localhost" : "bookstoree.liara.run",
 		expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
 	};
 }
