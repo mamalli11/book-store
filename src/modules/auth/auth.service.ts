@@ -149,8 +149,8 @@ export class AuthService {
 				httpOnly: true,
 				sameSite: "lax",
 				secure: process.env.NODE_ENV === "production",
-				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
-				domain: process.env.NODE_ENV === "production" ? "bookstoree.liara.run" : undefined,
+				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10),
+				domain: 'localhost',
 			})
 			.json({ message: PublicMessage.LoggedIn, accessToken, refreshToken });
 	}
