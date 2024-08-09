@@ -12,10 +12,15 @@ import { ImagesBookEntity } from "./entities/images.entity";
 import { CategoryService } from "../category/category.service";
 import { EditorEntity } from "../editor/entities/editor.entity";
 import { WriterEntity } from "../writer/entities/writer.entity";
+import { BookWritersEntity } from "./entities/bookWriters.entity";
 import { PublisherService } from "../publisher/publisher.service";
+import { BookEditorsEntity } from "./entities/bookEditors.entity";
 import { TranslatorService } from "../translator/translator.service";
+import { BookCategorysEntity } from "./entities/bookCategory.entity";
 import { CategoryEntity } from "../category/entities/category.entity";
+import { BookPublishersEntity } from "./entities/bookpublishers.entity";
 import { PublisherEntity } from "../publisher/entities/publisher.entity";
+import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
 import { TranslatorEntity } from "../translator/entities/translator.entity";
 
 @Module({
@@ -29,6 +34,12 @@ import { TranslatorEntity } from "../translator/entities/translator.entity";
 			PublisherEntity,
 			ImagesBookEntity,
 			TranslatorEntity,
+			BookWritersEntity,
+			BookWritersEntity,
+			BookEditorsEntity,
+			BookCategorysEntity,
+			BookPublishersEntity,
+			BookTranslatorsEntity,
 		]),
 	],
 	controllers: [BooksController],

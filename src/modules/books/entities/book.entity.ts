@@ -1,15 +1,15 @@
 import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
 import { ImagesBookEntity } from "./images.entity";
+import { BookEditorsEntity } from "./bookEditors.entity";
+import { BookWritersEntity } from "./bookWriters.entity";
 import { EntityName } from "src/common/enums/entity.enum";
+import { BookCategorysEntity } from "./bookCategory.entity";
 import { BaseEntity } from "src/common/abstracts/base.entity";
+import { BookPublishersEntity } from "./bookpublishers.entity";
+import { BookTranslatorsEntity } from "./bookTranslators.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
-import { CategoryEntity } from "src/modules/category/entities/category.entity";
-import { EditorEntity } from "src/modules/editor/entities/editor.entity";
-import { PublisherEntity } from "src/modules/publisher/entities/publisher.entity";
-import { TranslatorEntity } from "src/modules/translator/entities/translator.entity";
-import { WriterEntity } from "src/modules/writer/entities/writer.entity";
 
 @Entity(EntityName.Books)
 export class BookEntity extends BaseEntity {
@@ -70,24 +70,6 @@ export class BookEntity extends BaseEntity {
 	@Column({ default: true })
 	is_active: boolean;
 
-	@Column({})
-	writerId: number;
-
-	@Column({ nullable: true })
-	translatorId: number;
-
-	@Column({})
-	publisherId: number;
-
-	@Column({ nullable: true })
-	editorId: number;
-
-	@Column({})
-	categoryId: number;
-
-	@Column({ nullable: true })
-	commentsId: number;
-
 	@CreateDateColumn()
 	created_at: Date;
 
@@ -103,18 +85,18 @@ export class BookEntity extends BaseEntity {
 	@OneToMany(() => ImagesBookEntity, (image) => image.book)
 	images: ImagesBookEntity[];
 
-	@OneToMany(() => CategoryEntity, (cat) => cat.id)
-	category: CategoryEntity[];
+	@OneToMany(() => BookCategorysEntity, (cat) => cat.book)
+	categorys: BookCategorysEntity[];
 
-	@OneToMany(() => EditorEntity, (editor) => editor.book)
-	editor: EditorEntity[];
+	@OneToMany(() => BookEditorsEntity, (editor) => editor.book)
+	editors: BookEditorsEntity[];
 
-	@OneToMany(() => PublisherEntity, (publisher) => publisher.book)
-	publisher: PublisherEntity[];
+	@OneToMany(() => BookPublishersEntity, (publisher) => publisher.book)
+	publishers: BookPublishersEntity[];
 
-	@OneToMany(() => TranslatorEntity, (translator) => translator.book)
-	translator: TranslatorEntity[];
+	@OneToMany(() => BookTranslatorsEntity, (translator) => translator.book)
+	translators: BookTranslatorsEntity[];
 
-	@OneToMany(() => WriterEntity, (writer) => writer.book)
-	writer: WriterEntity[];
+	@OneToMany(() => BookWritersEntity, (writer) => writer.book)
+	writers: BookWritersEntity[];
 }

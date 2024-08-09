@@ -1,8 +1,16 @@
-import { Entity, Column, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+	Entity,
+	Column,
+	OneToMany,
+	ManyToOne,
+	CreateDateColumn,
+	UpdateDateColumn,
+	ManyToMany,
+} from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
-import { BookEntity } from "src/modules/books/entities/book.entity";
+import { BookCategorysEntity } from "src/modules/books/entities/bookCategory.entity";
 
 @Entity(EntityName.Category)
 export class CategoryEntity extends BaseEntity {
@@ -35,6 +43,6 @@ export class CategoryEntity extends BaseEntity {
 	@UpdateDateColumn()
 	updated_at: Date;
 
-	@ManyToOne(() => BookEntity, (book) => book.category, { onDelete: "CASCADE" })
-	book: BookEntity;
+	@ManyToMany(() => BookCategorysEntity, (book) => book.category, { onDelete: "CASCADE" })
+	books: BookCategorysEntity[];
 }

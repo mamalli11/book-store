@@ -1,9 +1,9 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, UpdateDateColumn } from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { DefaultPath } from "src/common/enums/default-path.enum";
-import { BookEntity } from "src/modules/books/entities/book.entity";
+import { BookTranslatorsEntity } from "src/modules/books/entities/bookTranslators.entity";
 
 @Entity(EntityName.Translator)
 export class TranslatorEntity extends BaseEntity {
@@ -40,6 +40,6 @@ export class TranslatorEntity extends BaseEntity {
 	@UpdateDateColumn()
 	updated_at: Date;
 
-	@ManyToOne(() => BookEntity, (book) => book.translator, { onDelete: "CASCADE" })
-	book: BookEntity;
+	@ManyToMany(() => BookTranslatorsEntity, (book) => book.translator, { onDelete: "CASCADE" })
+	book: BookTranslatorsEntity[];
 }
