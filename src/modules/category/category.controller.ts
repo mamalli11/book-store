@@ -19,6 +19,7 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
 import { Pagination } from "src/common/decorators/pagination.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 import { UploadFileS3 } from "src/common/interceptors/upload-file.interceptor";
@@ -43,6 +44,7 @@ export class CategoryController {
 	}
 
 	@Get()
+	@SkipAuth()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	@Pagination()
 	findAll(@Query() paginationDto: PaginationDto) {
@@ -50,6 +52,7 @@ export class CategoryController {
 	}
 
 	@Get(":id")
+	@SkipAuth()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id", ParseIntPipe) id: number) {
 		return this.categoryService.findOneById(id);

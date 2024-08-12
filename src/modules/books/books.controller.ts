@@ -20,6 +20,7 @@ import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
 import { Pagination } from "src/common/decorators/pagination.decorator";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
@@ -49,6 +50,7 @@ export class BooksController {
 	}
 
 	@Get()
+	@SkipAuth()
 	@Pagination()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findAll(@Query() paginationDto: PaginationDto, @Query() queryDto: QueryDto) {
@@ -56,6 +58,7 @@ export class BooksController {
 	}
 
 	@Get(":id")
+	@SkipAuth()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id", ParseIntPipe) id: number) {
 		return this.booksService.findOne(id);

@@ -19,6 +19,7 @@ import { CreatePublisherDto } from "./dto/create-publisher.dto";
 import { UpdatePublisherDto } from "./dto/update-publisher.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 import { UploadFileS3 } from "src/common/interceptors/upload-file.interceptor";
 import { Uploaded_File, UploadedOptionalFile } from "src/common/decorators/upload-file.decorator";
@@ -42,12 +43,14 @@ export class PublisherController {
 	}
 
 	@Get()
+	@SkipAuth()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findAll(@Query() paginationDto: PaginationDto) {
 		return this.publisherService.findAll(paginationDto);
 	}
 
 	@Get(":id")
+	@SkipAuth()
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id", ParseIntPipe) id: number) {
 		return this.publisherService.findOne(id);
