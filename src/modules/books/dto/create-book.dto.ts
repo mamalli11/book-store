@@ -24,25 +24,20 @@ export class CreateBookDto {
 	@Length(15, 20)
 	ISBN: string;
 
-	@ApiProperty({ example: "" })
-	@IsNumberString()
-	writerId: number;
+	@ApiProperty({ type: String, isArray: true, description: "نویسندگان کتاب", example: [""] })
+	writerId: string[] | string;
 
-	@ApiPropertyOptional({ example: "" })
-	@IsNumberString()
-	translatorId: number;
+	@ApiProperty({ type: String, isArray: true, description: "مترجم های کتاب", example: [""] })
+	translatorId: string[] | string;
 
-	@ApiProperty({ example: "" })
-	@IsNumberString()
-	publisherId: number;
+	@ApiProperty({ type: String, isArray: true, description: "ناشر های کتاب", example: [""] })
+	publisherId: string[] | string;
 
-	@ApiPropertyOptional({ example: "" })
-	@IsNumberString()
-	editorId: number;
+	@ApiProperty({ type: String, isArray: true, description: "ویرایشگر های کتاب", example: [""] })
+	editorId: string[] | string;
 
-	@ApiProperty({ example: "" })
-	@IsNumberString()
-	categoryId: number;
+	@ApiProperty({ type: String, isArray: true, description: "دسته بندی های کتاب", example: [""] })
+	categoryId: string[] | string;
 
 	@ApiProperty({ example: "1234567891023" })
 	@IsString()

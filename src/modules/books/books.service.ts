@@ -1,6 +1,7 @@
 import { Repository } from "typeorm";
+import { isArray } from "class-validator";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
 import { BookImagesType } from "./types/up_files";
@@ -20,8 +21,8 @@ import { BookCategorysEntity } from "./entities/bookCategory.entity";
 import { BookPublishersEntity } from "./entities/bookpublishers.entity";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
-import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
+import { BadRequestMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class BooksService {
@@ -50,6 +51,7 @@ export class BooksService {
 
 	async create(createBookDto: CreateBookDto, files: BookImagesType) {
 		const { editorId, writerId, categoryId, publisherId, translatorId } = createBookDto;
+
 		await this.checkExistRelationship({
 			editorId,
 			writerId,
@@ -60,7 +62,7 @@ export class BooksService {
 
 		const book = await this.bookRepository.save(this.bookRepository.create({ ...createBookDto }));
 
-		if (!files) {
+		if (files) {
 			Object.keys(files).map(async (k) => {
 				const imageResult = await this.s3Service.uploadFile(files[k][0], "books");
 				await this.imagesBookRepository.save(
@@ -72,14 +74,54 @@ export class BooksService {
 				);
 			});
 		}
-		if (categoryId) await this.bookCategorysRepository.insert({ bookId: book.id, categoryId });
-		if (editorId) await this.bookEditorsRepository.insert({ bookId: book.id, editorId });
-		if (publisherId) await this.bookPublishersRepository.insert({ bookId: book.id, publisherId });
-		if (writerId) await this.bookWriterRepository.insert({ bookId: book.id, writerId });
-		if (translatorId)
-			await this.bookTranslatorsRepository.insert({ bookId: book.id, translatorId });
+
+		if (categoryId) {
+			await this.insertEntities(categoryId, this.bookCategorysRepository, book.id, "categoryId");
+		}
+
+		if (editorId) {
+			await this.insertEntities(editorId, this.bookEditorsRepository, book.id, "editorId");
+		}
+
+		if (publisherId) {
+			await this.insertEntities(
+				publisherId,
+				this.bookPublishersRepository,
+				book.id,
+				"publisherId",
+			);
+		}
+
+		if (writerId) {
+			await this.insertEntities(writerId, this.bookWriterRepository, book.id, "writerId");
+		}
+
+		if (translatorId) {
+			await this.insertEntities(
+				translatorId,
+				this.bookTranslatorsRepository,
+				book.id,
+				"translatorId",
+			);
+		}
 
 		return { message: PublicMessage.CreatedBook };
+	}
+
+	private async insertEntities(
+		ids: string | string[],
+		repository: any,
+		bookId: number,
+		entityIdKey: string,
+	) {
+		if (typeof ids === "string") {
+			ids = ids.split(",");
+			console.log({ ids });
+		}
+		for (const id of ids) {
+			const entity = { bookId, [entityIdKey]: +id };
+			await repository.insert(entity);
+		}
 	}
 
 	async findAll(paginationDto: PaginationDto, queryDto: QueryDto) {
@@ -180,14 +222,45 @@ export class BooksService {
 		return book;
 	}
 
-	async checkExistRelationship(relationShipType: RelationShipType) {
+	private async checkExistRelationship(relationShipType: RelationShipType) {
 		const { categoryId, editorId, publisherId, writerId, translatorId } = relationShipType;
 
-		if (categoryId) await this.categoryService.findOneById(categoryId);
-		if (editorId) await this.editorService.findOne(editorId);
-		if (publisherId) await this.publisherService.findOne(publisherId);
-		if (writerId) await this.writerService.findOne(writerId);
-		if (translatorId) await this.translatorService.findOne(translatorId);
+		const processIds = async (
+			ids: string | string[],
+			serviceMethod: (id: number) => Promise<any>,
+		) => {
+			if (!isArray(ids) && typeof ids === "string") {
+				ids = ids.split(",");
+			} else if (!isArray(ids)) {
+				throw new BadRequestException(BadRequestMessage.InvalidCategories);
+			}
+			for (const id of ids) {
+				await serviceMethod(+id);
+			}
+		};
+
+		if (categoryId) {
+			await processIds(categoryId, this.categoryService.findOneById.bind(this.categoryService));
+		}
+
+		if (editorId) {
+			await processIds(editorId, this.editorService.findOne.bind(this.editorService));
+		}
+
+		if (publisherId) {
+			await processIds(publisherId, this.publisherService.findOne.bind(this.publisherService));
+		}
+
+		if (writerId) {
+			await processIds(writerId, this.writerService.findOne.bind(this.writerService));
+		}
+
+		if (translatorId) {
+			await processIds(
+				translatorId,
+				this.translatorService.findOne.bind(this.translatorService),
+			);
+		}
 
 		return true;
 	}

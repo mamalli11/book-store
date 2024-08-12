@@ -3,6 +3,11 @@ export enum BadRequestMessage {
 	SomeThingWrong = "خطایی پیش آمده مجددا تلاش کنید",
 	AlreadyRejected = "نظر انتخاب شده قبلا رد شده است",
 	AlreadyAccepted = "نظر انتخاب شده قبلا تایید شده است",
+	
+	InvalidEditors = "ویرایشگر ها را به درستی وارد کنید",
+	InvalidWriters = "نویسنده ها را به درستی وارد کنید",
+	InvalidPublishers = "ناشر ها را به درستی وارد کنید",
+	InvalidCategories = "دسته بندی ها را به درستی وارد کنید",
 	InValidLoginData = "اطلاعات ارسال شده برای ورود صحیح نمیباشد",
 	InValidRegisterData = "اطلاعات ارسال شده برای ثبت نام صحیح نمیباشد",
 }

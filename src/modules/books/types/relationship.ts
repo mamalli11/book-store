@@ -1,7 +1,7 @@
 export type RelationShipType = {
-	editorId: number;
-	writerId: number;
-	categoryId: number;
-	publisherId: number;
-	translatorId?: number;
+	editorId: string[] | string;
+	writerId: string[] | string;
+	categoryId: string[] | string;
+	publisherId: string[] | string;
+	translatorId?: string[] | string;
 };
