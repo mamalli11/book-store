@@ -205,7 +205,69 @@ export class BooksService {
 	}
 
 	async findOne(id: number) {
-		return `This action returns a #${id} book`;
+		const book = await this.bookRepository.findOne({
+			where: { id },
+			relations: {
+				images: true,
+				writers: { writer: true },
+				editors: { editor: true },
+				categorys: { category: true },
+				publishers: { publisher: true },
+				translators: { translator: true },
+			},
+			select: {
+				images: {
+					id: true,
+					image: true,
+				},
+				writers: {
+					id: true,
+					writer: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				editors: {
+					id: true,
+					editor: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				publishers: {
+					id: true,
+					publisher: {
+						id: true,
+						name: true,
+						enName: true,
+						logo: true,
+					},
+				},
+				translators: {
+					id: true,
+					translator: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				categorys: {
+					id: true,
+					category: {
+						id: true,
+						slug: true,
+						title: true,
+					},
+				},
+			},
+		});
+		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		return book;
 	}
 
 	async update(id: number, updateBookDto: UpdateBookDto) {
@@ -213,7 +275,19 @@ export class BooksService {
 	}
 
 	async remove(id: number) {
-		return `This action removes a #${id} book`;
+		const { images } = await this.bookRepository.findOne({
+			where: { id },
+			relations: { images: true },
+		});
+
+		if (images) {
+			Object.keys(images).map(async (k) => {
+				await this.s3Service.deleteFile(images[k].imageKey);
+			});
+		}
+
+		await this.bookRepository.delete({ id });
+		return { message: PublicMessage.Deleted };
 	}
 
 	async checkExistBlogById(id: number) {
