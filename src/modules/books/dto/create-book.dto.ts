@@ -12,7 +12,7 @@ export class CreateBookDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(2, 150)
-	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
+	@Matches(/^[a-zA-Z0-9 ]+$/, { message: "enName values must be entered in English" })
 	enName: string;
 
 	@ApiPropertyOptional({ example: "", nullable: true })

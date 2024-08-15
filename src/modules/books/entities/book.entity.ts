@@ -6,7 +6,7 @@ import { BookWritersEntity } from "./bookWriters.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BookCategorysEntity } from "./bookCategory.entity";
 import { BaseEntity } from "src/common/abstracts/base.entity";
-import { BookPublishersEntity } from "./bookpublishers.entity";
+import { BookPublishersEntity } from "./bookPublishers.entity";
 import { BookTranslatorsEntity } from "./bookTranslators.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";

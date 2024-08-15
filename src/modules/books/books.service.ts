@@ -24,7 +24,7 @@ import { BookWritersEntity } from "./entities/bookWriters.entity";
 import { BookEditorsEntity } from "./entities/bookEditors.entity";
 import { TranslatorService } from "../translator/translator.service";
 import { BookCategorysEntity } from "./entities/bookCategory.entity";
-import { BookPublishersEntity } from "./entities/bookpublishers.entity";
+import { BookPublishersEntity } from "./entities/bookPublishers.entity";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";

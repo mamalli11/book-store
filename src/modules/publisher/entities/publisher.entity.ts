@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToMany, UpdateDateColumn } from "
 
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
-import { BookPublishersEntity } from "src/modules/books/entities/bookpublishers.entity";
+import { BookPublishersEntity } from "src/modules/books/entities/bookPublishers.entity";
 
 @Entity(EntityName.Publisher)
 export class PublisherEntity extends BaseEntity {
