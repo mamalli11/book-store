@@ -1,7 +1,13 @@
-import { Repository } from "typeorm";
+import slugify from "slugify";
 import { isArray } from "class-validator";
+import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+	BadRequestException,
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
 import { BookImagesType } from "./types/up_files";
@@ -50,7 +56,9 @@ export class BooksService {
 	) {}
 
 	async create(createBookDto: CreateBookDto, files: BookImagesType) {
-		const { editorId, writerId, categoryId, publisherId, translatorId } = createBookDto;
+		const { editorId, writerId, categoryId, publisherId, translatorId, slug } = createBookDto;
+
+		await this.checkExsistSlug(slug ? slug.trim().replaceAll(" ", "_") : null);
 
 		await this.checkExistRelationship({
 			editorId,
@@ -60,7 +68,18 @@ export class BooksService {
 			translatorId,
 		});
 
-		const book = await this.bookRepository.save(this.bookRepository.create({ ...createBookDto }));
+		const book = await this.bookRepository.save(
+			this.bookRepository.create({
+				...createBookDto,
+				slug: slug
+					? slug.trim().replaceAll(" ", "_")
+					: slugify(createBookDto.name, {
+							replacement: "_", // replace spaces with replacement character, defaults to `-`
+							locale: "fa", // language code of the locale to use
+							trim: true, // trim leading and trailing replacement chars, defaults to `true`
+						}),
+			}),
+		);
 
 		if (files) {
 			Object.keys(files).map(async (k) => {
@@ -116,7 +135,6 @@ export class BooksService {
 	) {
 		if (typeof ids === "string") {
 			ids = ids.split(",");
-			console.log({ ids });
 		}
 		for (const id of ids) {
 			const entity = { bookId, [entityIdKey]: +id };
@@ -219,6 +237,7 @@ export class BooksService {
 				images: {
 					id: true,
 					image: true,
+					imageKey: true,
 				},
 				writers: {
 					id: true,
@@ -270,8 +289,98 @@ export class BooksService {
 		return book;
 	}
 
-	async update(id: number, updateBookDto: UpdateBookDto) {
-		return `This action updates a #${id} book`;
+	async update(id: number, updateBookDto: UpdateBookDto, files: BookImagesType) {
+		const book = await this.findOne(id);
+		const updateObject: DeepPartial<BookEntity> = {};
+		const { editorId, writerId, categoryId, publisherId, translatorId } = updateBookDto;
+
+		await this.checkExistRelationship({
+			editorId,
+			writerId,
+			categoryId,
+			publisherId,
+			translatorId,
+		});
+
+		if (files.media1) {
+			if (book.images) {
+				Object.keys(book.images).map(async (k) => {
+					await this.s3Service.deleteFile(book.images[k].imageKey);
+					await this.bookRepository.delete({ id: book.images[k].id });
+				});
+			}
+
+			Object.keys(files).map(async (k) => {
+				const imageResult = await this.s3Service.uploadFile(files[k][0], "books");
+				await this.imagesBookRepository.save(
+					this.imagesBookRepository.create({
+						image: imageResult.Location,
+						imageKey: imageResult.Key,
+						bookId: book.id,
+					}),
+				);
+			});
+		}
+
+		if (updateBookDto.name) updateObject["name"] = updateBookDto.name;
+		if (updateBookDto.enName) updateObject["enName"] = updateBookDto.enName;
+		if (updateBookDto.slug) {
+			const bk = await this.bookRepository.findOneBy({ slug: updateBookDto.slug });
+			if (bk && bk.id !== id) throw new ConflictException("already exist book slug");
+			updateObject["slug"] = updateBookDto.slug;
+		}
+		if (updateBookDto.introduction) updateObject["introduction"] = updateBookDto.introduction;
+		if (updateBookDto.ISBN) updateObject["ISBN"] = updateBookDto.ISBN;
+		if (updateBookDto.shabak) updateObject["shabak"] = updateBookDto.shabak;
+		if (updateBookDto.nbn) updateObject["nbn"] = updateBookDto.nbn;
+		if (updateBookDto.stockCount) updateObject["stockCount"] = updateBookDto.stockCount;
+		if (updateBookDto.price) updateObject["price"] = updateBookDto.price;
+		if (updateBookDto.discount) updateObject["discount"] = updateBookDto.discount;
+		if (updateBookDto.weightBook) updateObject["weightBook"] = updateBookDto.weightBook;
+		if (updateBookDto.numberOfPage) updateObject["numberOfPage"] = updateBookDto.numberOfPage;
+		if (updateBookDto.yearOfPublication)
+			updateObject["yearOfPublication"] = updateBookDto.yearOfPublication;
+		if (updateBookDto.bookCoverType) updateObject["bookCoverType"] = updateBookDto.bookCoverType;
+		if (updateBookDto.type) updateObject["type"] = updateBookDto.type;
+		if (updateBookDto.status) updateObject["status"] = updateBookDto.status;
+
+		if (categoryId) {
+			await this.bookCategorysRepository.delete(book.categorys.map((i) => i.id));
+			await this.insertEntities(categoryId, this.bookCategorysRepository, book.id, "categoryId");
+		}
+
+		if (editorId) {
+			await this.bookEditorsRepository.delete(book.editors.map((i) => i.id));
+			await this.insertEntities(editorId, this.bookEditorsRepository, book.id, "editorId");
+		}
+
+		if (publisherId) {
+			await this.bookPublishersRepository.delete(book.publishers.map((i) => i.id));
+			await this.insertEntities(
+				publisherId,
+				this.bookPublishersRepository,
+				book.id,
+				"publisherId",
+			);
+		}
+
+		if (writerId) {
+			await this.bookWriterRepository.delete(book.writers.map((i) => i.id));
+			await this.insertEntities(writerId, this.bookWriterRepository, book.id, "writerId");
+		}
+
+		if (translatorId) {
+			await this.bookTranslatorsRepository.delete(book.translators.map((i) => i.id));
+			await this.insertEntities(
+				translatorId,
+				this.bookTranslatorsRepository,
+				book.id,
+				"translatorId",
+			);
+		}
+
+		await this.bookRepository.update({ id }, updateObject);
+		return { message: PublicMessage.Updated };
 	}
 
 	async remove(id: number) {
@@ -290,7 +399,7 @@ export class BooksService {
 		return { message: PublicMessage.Deleted };
 	}
 
-	async checkExistBlogById(id: number) {
+	async checkExistBookById(id: number) {
 		const book = await this.bookRepository.findOneBy({ id });
 		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
 		return book;
@@ -337,5 +446,77 @@ export class BooksService {
 		}
 
 		return true;
+	}
+
+	async checkExsistSlug(slug: string) {
+		const bk = await this.bookRepository.findOneBy({ slug });
+		if (bk) throw new ConflictException("already exist slug");
+	}
+
+	async findOneBySlug(slug: string) {
+		const book = await this.bookRepository.findOne({
+			where: { slug },
+			relations: {
+				images: true,
+				writers: { writer: true },
+				editors: { editor: true },
+				categorys: { category: true },
+				publishers: { publisher: true },
+				translators: { translator: true },
+			},
+			select: {
+				images: {
+					id: true,
+					image: true,
+					imageKey: true,
+				},
+				writers: {
+					id: true,
+					writer: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				editors: {
+					id: true,
+					editor: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				publishers: {
+					id: true,
+					publisher: {
+						id: true,
+						name: true,
+						enName: true,
+						logo: true,
+					},
+				},
+				translators: {
+					id: true,
+					translator: {
+						id: true,
+						name: true,
+						enName: true,
+						image: true,
+					},
+				},
+				categorys: {
+					id: true,
+					category: {
+						id: true,
+						slug: true,
+						title: true,
+					},
+				},
+			},
+		});
+		if (!book) throw new NotFoundException("not found this book slug ");
+		return book;
 	}
 }

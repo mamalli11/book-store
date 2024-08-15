@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString, Length } from "class-validator";
+import { IsEnum, IsNumberString, IsOptional, IsString, Length, Matches } from "class-validator";
 
 import { BookCoverType, StatusBook, TypeBook } from "../enums/types.enum";
 
@@ -12,7 +12,14 @@ export class CreateBookDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(2, 150)
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
 	enName: string;
+
+	@ApiPropertyOptional({ example: "", nullable: true })
+	@IsOptional()
+	@IsString()
+	@Length(1, 60)
+	slug: string;
 
 	@ApiProperty({ example: "", description: "درباره کتاب" })
 	@IsString()
@@ -58,7 +65,7 @@ export class CreateBookDto {
 	price: number;
 
 	@ApiPropertyOptional({ example: "", description: "تخفیف" })
-	@IsNumber()
+	@IsNumberString()
 	@IsOptional()
 	discount: number;
 

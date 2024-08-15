@@ -1,8 +1,8 @@
 import {
 	Get,
 	Post,
+	Put,
 	Body,
-	Patch,
 	Param,
 	Query,
 	Delete,
@@ -24,6 +24,7 @@ import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
 import { Pagination } from "src/common/decorators/pagination.decorator";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
+import { UploadedOptionalFiles } from "src/common/decorators/upload-file.decorator";
 import { UploadFileFieldsS3 } from "src/common/interceptors/upload-file.interceptor";
 
 @Controller("books")
@@ -64,12 +65,32 @@ export class BooksController {
 		return this.booksService.findOne(id);
 	}
 
-	@Patch(":id")
+	@Get("/by-slug/:slug")
+	@SkipAuth()
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	findBySlug(@Param("slug") slug: string) {
+		return this.booksService.findOneBySlug(slug);
+	}
+
+	@Put(":id")
 	@CanAccess(Roles.Admin)
 	@ApiOperation({ summary: "For the admin role" })
 	@ApiConsumes(SwaggerConsumes.MultipartData)
-	update(@Param("id", ParseIntPipe) id: number, @Body() updateBookDto: UpdateBookDto) {
-		return this.booksService.update(id, updateBookDto);
+	@UseInterceptors(
+		UploadFileFieldsS3([
+			{ name: "media1", maxCount: 1 },
+			{ name: "media2", maxCount: 1 },
+			{ name: "media3", maxCount: 1 },
+			{ name: "media4", maxCount: 1 },
+			{ name: "media5", maxCount: 1 },
+		]),
+	)
+	update(
+		@Param("id", ParseIntPipe) id: number,
+		@Body() updateBookDto: UpdateBookDto,
+		@UploadedOptionalFiles() files: BookImagesType,
+	) {
+		return this.booksService.update(id, updateBookDto, files);
 	}
 
 	@Delete(":id")

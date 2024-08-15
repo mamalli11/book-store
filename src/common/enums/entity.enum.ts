@@ -14,9 +14,9 @@ export enum EntityName {
 	ImagesBook = "book_images",
 	CommentLike = "comment_like",
 	BookWriters = "book_writers",
-	BookEditors = "Book_editors",
+	BookEditors = "book_editors",
 	BookBookmark = "book_bookmarks",
-	BookCategorys = "Book_categorys",
-	BookPublishers = "Book_publishers",
-	BookTranslators = "Book_translators",
+	BookCategorys = "book_categorys",
+	BookPublishers = "book_publishers",
+	BookTranslators = "book_translators",
 }

@@ -41,3 +41,15 @@ export function Uploaded_Files() {
 		}),
 	);
 }
+
+export function UploadedOptionalFiles() {
+	return UploadedFiles(
+		new ParseFilePipe({
+			fileIsRequired: false,
+			validators: [
+				new MaxFileSizeValidator({ maxSize: 3 * 1024 * 1024 }),
+				new FileTypeValidator({ fileType: "image/(png|jpg|jpeg|webp)" }),
+			],
+		}),
+	);
+}

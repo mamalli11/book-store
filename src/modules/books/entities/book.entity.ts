@@ -19,6 +19,9 @@ export class BookEntity extends BaseEntity {
 	@Column({ length: 150 })
 	enName: string;
 
+	@Column({ unique: true, length: 60 })
+	slug: string;
+
 	@Column({})
 	introduction: string;
 
