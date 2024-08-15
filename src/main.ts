@@ -16,7 +16,34 @@ async function bootstrap() {
 		origin: ["http://localhost:5173", "http://localhost:5174", "https://bookstoree.liara.run"],
 		optionsSuccessStatus: 200,
 	});
-	app.use(helmet());
+	app.use(
+		helmet({
+			contentSecurityPolicy: {
+				directives: {
+					defaultSrc: ["'self'"],
+					styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+					scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					imgSrc: ["'self'", "data:", "https:"],
+					connectSrc: ["'self'", "https:", "wss:"],
+				},
+			},
+			frameguard: {
+				action: "deny", // یا 'sameorigin'
+			},
+			referrerPolicy: { policy: "no-referrer" }, // یا 'strict-origin-when-cross-origin'
+			hsts: {
+				maxAge: 60 * 60 * 24 * 365, // 1 سال
+				includeSubDomains: true,
+				preload: true,
+			},
+			hidePoweredBy: true,
+			xssFilter: true,
+			noSniff: true,
+			ieNoOpen: true,
+			dnsPrefetchControl: { allow: false },
+			permittedCrossDomainPolicies: { permittedPolicies: "none" },
+		}),
+	);
 
 	SwaggerConfigInit(app);
 	app.useStaticAssets("public");
