@@ -18,7 +18,7 @@ import { BookEditorsEntity } from "./entities/bookEditors.entity";
 import { TranslatorService } from "../translator/translator.service";
 import { BookCategorysEntity } from "./entities/bookCategory.entity";
 import { CategoryEntity } from "../category/entities/category.entity";
-import { BookPublishersEntity } from "./entities/bookpublishers.entity";
+import { BookPublishersEntity } from "./entities/bookPublishers.entity";
 import { PublisherEntity } from "../publisher/entities/publisher.entity";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
 import { TranslatorEntity } from "../translator/entities/translator.entity";
