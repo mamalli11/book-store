@@ -136,8 +136,14 @@ export class AuthService {
 			await this.userRepository.update({ id: userId }, { verify_phone: true });
 		}
 
-		let profile = await this.profileRepository.save(this.profileRepository.create({ userId }));
-		await this.userRepository.update({ id: userId }, { profileId: profile.id });
+		const user = await this.userRepository.findOneBy({ id: userId });
+
+		const profile = await this.profileRepository.findOneBy({ id: user.profileId });
+		if (!profile) {
+			await this.profileRepository.save(this.profileRepository.create({ userId }));
+			await this.userRepository.update({ id: userId }, { profileId: profile.id });
+		}
+
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
 		// const result = { accessToken, refreshToken };
@@ -147,12 +153,11 @@ export class AuthService {
 			.cookie(CookieKeys.AccessToken, accessToken, {
 				signed: true,
 				httpOnly: true,
-				sameSite: "lax",
-				secure: process.env.NODE_ENV === "production",
+				sameSite: "none", // برای اینکه کوکی بین دامنه‌های مختلف معتبر باشد
+				secure: true, // کوکی فقط در درخواست‌های HTTPS ارسال می‌شود
 				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10),
-				domain: 'localhost',
 			})
-			.json({ message: PublicMessage.LoggedIn, accessToken, refreshToken });
+			.json({ message: PublicMessage.LoggedIn, accessToken });
 	}
 
 	async refreshToken(res: Response) {

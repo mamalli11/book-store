@@ -12,10 +12,12 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
 	app.enableCors({
-		credentials: true,
-		origin: ["http://localhost:5173", "http://localhost:5174", "https://bookstoree.liara.run"],
+		credentials: true, // برای ارسال کوکی‌ها
+		origin: ["https://bookstoree.liara.run"], // مطمئن شوید که دامنه‌های مورد نظر به درستی تنظیم شده‌اند
 		optionsSuccessStatus: 200,
 	});
+
+	// تنظیمات helmet برای امنیت
 	app.use(
 		helmet({
 			contentSecurityPolicy: {
@@ -28,9 +30,9 @@ async function bootstrap() {
 				},
 			},
 			frameguard: {
-				action: "deny", // یا 'sameorigin'
+				action: "sameorigin", // اگر نیاز به فریم‌ها دارید، می‌توانید از 'sameorigin' استفاده کنید
 			},
-			referrerPolicy: { policy: "no-referrer" }, // یا 'strict-origin-when-cross-origin'
+			referrerPolicy: { policy: "strict-origin-when-cross-origin" }, // سیاست ارجاع برای امنیت بیشتر
 			hsts: {
 				maxAge: 60 * 60 * 24 * 365, // 1 سال
 				includeSubDomains: true,

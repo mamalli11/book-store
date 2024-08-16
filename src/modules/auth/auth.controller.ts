@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./guards/auth.guard";
@@ -27,7 +27,8 @@ export class AuthController {
 	@Get("ref-token")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	refreshToken(@Res() res: Response) {
-		return this.authService.refreshToken(res);
+		// return this.authService.refreshToken(res);
+		return res.json({ message: "The feature has been disabled" });
 	}
 
 	@Get("check-login")
