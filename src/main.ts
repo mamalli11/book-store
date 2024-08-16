@@ -13,7 +13,7 @@ async function bootstrap() {
 
 	app.enableCors({
 		credentials: true, // برای ارسال کوکی‌ها
-		origin: ["https://bookstoree.liara.run"], // مطمئن شوید که دامنه‌های مورد نظر به درستی تنظیم شده‌اند
+		origin: "https://fbk-store.liara.run", // مطمئن شوید که دامنه‌های مورد نظر به درستی تنظیم شده‌اند
 		optionsSuccessStatus: 200,
 	});
 

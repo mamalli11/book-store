@@ -151,11 +151,12 @@ export class AuthService {
 
 		return res
 			.cookie(CookieKeys.AccessToken, accessToken, {
-				signed: true,
+				// signed: true,
 				httpOnly: true,
-				sameSite: "none", // برای اینکه کوکی بین دامنه‌های مختلف معتبر باشد
-				secure: true, // کوکی فقط در درخواست‌های HTTPS ارسال می‌شود
+				sameSite: "lax", // برای اینکه کوکی بین دامنه‌های مختلف معتبر باشد
+				//  secure: true, // کوکی فقط در درخواست‌های HTTPS ارسال می‌شود
 				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10),
+				domain: ".bk-store.liara.run",
 			})
 			.json({ message: PublicMessage.LoggedIn, accessToken });
 	}
