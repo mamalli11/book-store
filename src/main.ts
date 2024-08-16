@@ -2,9 +2,10 @@ import helmet from "helmet";
 import { NestFactory } from "@nestjs/core";
 import * as cookieParser from "cookie-parser";
 import { ValidationPipe } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
+
 import { AppModule } from "./modules/app/app.module";
 import { SwaggerConfigInit } from "./config/swagger.config";
-import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
 	const { PORT, NODE_ENV, COOKIE_SECRET, URL } = process.env;
@@ -13,7 +14,11 @@ async function bootstrap() {
 
 	app.enableCors({
 		credentials: true, // برای ارسال کوکی‌ها
-		origin: "https://fbk-store.liara.run", // مطمئن شوید که دامنه‌های مورد نظر به درستی تنظیم شده‌اند
+		origin: [
+			"https://bookstoree.liara.run",
+			"http://localhost:5173",
+			"https://fbk-store.liara.run",
+		], // مطمئن شوید که دامنه‌های مورد نظر به درستی تنظیم شده‌اند
 		optionsSuccessStatus: 200,
 	});
 

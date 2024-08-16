@@ -82,13 +82,13 @@ export class AuthService {
 		return user;
 	}
 
-	// async sendResponse(res: Response, result: AuthResponse, message: string) {
-	// 	const { refreshToken, accessToken } = result;
-	// 	return res
-	// 		.cookie(CookieKeys.AccessToken, accessToken, CookiesOptionsToken())
-	// 		.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
-	// 		.json({ message, accessToken, refreshToken });
-	// }
+	async sendResponse(res: Response, result: AuthResponse, message: string) {
+		const { refreshToken, accessToken } = result;
+		return res
+			.cookie(CookieKeys.AccessToken, accessToken, CookiesOptionsToken())
+			.cookie(CookieKeys.RefreshToken, refreshToken, CookiesOptionsToken())
+			.json({ message, accessToken, refreshToken });
+	}
 
 	async validateAccessToken(token: string) {
 		const { userId } = this.tokenService.verifyAccessToken(token);
@@ -146,19 +146,8 @@ export class AuthService {
 
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		// const result = { accessToken, refreshToken };
-		// return this.sendResponse(res, result, PublicMessage.LoggedIn);
-
-		return res
-			.cookie(CookieKeys.AccessToken, accessToken, {
-				// signed: true,
-				httpOnly: true,
-				sameSite: "lax", // برای اینکه کوکی بین دامنه‌های مختلف معتبر باشد
-				//  secure: true, // کوکی فقط در درخواست‌های HTTPS ارسال می‌شود
-				expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10),
-				domain: ".bk-store.liara.run",
-			})
-			.json({ message: PublicMessage.LoggedIn, accessToken });
+		const result = { accessToken, refreshToken };
+		return this.sendResponse(res, result, PublicMessage.LoggedIn);
 	}
 
 	async refreshToken(res: Response) {
@@ -177,7 +166,7 @@ export class AuthService {
 
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		// return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
+		return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
 	}
 
 	async logout(res: Response, req: Request) {
