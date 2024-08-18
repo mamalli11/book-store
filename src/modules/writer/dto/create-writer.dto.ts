@@ -18,7 +18,7 @@ export class CreateWriterDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
 	enName: string;
 
 	@ApiPropertyOptional({ format: "binary" })
@@ -27,7 +27,7 @@ export class CreateWriterDto {
 
 	@ApiProperty({ example: "" })
 	@IsString()
-	@Length(1, 200)
+	@Length(1, 400)
 	bio: string;
 
 	@ApiPropertyOptional({ example: "1996-02-22T12:01:26.487Z" })

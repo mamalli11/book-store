@@ -48,6 +48,7 @@ export class UserController {
 	}
 
 	@Delete()
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	removeAccount() {
 		return this.userService.removeAccount();
 	}

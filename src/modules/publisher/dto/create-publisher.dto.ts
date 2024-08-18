@@ -19,9 +19,14 @@ export class CreatePublisherDto {
 
 	@ApiProperty({ example: "" })
 	@IsString()
-	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
 	@Length(1, 50)
 	enName: string;
+
+	@ApiProperty({ example: "" })
+	@IsString()
+	@Length(1, 400)
+	bio: string;
 
 	@ApiProperty({ format: "binary" })
 	logo: string;

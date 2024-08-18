@@ -12,9 +12,14 @@ export class CreateTranslatorDto {
 	@ApiProperty({ example: "" })
 	@Length(1, 50)
 	@IsString()
-	@Matches(/^[a-zA-Z ]+$/, { message: "enName values ​​must be entered in English" })
+	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
 	enName: string;
 
+	@ApiProperty({ example: "" })
+	@IsString()
+	@Length(1, 400)
+	bio: string;
+	
 	@ApiPropertyOptional({ format: "binary" })
 	@IsOptional()
 	image: string;

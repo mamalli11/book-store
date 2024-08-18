@@ -19,7 +19,7 @@ export class WriterEntity extends BaseEntity {
 	@Column({ nullable: true })
 	imageKey: string;
 
-	@Column({ length: 200 })
+	@Column({ length: 400 })
 	bio: string;
 
 	@Column({ nullable: true })
