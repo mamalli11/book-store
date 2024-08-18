@@ -15,7 +15,8 @@ export class CreateEditorDto {
 	@Matches(/^[a-zA-Z ]+$/, { message: "enName values must be entered in English" })
 	enName: string;
 
-	@ApiProperty({ example: "" })
+	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsString()
 	@Length(1, 400)
 	bio: string;

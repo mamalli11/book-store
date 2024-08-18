@@ -23,7 +23,8 @@ export class CreatePublisherDto {
 	@Length(1, 50)
 	enName: string;
 
-	@ApiProperty({ example: "" })
+	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsString()
 	@Length(1, 400)
 	bio: string;

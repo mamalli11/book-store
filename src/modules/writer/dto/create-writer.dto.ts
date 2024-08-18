@@ -25,7 +25,8 @@ export class CreateWriterDto {
 	@IsOptional()
 	image: string;
 
-	@ApiProperty({ example: "" })
+	@ApiPropertyOptional({ example: "" })
+	@IsOptional()
 	@IsString()
 	@Length(1, 400)
 	bio: string;

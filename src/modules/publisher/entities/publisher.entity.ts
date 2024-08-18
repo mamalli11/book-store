@@ -12,7 +12,7 @@ export class PublisherEntity extends BaseEntity {
 	@Column({ length: 50 })
 	enName: string;
 
-	@Column({ length: 400 })
+	@Column({ length: 400, nullable: true })
 	bio: string;
 	
 	@Column({})
