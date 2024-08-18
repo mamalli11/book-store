@@ -14,7 +14,9 @@ import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
+import { BookBookmarkEntity } from "src/modules/books/entities/bookmark.entity";
 import { CommentLikeEntity } from "src/modules/comments/entities/commentLike.entity";
+import { BookWantToReadEntity } from "src/modules/books/entities/bookWantToRead.entity";
 
 @Entity(EntityName.User)
 export class UserEntity extends BaseEntity {
@@ -63,11 +65,11 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(() => CommentLikeEntity, (like) => like.user)
 	comment_likes: CommentLikeEntity[];
 
-	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
-	// book_bookmarks: BookBookmarkEntity[];
+	@OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
+	book_bookmarks: BookBookmarkEntity[];
 
-	// @OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.user)
-	// book_wantToRead: BookBookmarkEntity[];
+	@OneToMany(() => BookWantToReadEntity, (wtr) => wtr.user)
+	book_wantToRead: BookWantToReadEntity[];
 
 	@OneToMany(() => CommentEntity, (comment) => comment.user)
 	book_comments: CommentEntity[];

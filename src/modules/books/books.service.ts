@@ -1,13 +1,17 @@
+import {
+	Scope,
+	Inject,
+	Injectable,
+	ConflictException,
+	NotFoundException,
+	BadRequestException,
+} from "@nestjs/common";
 import slugify from "slugify";
+import { Request } from "express";
+import { REQUEST } from "@nestjs/core";
 import { isArray } from "class-validator";
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-	BadRequestException,
-	ConflictException,
-	Injectable,
-	NotFoundException,
-} from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
 import { BookImagesType } from "./types/up_files";
@@ -19,18 +23,20 @@ import { EditorService } from "../editor/editor.service";
 import { WriterService } from "../writer/writer.service";
 import { ImagesBookEntity } from "./entities/images.entity";
 import { CategoryService } from "../category/category.service";
+import { BookBookmarkEntity } from "./entities/bookmark.entity";
 import { PublisherService } from "../publisher/publisher.service";
 import { BookWritersEntity } from "./entities/bookWriters.entity";
 import { BookEditorsEntity } from "./entities/bookEditors.entity";
 import { TranslatorService } from "../translator/translator.service";
 import { BookCategorysEntity } from "./entities/bookCategory.entity";
+import { BookWantToReadEntity } from "./entities/bookWantToRead.entity";
 import { BookPublishersEntity } from "./entities/bookPublishers.entity";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 import { BadRequestMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class BooksService {
 	constructor(
 		@InjectRepository(BookEntity) private bookRepository: Repository<BookEntity>,
@@ -46,6 +52,12 @@ export class BooksService {
 		private bookWriterRepository: Repository<BookWritersEntity>,
 		@InjectRepository(ImagesBookEntity)
 		private imagesBookRepository: Repository<ImagesBookEntity>,
+		@InjectRepository(BookBookmarkEntity)
+		private bookBookmarkRepository: Repository<BookBookmarkEntity>,
+		@InjectRepository(BookWantToReadEntity)
+		private wantToReadRepository: Repository<BookWantToReadEntity>,
+
+		@Inject(REQUEST) private request: Request,
 
 		private s3Service: S3Service,
 		private editorService: EditorService,
@@ -518,5 +530,84 @@ export class BooksService {
 		});
 		if (!book) throw new NotFoundException("not found this book slug ");
 		return book;
+	}
+
+	async bookmarkToggle(bookId: number) {
+		const { id: userId } = this.request.user;
+		await this.checkExistBookById(bookId);
+		const isBookmarked = await this.bookBookmarkRepository.findOneBy({ userId, bookId });
+		let message = PublicMessage.Bookmark;
+		if (isBookmarked) {
+			await this.bookBookmarkRepository.delete({ id: isBookmarked.id });
+			message = PublicMessage.UnBookmark;
+		} else {
+			await this.bookBookmarkRepository.insert({ bookId, userId });
+		}
+		return { message };
+	}
+
+	async WantToReadToggle(bookId: number) {
+		const { id: userId } = this.request.user;
+		await this.checkExistBookById(bookId);
+		const isWTR = await this.wantToReadRepository.findOneBy({ userId, bookId });
+		let message = PublicMessage.Wtr;
+		if (isWTR) {
+			await this.wantToReadRepository.delete({ id: isWTR.id });
+			message = PublicMessage.UnWtr;
+		} else {
+			await this.wantToReadRepository.insert({ bookId, userId });
+		}
+		return { message };
+	}
+
+	async findAllBookmark(paginationDto: PaginationDto) {
+		const { id: userId } = this.request.user;
+		const { limit, page, skip } = paginationSolver(paginationDto);
+		const [bookBookmark, count] = await this.bookBookmarkRepository.findAndCount({
+			where: { userId },
+			relations: {
+				book: { images: true },
+			},
+			select: {
+				userId: false,
+				book: {
+					name: true,
+					enName: true,
+					images: true,
+					price: true,
+					discount: true,
+				},
+			},
+			skip,
+			take: limit,
+			order: { id: "DESC" },
+		});
+		return { pagination: paginationGenerator(count, page, limit), bookBookmark };
+	}
+
+	async findAllWantToRead(paginationDto: PaginationDto) {
+		const { id: userId } = this.request.user;
+		const { limit, page, skip } = paginationSolver(paginationDto);
+
+		const [wtrs, count] = await this.wantToReadRepository.findAndCount({
+			where: { userId },
+			relations: {
+				book: { images: true },
+			},
+			select: {
+				userId: false,
+				book: {
+					name: true,
+					enName: true,
+					images: true,
+					price: true,
+					discount: true,
+				},
+			},
+			skip,
+			take: limit,
+			order: { id: "DESC" },
+		});
+		return { pagination: paginationGenerator(count, page, limit), wtrs };
 	}
 }

@@ -1,12 +1,14 @@
 import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
 import { ImagesBookEntity } from "./images.entity";
+import { BookBookmarkEntity } from "./bookmark.entity";
 import { BookEditorsEntity } from "./bookEditors.entity";
 import { BookWritersEntity } from "./bookWriters.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BookCategorysEntity } from "./bookCategory.entity";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { BookPublishersEntity } from "./bookPublishers.entity";
+import { BookWantToReadEntity } from "./bookWantToRead.entity";
 import { BookTranslatorsEntity } from "./bookTranslators.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
@@ -102,4 +104,10 @@ export class BookEntity extends BaseEntity {
 
 	@OneToMany(() => BookWritersEntity, (writer) => writer.book)
 	writers: BookWritersEntity[];
+
+	@OneToMany(() => BookBookmarkEntity, (bookmark) => bookmark.book)
+	bookmarks: BookBookmarkEntity[];
+
+	@OneToMany(() => BookWantToReadEntity, (wtr) => wtr.book)
+	book_wantToRead: BookWantToReadEntity[];
 }

@@ -1,7 +1,7 @@
 import {
 	Get,
-	Post,
 	Put,
+	Post,
 	Body,
 	Param,
 	Query,
@@ -99,5 +99,29 @@ export class BooksController {
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	remove(@Param("id", ParseIntPipe) id: number) {
 		return this.booksService.remove(id);
+	}
+
+	@Put("/bookmark/:id")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	bookmarkToggle(@Param("id", ParseIntPipe) id: number) {
+		return this.booksService.bookmarkToggle(id);
+	}
+
+	@Put("/wtr/:id")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	WantToReadToggle(@Param("id", ParseIntPipe) id: number) {
+		return this.booksService.WantToReadToggle(id);
+	}
+
+	@Post("/bookmarks")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	findAllBkMarks(@Query() paginationDto: PaginationDto) {
+		return this.booksService.findAllBookmark(paginationDto);
+	}
+
+	@Post("/wtrs")
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	findAllWTRs(@Query() paginationDto: PaginationDto) {
+		return this.booksService.findAllWantToRead(paginationDto);
 	}
 }

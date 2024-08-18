@@ -12,12 +12,14 @@ import { ImagesBookEntity } from "./entities/images.entity";
 import { CategoryService } from "../category/category.service";
 import { EditorEntity } from "../editor/entities/editor.entity";
 import { WriterEntity } from "../writer/entities/writer.entity";
+import { BookBookmarkEntity } from "./entities/bookmark.entity";
 import { BookWritersEntity } from "./entities/bookWriters.entity";
 import { PublisherService } from "../publisher/publisher.service";
 import { BookEditorsEntity } from "./entities/bookEditors.entity";
 import { TranslatorService } from "../translator/translator.service";
 import { BookCategorysEntity } from "./entities/bookCategory.entity";
 import { CategoryEntity } from "../category/entities/category.entity";
+import { BookWantToReadEntity } from "./entities/bookWantToRead.entity";
 import { BookPublishersEntity } from "./entities/bookPublishers.entity";
 import { PublisherEntity } from "../publisher/entities/publisher.entity";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
@@ -37,8 +39,10 @@ import { TranslatorEntity } from "../translator/entities/translator.entity";
 			BookWritersEntity,
 			BookWritersEntity,
 			BookEditorsEntity,
+			BookBookmarkEntity,
 			BookCategorysEntity,
 			BookPublishersEntity,
+			BookWantToReadEntity,
 			BookTranslatorsEntity,
 		]),
 	],
