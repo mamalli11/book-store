@@ -3,7 +3,7 @@ export enum BadRequestMessage {
 	SomeThingWrong = "خطایی پیش آمده مجددا تلاش کنید",
 	AlreadyRejected = "نظر انتخاب شده قبلا رد شده است",
 	AlreadyAccepted = "نظر انتخاب شده قبلا تایید شده است",
-	
+
 	InvalidEditors = "ویرایشگر ها را به درستی وارد کنید",
 	InvalidWriters = "نویسنده ها را به درستی وارد کنید",
 	InvalidPublishers = "ناشر ها را به درستی وارد کنید",
@@ -40,6 +40,18 @@ export enum ValidationMessage {
 	InvalidPhoneFormat = "شماره موبایل وارد شده صحیح نمیباشد",
 	InvalidWorkPhoneFormat = "شماره ثابت وارد شده صحیح نمیباشد",
 	InvalidImageFormat = "فرمت تصریر انتخاب شده باید ار نوع jpg و png باشد",
+}
+export enum BasketMessage {
+	RemoveDiscount = "کد تخفیف حذف شد",
+	ExpiredDiscount = "کد تخفیف باطل شد است",
+	AddedDiscount = "کد تخفیف با موفقیت اعمال شد",
+	AlreadyDiscount = "کد تخفیف قبلا اعمال شده است",
+	NotActiveDiscount = "کد تخفیف غیرفعال شده است",
+	AddItemToBasket = "ایتم مورد نظز به سبد خرید اضافه شد",
+	NotFoundDiscount = "چنین کد تخفیفی در این سبد پیدا نشد",
+	RemoveItemToBasket = "ایتم مورد نظر از سبد خرید حذف شد",
+	LimitFullDiscount = "ظرفیت استفاده از این کد تخفیف پرشده است",
+	NotFoundItemFromBasket = "ایتم موردنظر در سبد خرید موجود نیست",
 }
 export enum PublicMessage {
 	Created = "با موفقیت ایجاد شد",
