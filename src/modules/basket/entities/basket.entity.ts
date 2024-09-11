@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 
 import { EntityName } from "src/common/enums/entity.enum";
+import { BasketDiscountType } from "../enum/discount-type";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { UserEntity } from "src/modules/user/entities/user.entity";
 import { BookEntity } from "src/modules/books/entities/book.entity";
@@ -14,8 +15,14 @@ export class BasketEntity extends BaseEntity {
 	@Column()
 	userId: number;
 
-	@Column({ nullable: true })
+	@Column({ default: 1 })
 	count: number;
+
+	@Column({ default: true })
+	is_active: boolean;
+
+	@Column({ enum: BasketDiscountType, type: "enum", nullable: true })
+	type: string;
 
 	@Column({ nullable: true })
 	discountId: number;
