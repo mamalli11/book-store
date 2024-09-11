@@ -37,7 +37,6 @@ import { TranslatorEntity } from "../translator/entities/translator.entity";
 			ImagesBookEntity,
 			TranslatorEntity,
 			BookWritersEntity,
-			BookWritersEntity,
 			BookEditorsEntity,
 			BookBookmarkEntity,
 			BookCategorysEntity,
@@ -56,5 +55,6 @@ import { TranslatorEntity } from "../translator/entities/translator.entity";
 		PublisherService,
 		TranslatorService,
 	],
+	exports: [BooksService, TypeOrmModule],
 })
 export class BooksModule {}
