@@ -64,7 +64,7 @@ export class CreateBookDto {
 	@IsNumberString()
 	price: number;
 
-	@ApiPropertyOptional({ example: "", description: "تخفیف" })
+	@ApiPropertyOptional({ example: 0, description: "درصد تخفیف", minimum: 0, maximum: 100 })
 	@IsNumberString()
 	@IsOptional()
 	discount: number;

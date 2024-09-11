@@ -42,7 +42,7 @@ export class BookEntity extends BaseEntity {
 	@Column({})
 	price: number;
 
-	@Column({ default: 0 })
+	@Column({ type: "real", default: 0 })
 	discount: number;
 
 	@Column({ default: 0, type: "float" })
