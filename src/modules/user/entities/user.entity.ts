@@ -10,8 +10,10 @@ import {
 
 import { OtpEntity } from "./otp.entity";
 import { ProfileEntity } from "./profile.entity";
+import { UserAddressEntity } from "./address.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
+import { OrderEntity } from "src/modules/order/entities/order.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
 import { BookBookmarkEntity } from "src/modules/books/entities/bookmark.entity";
@@ -59,6 +61,9 @@ export class UserEntity extends BaseEntity {
 	@JoinColumn({ name: "profileId" })
 	profile: ProfileEntity;
 
+	@OneToMany(() => UserAddressEntity, (address) => address.user)
+	addressList: UserAddressEntity[];
+
 	@OneToMany(() => BasketEntity, (basket) => basket.user)
 	basket: BasketEntity[];
 
@@ -73,6 +78,12 @@ export class UserEntity extends BaseEntity {
 
 	@OneToMany(() => CommentEntity, (comment) => comment.user)
 	book_comments: CommentEntity[];
+
+	@OneToMany(() => OrderEntity, (order) => order.address)
+	orders: OrderEntity[];
+
+	// @OneToMany(() => PaymentEntity, (payment) => payment.user)
+	// payments: PaymentEntity[];
 
 	@CreateDateColumn({ type: "time with time zone" })
 	created_at: Date;
