@@ -72,6 +72,12 @@ export class BooksService {
 
 		await this.checkExsistSlug(slug ? slug.trim().replaceAll(" ", "_") : null);
 
+		if (createBookDto?.discount && createBookDto.discount != 0) {
+			if (createBookDto.discount < 0 || createBookDto.discount > 100) {
+				throw new BadRequestException("مقدار درصد تخفیف مجاز نیست");
+			}
+		}
+
 		await this.checkExistRelationship({
 			editorId,
 			writerId,
@@ -529,6 +535,12 @@ export class BooksService {
 			},
 		});
 		if (!book) throw new NotFoundException("not found this book slug ");
+		return book;
+	}
+
+	async getOne(id: number) {
+		const book = await this.bookRepository.findOne({ where: { id } });
+		if (!book) throw new NotFoundException();
 		return book;
 	}
 
