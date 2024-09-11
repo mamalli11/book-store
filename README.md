@@ -3,20 +3,20 @@
  <img width=200px height=200px src="https://png.pngtree.com/template/20191125/ourmid/pngtree-book-store-logo-template-sale-learning-logo-designs-vector-image_335046.jpg" alt="Project logo"></a>
 </p>
 
-<h3 align="center">Book Store</h3>
+<h3 align="center">Online Book Store</h3>
 
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/mamalli11/book-store/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/mamalli11/book-store/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/mamalli11/book-store.svg)](https://github.com/mamalli11/book-store/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/mamalli11/book-store.svg)](https://github.com/mamalli11/book-store/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
 
 ---
 
-<p align="center"> Few lines describing your project.
+<p align="center">An online book store application built with Nest.js, featuring CRUD operations for books, authors, publishers, translators, and categories. It also supports features like discount codes, shopping cart, and Zarinpal payment gateway.
     <br> 
 </p>
 
@@ -34,81 +34,73 @@
 
 ## 🧐 About <a name = "about"></a>
 
-Write about 1-2 paragraphs describing the purpose of your project.
+This project is an online bookstore application built using Nest.js, and PostgreSQL for database management. It provides an API for managing books, authors, publishers, translators, and categories. Additionally, users can submit reviews for books, apply discount codes, and complete purchases via the Zarinpal payment gateway. The app is integrated with AWS for image management and uses Swagger for API documentation.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will help you set up the project on your local machine for development and testing purposes.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them.
+You'll need the following software installed:
 
-```
-Give examples
-```
+- Node.js
+- PostgreSQL
+- Zarinpal Payment Gateway credentials
+- AWS credentials for image management
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+Clone the repository:
 
 ```
-Give the example
+git clone https://github.com/mamalli11/book-store.git
+cd book-store
 ```
 
-And repeat
+Install dependencies:
 
 ```
-until finished
+npm install
 ```
 
-End with an example of getting some data out of the system or using it for a little demo.
+Rename the file from `.env.local` to `.env` and fill in the requested values.
 
-## 🔧 Running the tests <a name = "tests"></a>
-
-Explain how to run the automated tests for this system.
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Start the development server:
 
 ```
-Give an example
+npm run start:dev
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## 🎈 Usage <a name="usage"></a>
 
-Add notes about how to use the system.
+Once the server is running, you can access the API at `http://localhost:3000`. Use Swagger for API documentation by visiting `http://localhost:3000/swagger`.
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
-Add additional notes about how to deploy this on a live system.
+To deploy the application:
+
+1. Set up a PostgreSQL instance on your server or cloud service.
+2. Set environment variables for your production environment.
+3. Use `pm2` or any process manager to keep the server running.
+4. Run `npm run build` to create a production build.
+5. Start the application with `npm run start:prod`.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
+- [NestJS](http://nestjs.com/) - Framework
 - [PostgreSQL](https://www.postgresql.org/) - Database
-- [Express](https://expressjs.com/) - Server Framework
-- [NestJS](http://nestjs.com/) - A progressive Node.js framework
-- [NodeJs](https://nodejs.org/en/) - Server Environment
+- [Swagger](https://swagger.io/) - API Documentation
+- [AWS S3](https://aws.amazon.com/s3/) - Image Storage
+- [Zarinpal](https://www.zarinpal.com) - Payment Gateway
 
 ## ✍️ Authors <a name = "authors"></a>
 
--  [@mamalli11](https://github.com/mamalli11) - Idea & Initial work
+- [@mamalli11](https://github.com/mamalli11) - Developer
 
-See also the list of [contributors](https://github.com/mamalli11/book-store/contributors) who participated in this project.
+See the list of [contributors](https://github.com/mamalli11/book-store/contributors) who participated in this project.
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 
-- Hat tip to anyone whose code was used
-- Inspiration
-- References
+- Thanks to the open-source community for the inspiration and resources.
