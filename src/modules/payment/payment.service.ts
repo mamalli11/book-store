@@ -23,7 +23,7 @@ export class PaymentService {
 	) {}
 
 	async getGatewayUrl(paymentDto: PaymentDto) {
-		const { id: userId } = this.req.user;
+		const { id: userId, email, phone } = this.req.user;
 		const basket = await this.basketService.getBasket();
 		const order = await this.orderService.create(basket, paymentDto);
 		const payment = await this.create({
@@ -37,14 +37,11 @@ export class PaymentService {
 			const { authority, code, gatewayURL } = await this.zarinpalService.sendRequest({
 				amount: basket.payment_amount,
 				description: "PAYMENT ORDER",
-				user: { email: "erfan@gmail.com", mobile: "09332255768" },
+				user: { email, mobile: phone },
 			});
 			payment.authority = authority;
 			await this.paymentRepository.save(payment);
-			return {
-				gatewayURL,
-				code,
-			};
+			return { gatewayURL, code };
 		}
 		return {
 			message: "payment successfully",
@@ -55,10 +52,10 @@ export class PaymentService {
 		const { amount, invoice_number, orderId, status, userId } = paymentDto;
 		const payment = this.paymentRepository.create({
 			amount,
-			invoice_number,
-			orderId,
 			status,
 			userId,
+			orderId,
+			invoice_number,
 		});
 		return await this.paymentRepository.save(payment);
 	}
