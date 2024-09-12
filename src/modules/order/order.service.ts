@@ -55,7 +55,7 @@ export class OrderService {
 			if (orderItems.length > 0) {
 				await queryRunner.manager.insert(OrderItemEntity, orderItems);
 			} else {
-				throw new BadRequestException("your food list is empty");
+				throw new BadRequestException("your book list is empty");
 			}
 			await queryRunner.commitTransaction();
 			await queryRunner.release();
