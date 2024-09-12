@@ -16,7 +16,7 @@ export class ZarinpalService {
 				email: user?.email ?? "example@gmail.com",
 				mobile: user?.mobile ?? "",
 			},
-			callback_url: "http://localhost:3000/payment/verify",
+			callback_url: `${process.env.URL}/payment/verify`,
 		};
 		const result = await lastValueFrom(
 			this.httpService
@@ -39,7 +39,7 @@ export class ZarinpalService {
 		}
 		throw new BadRequestException("connection faild in zarinpal");
 	}
-  
+
 	async verifyRequest(data?: any) {
 		const option = {
 			authority: data.authority,
