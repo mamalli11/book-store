@@ -24,17 +24,15 @@
 
 - [About](#about)
 - [Getting Started](#getting_started)
-- [Deployment](#deployment)
 - [Usage](#usage)
+- [Deployment](#deployment)
 - [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
 
-This project is an online bookstore application built using Nest.js, and PostgreSQL for database management. It provides an API for managing books, authors, publishers, translators, and categories. Additionally, users can submit reviews for books, apply discount codes, and complete purchases via the Zarinpal payment gateway. The app is integrated with AWS for image management and uses Swagger for API documentation.
+This project is an online bookstore application built using Nest.js and PostgreSQL for database management. The system provides APIs for managing books, authors, publishers, translators, and categories. Users can also submit reviews for books, apply discount codes, and finalize their purchases through the Zarinpal payment gateway. The application is integrated with AWS for image management and uses Swagger for API documentation.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -83,9 +81,8 @@ To deploy the application:
 
 1. Set up a PostgreSQL instance on your server or cloud service.
 2. Set environment variables for your production environment.
-3. Use `pm2` or any process manager to keep the server running.
-4. Run `npm run build` to create a production build.
-5. Start the application with `npm run start:prod`.
+3. Run `npm run build` to create a production build.
+4. Start the application with `npm run start`.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
