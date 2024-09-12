@@ -3,8 +3,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaymentService } from "./payment.service";
 import { PaymentController } from "./payment.controller";
 
-import { S3Service } from "../s3/s3.service";
 import { AuthModule } from "../auth/auth.module";
+import { BooksModule } from "../books/books.module";
 import { OrderService } from "../order/order.service";
 import { BasketService } from "../basket/basket.service";
 import { PaymentEntity } from "./entities/payment.entity";
@@ -17,15 +17,16 @@ import { DiscountEntity } from "../discount/entities/discount.entity";
 @Module({
 	imports: [
 		AuthModule,
+		BooksModule,
 		TypeOrmModule.forFeature([
-			BasketEntity,
-			DiscountEntity,
 			OrderEntity,
-			UserAddressEntity,
+			BasketEntity,
 			PaymentEntity,
+			DiscountEntity,
+			UserAddressEntity,
 		]),
 	],
-	providers: [PaymentService, BasketService, DiscountService, OrderService, S3Service],
+	providers: [PaymentService, BasketService, DiscountService, OrderService],
 	controllers: [PaymentController],
 	exports: [],
 })
