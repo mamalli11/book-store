@@ -5,6 +5,7 @@ import { DataSource, DeepPartial, Repository } from "typeorm";
 import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from "@nestjs/common";
 
 import { OrderEntity } from "./entities/order.entity";
+import { PaymentDto } from "../payment/dto/payment.dto";
 import { BasketType } from "../basket/types/basket.type";
 import { OrderItemEntity } from "./entities/order-items.entity";
 import { OrderItemStatus, OrderStatus } from "./enum/status.enum";
