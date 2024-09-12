@@ -5,6 +5,8 @@ import { OrderItemEntity } from "./order-items.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { UserEntity } from "src/modules/user/entities/user.entity";
+import { PaymentEntity } from "src/modules/payment/entities/payment.entity";
+import { UserAddressEntity } from "src/modules/user/entities/address.entity";
 
 @Entity(EntityName.Order)
 export class OrderEntity extends BaseEntity {

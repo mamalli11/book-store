@@ -15,6 +15,7 @@ import { EntityName } from "src/common/enums/entity.enum";
 import { BaseEntity } from "src/common/abstracts/base.entity";
 import { OrderEntity } from "src/modules/order/entities/order.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
+import { PaymentEntity } from "src/modules/payment/entities/payment.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
 import { BookBookmarkEntity } from "src/modules/books/entities/bookmark.entity";
 import { CommentLikeEntity } from "src/modules/comments/entities/commentLike.entity";
@@ -82,8 +83,8 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(() => OrderEntity, (order) => order.address)
 	orders: OrderEntity[];
 
-	// @OneToMany(() => PaymentEntity, (payment) => payment.user)
-	// payments: PaymentEntity[];
+	@OneToMany(() => PaymentEntity, (payment) => payment.user)
+	payments: PaymentEntity[];
 
 	@CreateDateColumn({ type: "time with time zone" })
 	created_at: Date;
