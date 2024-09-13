@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, UpdateDateColumn } from "typeorm";
 
 import { UserEntity } from "./user.entity";
 import { EntityName } from "src/common/enums/entity.enum";
@@ -9,20 +9,31 @@ import { OrderEntity } from "src/modules/order/entities/order.entity";
 export class UserAddressEntity extends BaseEntity {
 	@Column()
 	title: string;
+
 	@Column()
 	province: string;
+
 	@Column()
 	city: string;
+
 	@Column()
 	address: string;
-	@Column({ nullable: true })
+
+	@Column({})
 	postal_code: string;
+
 	@Column()
 	userId: number;
+
 	@CreateDateColumn()
 	created_at: Date;
+
+	@UpdateDateColumn()
+	updated_at: Date;
+
 	@ManyToOne(() => UserEntity, (user) => user.addressList, { onDelete: "CASCADE" })
 	user: UserEntity;
+
 	@OneToMany(() => OrderEntity, (order) => order.address)
 	orders: OrderEntity[];
 }
