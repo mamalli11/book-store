@@ -12,6 +12,7 @@ import { BookWantToReadEntity } from "./bookWantToRead.entity";
 import { BookTranslatorsEntity } from "./bookTranslators.entity";
 import { BasketEntity } from "src/modules/basket/entities/basket.entity";
 import { CommentEntity } from "src/modules/comments/entities/comment.entity";
+import { OrderItemEntity } from "src/modules/order/entities/order-items.entity";
 
 @Entity(EntityName.Books)
 export class BookEntity extends BaseEntity {
@@ -110,4 +111,7 @@ export class BookEntity extends BaseEntity {
 
 	@OneToMany(() => BookWantToReadEntity, (wtr) => wtr.book)
 	book_wantToRead: BookWantToReadEntity[];
+
+	@OneToMany(() => OrderItemEntity, (order) => order.book)
+	orders: OrderItemEntity[];
 }
