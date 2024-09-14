@@ -13,8 +13,8 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
 	app.enableCors({
-		credentials: true, // برای ارسال کوکی‌ها
-		origin: ["https://bookstoree.liara.run", "http://localhost:5173"],
+		credentials: true,
+		origin: "*",
 		optionsSuccessStatus: 200,
 	});
 
@@ -53,8 +53,8 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe());
 
 	await app.listen(PORT, "0.0.0.0", () => {
-		console.log(`Mode: ${NODE_ENV} | Runing : ${URL}:${PORT} ✅`);
-		console.log(`swagger => ${URL}:${PORT}/swagger ✅`);
+		console.log(`Mode: ${NODE_ENV} | Runing : ${URL} ✅`);
+		console.log(`swagger => ${URL}/swagger ✅`);
 	});
 }
 bootstrap();
