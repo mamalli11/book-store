@@ -138,9 +138,9 @@ export class AuthService {
 
 		const user = await this.userRepository.findOneBy({ id: userId });
 
-		const profile = await this.profileRepository.findOneBy({ id: user.profileId });
+		let profile = await this.profileRepository.findOneBy({ id: user.profileId });
 		if (!profile) {
-			await this.profileRepository.save(this.profileRepository.create({ userId }));
+			profile = await this.profileRepository.save(this.profileRepository.create({ userId }));
 			await this.userRepository.update({ id: userId }, { profileId: profile.id });
 		}
 
