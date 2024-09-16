@@ -10,7 +10,7 @@ export class CreateCategoryDto {
 	@ApiProperty({ example: "" })
 	@IsString()
 	@Length(1, 50)
-	@Matches(/^[a-zA-Z]+$/, { message: "enName values ​​must be entered in English" })
+	@Matches(/^[a-zA-Z_]+$/, { message: "slug values must be entered in English" })
 	slug: string;
 
 	@ApiPropertyOptional({ nullable: true })

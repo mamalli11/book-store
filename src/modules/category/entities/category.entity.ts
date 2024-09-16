@@ -31,17 +31,18 @@ export class CategoryEntity extends BaseEntity {
 
 	@Column({ nullable: true })
 	parentId: number;
-	@ManyToOne(() => CategoryEntity, (category) => category.children, { onDelete: "CASCADE" })
-	parent: CategoryEntity;
-
-	@OneToMany(() => CategoryEntity, (category) => category.parent)
-	children: CategoryEntity[];
 
 	@CreateDateColumn()
 	created_at: Date;
 
 	@UpdateDateColumn()
 	updated_at: Date;
+
+	@ManyToOne(() => CategoryEntity, (category) => category.children, { onDelete: "CASCADE" })
+	parent: CategoryEntity;
+
+	@OneToMany(() => CategoryEntity, (category) => category.parent)
+	children: CategoryEntity[];
 
 	@ManyToMany(() => BookCategorysEntity, (book) => book.category, { onDelete: "CASCADE" })
 	books: BookCategorysEntity[];

@@ -119,9 +119,9 @@ export class CategoryService {
 		const category = await this.categoryRepository.findOneBy({ title });
 		if (category) throw new ConflictException(ConflictMessage.CategoryTitle);
 
-		const enCategory = await this.categoryRepository.findOneBy({ slug });
-		if (enCategory) throw new ConflictException("enTitle " + ConflictMessage.CategoryTitle);
+		const slugCategory = await this.categoryRepository.findOneBy({ slug });
+		if (slugCategory) throw new ConflictException("slug " + ConflictMessage.CategorySlug);
 
-		return slug;
+		return true;
 	}
 }
