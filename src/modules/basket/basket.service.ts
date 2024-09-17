@@ -140,7 +140,12 @@ export class BasketService {
 	}
 
 	async basketDisable(userId: number) {
-		await this.basketRepository.update({ userId }, { is_active: false });
+		const basketItems = await this.basketRepository.find({ where: { userId, is_active: true } });
+		const books = basketItems.filter((item) => item.bookId);
+		for (const item of books) {
+			await this.booksService.decrementStockCount(item.bookId);
+		}
+		await this.basketRepository.update({ userId, is_active: true }, { is_active: false });
 		return true;
 	}
 
