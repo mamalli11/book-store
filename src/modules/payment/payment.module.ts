@@ -13,6 +13,7 @@ import { DiscountService } from "../discount/discount.service";
 import { BasketEntity } from "../basket/entities/basket.entity";
 import { UserAddressEntity } from "../user/entities/address.entity";
 import { DiscountEntity } from "../discount/entities/discount.entity";
+import { OrderItemEntity } from "../order/entities/order-items.entity";
 
 @Module({
 	imports: [
@@ -23,11 +24,11 @@ import { DiscountEntity } from "../discount/entities/discount.entity";
 			BasketEntity,
 			PaymentEntity,
 			DiscountEntity,
+			OrderItemEntity,
 			UserAddressEntity,
 		]),
 	],
 	providers: [PaymentService, BasketService, DiscountService, OrderService],
 	controllers: [PaymentController],
-	exports: [],
 })
 export class PaymentModule {}
