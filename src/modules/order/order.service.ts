@@ -16,6 +16,7 @@ export class OrderService {
 	constructor(
 		@Inject(REQUEST) private req: Request,
 		@InjectRepository(OrderEntity) private orderRepository: Repository<OrderEntity>,
+		@InjectRepository(OrderItemEntity) private orderItemRepository: Repository<OrderItemEntity>,
 		@InjectRepository(UserAddressEntity)
 		private userAddressRepository: Repository<UserAddressEntity>,
 		private dataSource: DataSource,
@@ -25,38 +26,42 @@ export class OrderService {
 		const { addressId, description = undefined } = paymentDto;
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
+
 		try {
+			await queryRunner.startTransaction();
+
 			const { id: userId } = this.req.user;
-			const address = await this.userAddressRepository.findOneBy({
-				id: addressId,
-				userId,
-			});
+			const address = await this.userAddressRepository.findOneBy({ id: addressId, userId });
 			if (!address) throw new NotFoundException("not found address");
+
 			const { bookList, payment_amount, total_amount, total_discount_amount } = basket;
 			let order = queryRunner.manager.create(OrderEntity, {
-				addressId,
 				userId,
-				total_amount,
+				addressId,
 				description,
-				discount_amount: total_discount_amount,
+				total_amount,
 				payment_amount,
 				status: OrderStatus.Pending,
+				discount_amount: total_discount_amount,
 			});
 			order = await queryRunner.manager.save(OrderEntity, order);
+
 			let orderItems: DeepPartial<OrderItemEntity>[] = [];
 			for (const item of bookList) {
 				orderItems.push({
+					orderId: order.id,
 					count: item.count,
 					bookId: item.bookId,
-					orderId: order.id,
 					status: OrderItemStatus.Pending,
 				});
 			}
+
 			if (orderItems.length > 0) {
 				await queryRunner.manager.insert(OrderItemEntity, orderItems);
 			} else {
 				throw new BadRequestException("your book list is empty");
 			}
+
 			await queryRunner.commitTransaction();
 			await queryRunner.release();
 			return order;
@@ -71,6 +76,10 @@ export class OrderService {
 		const order = await this.orderRepository.findOneBy({ id });
 		if (!order) throw new NotFoundException();
 		return order;
+	}
+
+	async updateOrderItem(orderId: number, status: string) {
+		return await this.orderItemRepository.update({ orderId }, { status });
 	}
 
 	async save(order: OrderEntity) {
