@@ -86,4 +86,16 @@ export class DiscountService {
 		if (!discount) throw new NotFoundException("not found discount code");
 		return discount;
 	}
+
+	async useDiscount(code: string) {
+		const discount = await this.findOneByCode(code);
+		if (!discount.active) throw new BadRequestException("not active discount");
+
+		discount.usage += 1;
+		if (discount.limit !== null && discount.usage >= discount.limit) {
+			discount.active = false;
+		}
+		await this.discountRepository.save(discount);
+		return discount;
+	}
 }
