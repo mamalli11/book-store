@@ -1,10 +1,10 @@
-import { Response } from "express";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Get, Post, Query, Res } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 
 import { PaymentDto } from "./dto/payment.dto";
 import { PaymentService } from "./payment.service";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
+import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
 
 @Controller("Payment")
@@ -20,12 +20,8 @@ export class PaymentController {
 	}
 
 	@Get("/verify")
-	async verifyPayment(
-		@Query("Authority") authority: string,
-		@Query("Status") status: string,
-		@Res() res: Response,
-	) {
-		const url = await this.paymentService.verify(authority, status);
-		return res.redirect(url);
+	@SkipAuth()
+	async verifyPayment(@Query("Authority") authority: string, @Query("Status") status: string) {
+		return await this.paymentService.verify(authority, status);
 	}
 }
