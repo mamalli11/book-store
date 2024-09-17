@@ -40,6 +40,9 @@ export class BookEntity extends BaseEntity {
 	@Column({ default: 0 })
 	stockCount: number;
 
+	@Column({ default: 0 })
+	view: number;
+
 	@Column({})
 	price: number;
 

@@ -304,6 +304,7 @@ export class BooksService {
 			},
 		});
 		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		await this.bookRepository.update({ id }, { view: book.view + 1 });
 		return book;
 	}
 
@@ -535,6 +536,7 @@ export class BooksService {
 			},
 		});
 		if (!book) throw new NotFoundException("not found this book slug ");
+		await this.bookRepository.update({ id: book.id }, { view: book.view + 1 });
 		return book;
 	}
 
@@ -621,5 +623,11 @@ export class BooksService {
 			order: { id: "DESC" },
 		});
 		return { pagination: paginationGenerator(count, page, limit), wtrs };
+	}
+
+	async incrimentStockCount(id: number) {
+		const book = await this.bookRepository.findOneBy({ id });
+		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		await this.bookRepository.update({ id }, { stockCount: book.stockCount + 1 });
 	}
 }
