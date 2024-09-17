@@ -625,9 +625,14 @@ export class BooksService {
 		return { pagination: paginationGenerator(count, page, limit), wtrs };
 	}
 
-	async incrimentStockCount(id: number) {
+	async decrementStockCount(id: number) {
 		const book = await this.bookRepository.findOneBy({ id });
 		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
-		await this.bookRepository.update({ id }, { stockCount: book.stockCount + 1 });
+		book.stockCount -= 1;
+		if (book.stockCount <= 0) {
+			book.is_active = false;
+			book.status = "endOfInventory";
+		}
+		await this.bookRepository.save(book);
 	}
 }
