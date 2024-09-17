@@ -541,8 +541,8 @@ export class BooksService {
 	}
 
 	async getOne(id: number) {
-		const book = await this.bookRepository.findOne({ where: { id } });
-		if (!book) throw new NotFoundException();
+		const book = await this.bookRepository.findOne({ where: { id, is_active: true } });
+		if (!book) throw new BadRequestException(BadRequestMessage.OutOfStockOrInactive);
 		return book;
 	}
 

@@ -17,14 +17,12 @@ import { OrderService } from "../order/order.service";
 import { BasketService } from "../basket/basket.service";
 import { PaymentEntity } from "./entities/payment.entity";
 import { ZarinpalService } from "../http/zarinpal.service";
-import { DiscountEntity } from "../discount/entities/discount.entity";
 import { OrderItemStatus, OrderStatus } from "../order/enum/status.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentService {
 	constructor(
 		@InjectRepository(PaymentEntity) private paymentRepository: Repository<PaymentEntity>,
-		@InjectRepository(DiscountEntity) private discountRepository: Repository<DiscountEntity>,
 		@Inject(REQUEST) private req: Request,
 		private orderService: OrderService,
 		private basketService: BasketService,

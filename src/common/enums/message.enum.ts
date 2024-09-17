@@ -10,6 +10,8 @@ export enum BadRequestMessage {
 	InvalidCategories = "دسته بندی ها را به درستی وارد کنید",
 	InValidLoginData = "اطلاعات ارسال شده برای ورود صحیح نمیباشد",
 	InValidRegisterData = "اطلاعات ارسال شده برای ثبت نام صحیح نمیباشد",
+
+	OutOfStockOrInactive = "موجودی کالا تمام شده است یا کالا غیرفعال است",
 }
 export enum AuthMessage {
 	TryAgain = "دوباره تلاش کنید",
