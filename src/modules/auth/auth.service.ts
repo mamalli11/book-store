@@ -11,12 +11,13 @@ import { TokenService } from "./tokens.service";
 import { AuthMethod } from "./enums/method.enum";
 import { MailService } from "../http/mail.service";
 import { AuthDto, CheckOtpDto } from "./dto/auth.dto";
+import { Sms_irService } from "../http/sms_ir.service";
 import { OtpEntity } from "../user/entities/otp.entity";
 import { UserEntity } from "../user/entities/user.entity";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { ProfileEntity } from "../user/entities/profile.entity";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
-import { AuthMessage, BadRequestMessage, PublicMessage } from "src/common/enums/message.enum";
+import { AuthMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
 		@Inject(REQUEST) private request: Request,
 		private tokenService: TokenService,
 		private mailService: MailService,
+		private smsIrService: Sms_irService,
 	) {}
 
 	async login(authDto: AuthDto) {
@@ -43,6 +45,14 @@ export class AuthService {
 		const otp = await this.saveOtp(user.id, method);
 		const token = this.tokenService.createOtpToken({ userId: user.id });
 
+		if (method === AuthMethod.Email) {
+			await this.mailService.verificationMail(user.email, otp.code);
+		}
+		if (method === AuthMethod.Phone) {
+			await this.smsIrService.sendVerificationCode(emailOrPhone, [
+				{ name: "Code", value: otp.code },
+			]);
+		}
 		return { token, code: otp.code };
 	}
 
