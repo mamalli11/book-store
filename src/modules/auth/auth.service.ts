@@ -1,14 +1,15 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { isEmail, isMobilePhone } from "class-validator";
+import { Repository, EntityManager } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { REQUEST } from "@nestjs/core";
-import { Repository } from "typeorm";
 import { randomInt } from "crypto";
 
 import { AuthResponse } from "./types/response";
 import { TokenService } from "./tokens.service";
 import { AuthMethod } from "./enums/method.enum";
+import { MailService } from "../http/mail.service";
 import { AuthDto, CheckOtpDto } from "./dto/auth.dto";
 import { OtpEntity } from "../user/entities/otp.entity";
 import { UserEntity } from "../user/entities/user.entity";
@@ -25,61 +26,39 @@ export class AuthService {
 		@InjectRepository(OtpEntity) private otpRepository: Repository<OtpEntity>,
 		@Inject(REQUEST) private request: Request,
 		private tokenService: TokenService,
+		private mailService: MailService,
 	) {}
 
 	async login(authDto: AuthDto) {
 		const { method, emailOrPhone } = authDto;
 		const validUsername = this.userValidator(method, emailOrPhone);
-		let user: UserEntity = await this.checkExistUser(method, validUsername);
 
+		let user = await this.checkExistUser(method, validUsername);
 		if (!user) {
 			user = await this.userRepository.save(
-				this.userRepository.create({
-					[method]: emailOrPhone,
-				}),
+				this.userRepository.create({ [method]: emailOrPhone }),
 			);
 		}
 
 		const otp = await this.saveOtp(user.id, method);
 		const token = this.tokenService.createOtpToken({ userId: user.id });
-		const result = { token, code: otp.code };
-		return result;
+
+		return { token, code: otp.code };
 	}
 
 	userValidator(method: AuthMethod, username: string) {
-		switch (method) {
-			case AuthMethod.Email:
-				if (isEmail(username)) return username;
-				throw new BadRequestException("Email format is incorrect");
-
-			case AuthMethod.Phone:
-				if (isMobilePhone(username, "fa-IR")) return username;
-				throw new BadRequestException("Phone format is incorrect");
-
-			default:
-				throw new UnauthorizedException("Email Or Phone is not valid");
-		}
+		if (method === AuthMethod.Email && isEmail(username)) return username;
+		if (method === AuthMethod.Phone && isMobilePhone(username, "fa-IR")) return username;
+		throw new BadRequestException("Invalid email or phone format");
 	}
 
 	async checkExistUser(method: AuthMethod, username: string) {
-		let user: UserEntity;
-		const filterData: object = {
+		const whereCondition =
+			method === AuthMethod.Phone ? { phone: username } : { email: username };
+		return await this.userRepository.findOne({
+			where: whereCondition,
 			select: ["id", "email", "phone", "otpId", "profileId"],
-		};
-		if (method === AuthMethod.Phone) {
-			user = await this.userRepository.findOne({
-				where: { phone: username },
-				...filterData,
-			});
-		} else if (method === AuthMethod.Email) {
-			user = await this.userRepository.findOne({
-				where: { email: username },
-				...filterData,
-			});
-		} else {
-			throw new BadRequestException(BadRequestMessage.InValidLoginData);
-		}
-		return user;
+		});
 	}
 
 	async sendResponse(res: Response, result: AuthResponse, message: string) {
@@ -100,70 +79,78 @@ export class AuthService {
 	async saveOtp(userId: number, method: AuthMethod) {
 		const code = randomInt(100000, 999999).toString();
 		const expiresIn = new Date(Date.now() + 1000 * 60 * 2);
+
 		let otp = await this.otpRepository.findOneBy({ userId });
-		let existOtp = false;
 		if (otp) {
-			existOtp = true;
-			otp.code = code;
-			otp.expiresIn = expiresIn;
-			otp.method = method;
+			Object.assign(otp, { code, expiresIn, method });
 		} else {
 			otp = this.otpRepository.create({ code, expiresIn, userId, method });
-		}
-		otp = await this.otpRepository.save(otp);
-		if (!existOtp) {
 			await this.userRepository.update({ id: userId }, { otpId: otp.id });
 		}
-		return otp;
+
+		return await this.otpRepository.save(otp);
 	}
 
 	async checkOtp(checkOtpDto: CheckOtpDto, res: Response) {
 		const { code, token } = checkOtpDto;
+
 		if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
 		const { userId } = this.tokenService.verifyOtpToken(token);
 
-		const otp = await this.otpRepository.findOneBy({ userId });
-		if (!otp) throw new UnauthorizedException(AuthMessage.LoginAgain);
+		return await this.userRepository.manager.transaction(async (manager: EntityManager) => {
+			const otp = await manager.findOne(OtpEntity, { where: { userId } });
+			if (!otp || otp.expiresIn < new Date() || otp.code !== code) {
+				throw new UnauthorizedException(AuthMessage.InvalidCode);
+			}
 
-		const now = new Date();
-		if (otp.expiresIn < now) throw new UnauthorizedException(AuthMessage.ExpiredCode);
-		if (otp.code !== code) throw new UnauthorizedException(AuthMessage.InvalidCode);
-		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
+			const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({
+				userId,
+			});
+			const user = await manager.findOne(UserEntity, {
+				where: { id: userId },
+				relations: ["profile"],
+			});
 
-		if (otp.method === AuthMethod.Email) {
-			await this.userRepository.update({ id: userId }, { verify_email: true });
-		} else if (otp.method === AuthMethod.Phone) {
-			await this.userRepository.update({ id: userId }, { verify_phone: true });
-		}
+			let profile = user?.profile;
+			if (!profile) {
+				profile = this.profileRepository.create({ userId });
+				await manager.save(ProfileEntity, profile);
+				await manager.update(UserEntity, userId, { profileId: profile.id });
+			}
 
-		const user = await this.userRepository.findOneBy({ id: userId });
+			const updateUser: Partial<UserEntity> = {};
+			if (otp.method === AuthMethod.Email) {
+				if (!user?.welcome_email) {
+					await this.mailService.welcomMail(
+						user?.email,
+						`${profile?.fname} ${profile?.lname}`,
+					);
+					updateUser.welcome_email = true;
+				}
+				updateUser.verify_email = true;
+			} else if (otp.method === AuthMethod.Phone) {
+				updateUser.verify_phone = true;
+			}
 
-		let profile = await this.profileRepository.findOneBy({ id: user.profileId });
-		if (!profile) {
-			profile = await this.profileRepository.save(this.profileRepository.create({ userId }));
-			await this.userRepository.update({ id: userId }, { profileId: profile.id });
-		}
+			await Promise.all([
+				manager.update(UserEntity, userId, updateUser),
+				manager.update(OtpEntity, otp.id, { refreshToken }),
+			]);
 
-		await this.otpRepository.update({ id: userId }, { refreshToken });
-
-		const result = { accessToken, refreshToken };
-		return this.sendResponse(res, result, PublicMessage.LoggedIn);
+			return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
+		});
 	}
 
 	async refreshToken(res: Response) {
-		if (!this.request.cookies?.[CookieKeys.RefreshToken])
-			throw new UnauthorizedException(AuthMessage.LoginAgain);
-
-		let token: any = this.request.cookies?.[CookieKeys.RefreshToken];
+		const token = this.request.cookies?.[CookieKeys.RefreshToken];
+		if (!token) throw new UnauthorizedException(AuthMessage.LoginAgain);
 
 		const { userId } = this.tokenService.verifyRefreshToken(token);
 		const user = await this.otpRepository.findOneBy({ userId });
-		if (!user) throw new UnauthorizedException(AuthMessage.ExpiredToken);
-
-		if (user.refreshToken !== token) throw new UnauthorizedException(AuthMessage.ExpiredToken);
+		if (!user || user.refreshToken !== token)
+			throw new UnauthorizedException(AuthMessage.ExpiredToken);
 
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
-
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
 		return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
@@ -180,8 +167,6 @@ export class AuthService {
 			.clearCookie(CookieKeys.AccessToken)
 			.clearCookie(CookieKeys.RefreshToken)
 			.status(200)
-			.json({
-				message: AuthMessage.LogoutSuccessfully,
-			});
+			.json({ message: AuthMessage.LogoutSuccessfully });
 	}
 }
