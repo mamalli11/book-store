@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fa">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>OTP Confirmation</title>
+		<!-- استفاده از فونت وزیر -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/vazirmatn@32.102.0/misc/UI/Vazirmatn-UI-font-face.css"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+			    font-family: 'Vazirmatn', sans-serif;
+			    background-color: #f4f4f4;
+			    margin: 0;
+			    padding: 0;
+			    direction: rtl;
+			    text-align: right;
+			}
+
+			.container {
+			    max-width: 600px;
+			    margin: 0 auto;
+			    background-color: #ffffff;
+			    padding: 20px;
+			    border-radius: 8px;
+			    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
+
+			.header {
+			    text-align: center;
+			    padding: 20px 0;
+			}
+
+			.header img {
+			    max-width: 100px;
+			}
+
+			.content {
+			    font-size: 16px;
+			    line-height: 1.6;
+			    color: #333333;
+			}
+
+			.otp-code {
+			    display: inline-block;
+			    font-size: 24px;
+			    font-weight: bold;
+			    margin: 20px 0;
+			    color: #ff6f61;
+			    background-color: #f2f2f2;
+			    padding: 10px 20px;
+			    border-radius: 5px;
+			    letter-spacing: 2px;
+			}
+
+			.footer {
+			    font-size: 14px;
+			    color: #777777;
+			    text-align: center;
+			    margin-top: 20px;
+			    border-top: 1px solid #eeeeee;
+			    padding-top: 20px;
+			}
+
+			.btn {
+			    display: inline-block;
+			    margin-top: 20px;
+			    padding: 12px 24px;
+			    font-size: 16px;
+			    color: #ffffff;
+			    background-color: #ff6f61;
+			    border: none;
+			    border-radius: 5px;
+			    text-decoration: none;
+			    text-align: center;
+			}
+
+			@media only screen and (max-width: 600px) {
+			    .container {
+			        padding: 10px;
+			    }
+
+			    .otp-code {
+			        font-size: 20px;
+			    }
+
+			    .btn {
+			        padding: 10px 20px;
+			        font-size: 14px;
+			    }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<img
+					src="https://png.pngtree.com/template/20191125/ourmid/pngtree-book-store-logo-template-sale-learning-logo-designs-vector-image_335046.jpg"
+					alt="Logo"
+				/>
+			</div>
+
+			<div class="content">
+				<p>سلام،</p>
+				<p>کد تأیید شما برای ورود به سیستم:</p>
+				<div class="otp-code"><%= otp_code %></div>
+				<p>
+					این کد به مدت ۲ دقیقه معتبر است. لطفاً از آن برای ورود به حساب کاربری خود استفاده
+					کنید.
+				</p>
+			</div>
+
+			<div class="footer">
+				<p>اگر شما این درخواست را نساخته‌اید، لطفاً این ایمیل را نادیده بگیرید.</p>
+				<p>&copy; 2024 شرکت شما. تمامی حقوق محفوظ است.</p>
+			</div>
+		</div>
+	</body>
+</html>
