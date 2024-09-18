@@ -5,6 +5,7 @@ import { MailerModule } from "@nestjs-modules/mailer";
 import { EjsAdapter } from "@nestjs-modules/mailer/dist/adapters/ejs.adapter";
 
 import { MailService } from "./mail.service";
+import { Sms_irService } from "./sms_ir.service";
 import { ZarinpalService } from "./zarinpal.service";
 import { KavenegarService } from "./kavenegar.service";
 
@@ -38,7 +39,7 @@ dotenv.config();
 			timeout: 5000,
 		}),
 	],
-	providers: [ZarinpalService, KavenegarService, MailService],
-	exports: [ZarinpalService, KavenegarService, MailService],
+	providers: [ZarinpalService, KavenegarService, MailService, Sms_irService],
+	exports: [ZarinpalService, KavenegarService, MailService, Sms_irService],
 })
 export class HttpApiModule {}
