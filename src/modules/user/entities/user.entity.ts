@@ -50,6 +50,9 @@ export class UserEntity extends BaseEntity {
 	@Column({ default: true })
 	is_otp: boolean;
 
+	@Column({ default: false })
+	welcome_email: boolean;
+
 	@Column({ nullable: true })
 	otpId: number;
 	@OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })

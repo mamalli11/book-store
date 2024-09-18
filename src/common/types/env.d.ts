@@ -27,5 +27,11 @@ namespace NodeJS {
 		ZARINPAL_REQUEST_URL: string;
 		ZARINPAL_GATEWAY_URL: string;
 		ZARINPAL_MERCHANT_ID: string;
+		//Nodemailer
+		MAIL_FROM: string;
+		MAIL_HOST: string;
+		MAIL_PORT: number;
+		MAIL_USER: string;
+		MAIL_PASSWORD: string;
 	}
 }
