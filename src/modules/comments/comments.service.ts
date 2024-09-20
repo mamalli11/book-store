@@ -2,6 +2,7 @@ import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { IsNull, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { Scope, Inject, Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 
 import { CommentEntity } from "./entities/comment.entity";
@@ -10,7 +11,6 @@ import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CommentLikeEntity } from "./entities/commentLike.entity";
 import { CreateCommentDto, updateCommentDto } from "./dto/create-comment.dto";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
-import { BadRequestMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CommentsService {
@@ -20,6 +20,7 @@ export class CommentsService {
 		@InjectRepository(CommentLikeEntity)
 		private commentLikeRepository: Repository<CommentLikeEntity>,
 		@Inject(REQUEST) private request: Request,
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createCommentDto: CreateCommentDto) {
@@ -27,7 +28,10 @@ export class CommentsService {
 		const { id: userId } = this.request.user;
 
 		const book = await this.bookRepository.findOneBy({ id: bookId });
-		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		if (!book)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBook", { lang: I18nContext.current().lang }),
+			);
 
 		let parent = null;
 
@@ -42,7 +46,11 @@ export class CommentsService {
 			parentId: parent ? parentId : null,
 			userId,
 		});
-		return { message: PublicMessage.CreatedComment };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedComment", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async find(paginationDto: PaginationDto) {
@@ -133,54 +141,89 @@ export class CommentsService {
 		const comment = await this.checkExistById(id);
 
 		if (comment.userId !== this.request.user.id)
-			throw new BadRequestException(BadRequestMessage.NotOwnerComment);
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.NotOwnerComment", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const { text } = updateCommentDto;
 		await this.commentRepository.update({ id }, { text, accepted: false });
 
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async remove(id: number) {
 		const comment = await this.checkExistById(id);
 
 		if (comment.userId !== this.request.user.id)
-			throw new BadRequestException(BadRequestMessage.NotOwnerComment);
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.NotOwnerComment", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		await this.commentRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async checkExistById(id: number) {
 		const comment = await this.commentRepository.findOneBy({ id });
-		if (!comment) throw new NotFoundException(NotFoundMessage.NotFound);
+		if (!comment)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFound", { lang: I18nContext.current().lang }),
+			);
 		return comment;
 	}
 
 	async accept(id: number) {
 		const comment = await this.checkExistById(id);
-		if (comment.accepted) throw new BadRequestException(BadRequestMessage.AlreadyAccepted);
+		if (comment.accepted)
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.AlreadyAccepted", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		comment.accepted = true;
 		await this.commentRepository.save(comment);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async reject(id: number) {
 		const comment = await this.checkExistById(id);
-		if (!comment.accepted) throw new BadRequestException(BadRequestMessage.AlreadyRejected);
+		if (!comment.accepted)
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.AlreadyRejected", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		comment.accepted = false;
 		await this.commentRepository.save(comment);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async likeComment(commentId: number) {
 		const { id: userId } = this.request.user;
 		await this.checkExistById(commentId);
 		const isLiked = await this.commentLikeRepository.findOneBy({ userId, commentId });
-		let message = PublicMessage.LikeComment;
+		let message = this.i18n.t("tr.PublicMessage.LikeComment", {
+			lang: I18nContext.current().lang,
+		});
 		if (isLiked) {
 			await this.commentLikeRepository.delete({ id: isLiked.id });
-			message = PublicMessage.DisLikeComment;
+			message = this.i18n.t("tr.PublicMessage.DisLikeComment", {
+				lang: I18nContext.current().lang,
+			});
 		} else {
 			await this.commentLikeRepository.insert({ commentId, userId });
 		}
