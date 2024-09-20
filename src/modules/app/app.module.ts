@@ -2,6 +2,7 @@ import * as path from "path";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 
 import { AuthModule } from "../auth/auth.module";
 import { UserModule } from "../user/user.module";
@@ -18,7 +19,6 @@ import { DiscountModule } from "../discount/discount.module";
 import { CommentsModule } from "../comments/comments.module";
 import { PublisherModule } from "../publisher/publisher.module";
 import { TranslatorModule } from "../translator/translator.module";
-import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 
 @Module({
 	imports: [

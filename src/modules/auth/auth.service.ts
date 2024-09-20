@@ -18,7 +18,6 @@ import { UserEntity } from "../user/entities/user.entity";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { ProfileEntity } from "../user/entities/profile.entity";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
-import { AuthMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class AuthService {
@@ -117,13 +116,22 @@ export class AuthService {
 	async checkOtp(checkOtpDto: CheckOtpDto, res: Response) {
 		const { code, token } = checkOtpDto;
 
-		if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
+		if (!token)
+			throw new UnauthorizedException(
+				this.i18n.t("tr.AuthMessage.ExpiredCode", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		const { userId } = this.tokenService.verifyOtpToken(token);
 
 		return await this.userRepository.manager.transaction(async (manager: EntityManager) => {
 			const otp = await manager.findOne(OtpEntity, { where: { userId } });
 			if (!otp || otp.expiresIn < new Date() || otp.code !== code) {
-				throw new UnauthorizedException(AuthMessage.InvalidCode);
+				throw new UnauthorizedException(
+					this.i18n.t("tr.AuthMessage.InvalidCode", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 			}
 
 			const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({
@@ -172,12 +180,21 @@ export class AuthService {
 
 	async refreshToken(res: Response) {
 		const token = this.request.cookies?.[CookieKeys.RefreshToken];
-		if (!token) throw new UnauthorizedException(AuthMessage.LoginAgain);
+		if (!token)
+			throw new UnauthorizedException(
+				this.i18n.t("tr.AuthMessage.LoginAgain", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const { userId } = this.tokenService.verifyRefreshToken(token);
 		const user = await this.otpRepository.findOneBy({ userId });
 		if (!user || user.refreshToken !== token)
-			throw new UnauthorizedException(AuthMessage.ExpiredToken);
+			throw new UnauthorizedException(
+				this.i18n.t("tr.AuthMessage.ExpiredToken", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
 		await this.otpRepository.update({ id: userId }, { refreshToken });
@@ -194,7 +211,11 @@ export class AuthService {
 	async logout(res: Response, req: Request) {
 		const { id } = req.user;
 		if (!this.request.cookies?.[CookieKeys.AccessToken])
-			throw new UnauthorizedException(AuthMessage.LoginAgain);
+			throw new UnauthorizedException(
+				this.i18n.t("tr.AuthMessage.LoginAgain", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		await this.otpRepository.update({ userId: id }, { refreshToken: null });
 
