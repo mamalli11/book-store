@@ -12,6 +12,7 @@ import { REQUEST } from "@nestjs/core";
 import { isArray } from "class-validator";
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 
 import { S3Service } from "../s3/s3.service";
 import { BookImagesType } from "./types/up_files";
@@ -34,7 +35,6 @@ import { BookPublishersEntity } from "./entities/bookPublishers.entity";
 import { PaginationDto, QueryDto } from "src/common/dtos/pagination.dto";
 import { BookTranslatorsEntity } from "./entities/bookTranslators.entity";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
-import { BadRequestMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class BooksService {
@@ -60,6 +60,7 @@ export class BooksService {
 		@Inject(REQUEST) private request: Request,
 
 		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 		private editorService: EditorService,
 		private writerService: WriterService,
 		private categoryService: CategoryService,
@@ -142,7 +143,11 @@ export class BooksService {
 			);
 		}
 
-		return { message: PublicMessage.CreatedBook };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedBook", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	private async insertEntities(
@@ -303,7 +308,12 @@ export class BooksService {
 				},
 			},
 		});
-		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		if (!book)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		await this.bookRepository.update({ id }, { view: book.view + 1 });
 		return book;
 	}
@@ -345,7 +355,12 @@ export class BooksService {
 		if (updateBookDto.enName) updateObject["enName"] = updateBookDto.enName;
 		if (updateBookDto.slug) {
 			const bk = await this.bookRepository.findOneBy({ slug: updateBookDto.slug });
-			if (bk && bk.id !== id) throw new ConflictException("already exist book slug");
+			if (bk && bk.id !== id)
+				throw new ConflictException(
+					this.i18n.t("tr.ConflictMessage.alreadyExistBookSlug", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 			updateObject["slug"] = updateBookDto.slug;
 		}
 		if (updateBookDto.introduction) updateObject["introduction"] = updateBookDto.introduction;
@@ -399,7 +414,11 @@ export class BooksService {
 		}
 
 		await this.bookRepository.update({ id }, updateObject);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async remove(id: number) {
@@ -415,12 +434,21 @@ export class BooksService {
 		}
 
 		await this.bookRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async checkExistBookById(id: number) {
 		const book = await this.bookRepository.findOneBy({ id });
-		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		if (!book)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return book;
 	}
 
@@ -434,7 +462,11 @@ export class BooksService {
 			if (!isArray(ids) && typeof ids === "string") {
 				ids = ids.split(",");
 			} else if (!isArray(ids)) {
-				throw new BadRequestException(BadRequestMessage.InvalidCategories);
+				throw new BadRequestException(
+					this.i18n.t("tr.BadRequestMessage.InvalidCategories", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 			}
 			for (const id of ids) {
 				await serviceMethod(+id);
@@ -469,7 +501,12 @@ export class BooksService {
 
 	async checkExsistSlug(slug: string) {
 		const bk = await this.bookRepository.findOneBy({ slug });
-		if (bk) throw new ConflictException("already exist slug");
+		if (bk)
+			throw new ConflictException(
+				this.i18n.t("tr.ConflictMessage.alreadyExistBookSlug", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 	}
 
 	async findOneBySlug(slug: string) {
@@ -535,14 +572,24 @@ export class BooksService {
 				},
 			},
 		});
-		if (!book) throw new NotFoundException("not found this book slug ");
+		if (!book)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBookSlug", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		await this.bookRepository.update({ id: book.id }, { view: book.view + 1 });
 		return book;
 	}
 
 	async getOne(id: number) {
 		const book = await this.bookRepository.findOne({ where: { id, is_active: true } });
-		if (!book) throw new BadRequestException(BadRequestMessage.OutOfStockOrInactive);
+		if (!book)
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.OutOfStockOrInactive", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return book;
 	}
 
@@ -550,10 +597,14 @@ export class BooksService {
 		const { id: userId } = this.request.user;
 		await this.checkExistBookById(bookId);
 		const isBookmarked = await this.bookBookmarkRepository.findOneBy({ userId, bookId });
-		let message = PublicMessage.Bookmark;
+		let message = this.i18n.t("tr.PublicMessage.Bookmark", {
+			lang: I18nContext.current().lang,
+		});
 		if (isBookmarked) {
 			await this.bookBookmarkRepository.delete({ id: isBookmarked.id });
-			message = PublicMessage.UnBookmark;
+			message = this.i18n.t("tr.PublicMessage.UnBookmark", {
+				lang: I18nContext.current().lang,
+			});
 		} else {
 			await this.bookBookmarkRepository.insert({ bookId, userId });
 		}
@@ -564,10 +615,14 @@ export class BooksService {
 		const { id: userId } = this.request.user;
 		await this.checkExistBookById(bookId);
 		const isWTR = await this.wantToReadRepository.findOneBy({ userId, bookId });
-		let message = PublicMessage.Wtr;
+		let message = this.i18n.t("tr.PublicMessage.Wtr", {
+			lang: I18nContext.current().lang,
+		});
 		if (isWTR) {
 			await this.wantToReadRepository.delete({ id: isWTR.id });
-			message = PublicMessage.UnWtr;
+			message = this.i18n.t("tr.PublicMessage.UnWtr", {
+				lang: I18nContext.current().lang,
+			});
 		} else {
 			await this.wantToReadRepository.insert({ bookId, userId });
 		}
@@ -627,7 +682,12 @@ export class BooksService {
 
 	async decrementStockCount(id: number) {
 		const book = await this.bookRepository.findOneBy({ id });
-		if (!book) throw new NotFoundException(NotFoundMessage.NotFoundBook);
+		if (!book)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		book.stockCount -= 1;
 		if (book.stockCount <= 0) {
 			book.is_active = false;
