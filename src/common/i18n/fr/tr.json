@@ -11,7 +11,8 @@
 		"InValidLoginData": "Les informations de connexion fournies sont incorrectes",
 		"InValidRegisterData": "Les informations d'inscription fournies sont incorrectes",
 		"OutOfStockOrInactive": "Le produit est en rupture de stock ou inactif",
-		"AmountOrPercent": "Vous devez entrer soit le champ du montant, soit celui du pourcentage"
+		"AmountOrPercent": "Vous devez entrer soit le champ du montant, soit celui du pourcentage",
+		"DiscountPercentageNotAllowed": "Le pourcentage de réduction ne doit pas dépasser 100"
 	},
 	"AuthMessage": {
 		"TryAgain": "Veuillez réessayer",

@@ -11,7 +11,8 @@
 		"InValidLoginData": "معلومات تسجيل الدخول غير صحيحة",
 		"InValidRegisterData": "معلومات التسجيل غير صحيحة",
 		"OutOfStockOrInactive": "المنتج غير متوفر أو غير نشط",
-		"AmountOrPercent": "يجب إدخال حقل الكمية أو النسبة"
+		"AmountOrPercent": "يجب إدخال حقل الكمية أو النسبة",
+		"DiscountPercentageNotAllowed": "نسبة الخصم لا يجب أن تتجاوز 100"
 	},
 	"AuthMessage": {
 		"TryAgain": "يرجى المحاولة مرة أخرى",

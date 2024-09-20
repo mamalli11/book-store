@@ -11,7 +11,8 @@
 		"InValidLoginData": "Неверные данные для входа",
 		"InValidRegisterData": "Неверные данные для регистрации",
 		"OutOfStockOrInactive": "Товар закончился на складе или неактивен",
-		"AmountOrPercent": "Необходимо ввести либо значение суммы, либо процент"
+		"AmountOrPercent": "Необходимо ввести либо значение суммы, либо процент",
+		"DiscountPercentageNotAllowed": "Процент скидки не должен превышать 100"
 	},
 	"AuthMessage": {
 		"TryAgain": "Попробуйте снова",

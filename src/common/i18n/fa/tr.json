@@ -11,7 +11,8 @@
 		"InValidLoginData": "اطلاعات ارسال شده برای ورود صحیح نمی‌باشد",
 		"InValidRegisterData": "اطلاعات ارسال شده برای ثبت‌نام صحیح نمی‌باشد",
 		"OutOfStockOrInactive": "موجودی کالا تمام شده است یا کالا غیرفعال است",
-		"AmountOrPercent": "باید یکی از فیلدهای مقدار یا درصد را وارد کنید"
+		"AmountOrPercent": "باید یکی از فیلدهای مقدار یا درصد را وارد کنید",
+		"DiscountPercentageNotAllowed": "درصد تخفیف نباید بیشتر از ۱۰۰ باشد"
 	},
 	"AuthMessage": {
 		"TryAgain": "دوباره تلاش کنید",

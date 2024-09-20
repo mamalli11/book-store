@@ -11,7 +11,8 @@
 		"InValidLoginData": "The login information provided is incorrect",
 		"InValidRegisterData": "The registration information provided is incorrect",
 		"OutOfStockOrInactive": "The product is out of stock or inactive",
-		"AmountOrPercent": "You must enter either the amount or percentage field"
+		"AmountOrPercent": "You must enter either the amount or percentage field",
+		"DiscountPercentageNotAllowed": "The discount percentage should not exceed 100"
 	},
 	"AuthMessage": {
 		"TryAgain": "Please try again",
