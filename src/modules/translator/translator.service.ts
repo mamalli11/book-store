@@ -1,5 +1,6 @@
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
@@ -7,7 +8,6 @@ import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { TranslatorEntity } from "./entities/translator.entity";
 import { CreateTranslatorDto } from "./dto/create-translator.dto";
 import { UpdateTranslatorDto } from "./dto/update-translator.dto";
-import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 
 @Injectable()
@@ -16,6 +16,7 @@ export class TranslatorService {
 		@InjectRepository(TranslatorEntity)
 		private translatorRepository: Repository<TranslatorEntity>,
 		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createTranslatorDto: CreateTranslatorDto, file: Express.Multer.File) {
@@ -28,7 +29,11 @@ export class TranslatorService {
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
-		return { message: PublicMessage.CreatedTranslator };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedTranslator", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -44,7 +49,12 @@ export class TranslatorService {
 
 	async findOne(id: number) {
 		const translator = await this.translatorRepository.findOneBy({ id });
-		if (!translator) throw new NotFoundException(NotFoundMessage.NotFoundTranslator);
+		if (!translator)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundTranslator", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return translator;
 	}
 
@@ -72,13 +82,21 @@ export class TranslatorService {
 		if (instagram) updateObject["instagram"] = instagram;
 
 		await this.translatorRepository.update({ id }, updateObject);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async remove(id: number) {
 		const translator = await this.findOne(id);
 		if (translator.imageKey) await this.s3Service.deleteFile(translator.imageKey);
 		await this.translatorRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 }
