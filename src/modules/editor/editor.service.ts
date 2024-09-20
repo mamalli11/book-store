@@ -1,5 +1,6 @@
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
@@ -7,7 +8,6 @@ import { EditorEntity } from "./entities/editor.entity";
 import { CreateEditorDto } from "./dto/create-editor.dto";
 import { UpdateEditorDto } from "./dto/update-editor.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
-import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 
 @Injectable()
@@ -15,6 +15,7 @@ export class EditorService {
 	constructor(
 		@InjectRepository(EditorEntity) private editorRepository: Repository<EditorEntity>,
 		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createEditorDto: CreateEditorDto, file: Express.Multer.File) {
@@ -27,7 +28,11 @@ export class EditorService {
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
-		return { message: PublicMessage.CreatedTranslator };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedTranslator", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -43,7 +48,12 @@ export class EditorService {
 
 	async findOne(id: number) {
 		const editor = await this.editorRepository.findOneBy({ id });
-		if (!editor) throw new NotFoundException(NotFoundMessage.NotFoundEditor);
+		if (!editor)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundEditor", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return editor;
 	}
 
@@ -71,13 +81,17 @@ export class EditorService {
 		if (instagram) updateObject["instagram"] = instagram;
 
 		await this.editorRepository.update({ id }, updateObject);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async remove(id: number) {
 		const editor = await this.findOne(id);
 		if (editor.imageKey) await this.s3Service.deleteFile(editor.imageKey);
 		await this.editorRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", { lang: I18nContext.current().lang }),
+		};
 	}
 }
