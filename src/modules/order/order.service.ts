@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { DataSource, DeepPartial, Repository } from "typeorm";
 import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from "@nestjs/common";
 
@@ -19,6 +20,7 @@ export class OrderService {
 		@InjectRepository(OrderItemEntity) private orderItemRepository: Repository<OrderItemEntity>,
 		@InjectRepository(UserAddressEntity)
 		private userAddressRepository: Repository<UserAddressEntity>,
+		private readonly i18n: I18nService,
 		private dataSource: DataSource,
 	) {}
 
@@ -32,7 +34,12 @@ export class OrderService {
 
 			const { id: userId } = this.req.user;
 			const address = await this.userAddressRepository.findOneBy({ id: addressId, userId });
-			if (!address) throw new NotFoundException("not found address");
+			if (!address)
+				throw new NotFoundException(
+					this.i18n.t("tr.NotFoundMessage.NotFoundAddress", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 
 			const { bookList, payment_amount, total_amount, total_discount_amount } = basket;
 			let order = queryRunner.manager.create(OrderEntity, {
@@ -59,7 +66,9 @@ export class OrderService {
 			if (orderItems.length > 0) {
 				await queryRunner.manager.insert(OrderItemEntity, orderItems);
 			} else {
-				throw new BadRequestException("your book list is empty");
+				throw new BadRequestException(
+					this.i18n.t("tr.BasketMessage.BasketIsEmpty", { lang: I18nContext.current().lang }),
+				);
 			}
 
 			await queryRunner.commitTransaction();
@@ -74,7 +83,10 @@ export class OrderService {
 
 	async findOne(id: number) {
 		const order = await this.orderRepository.findOneBy({ id });
-		if (!order) throw new NotFoundException();
+		if (!order)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundOrder", { lang: I18nContext.current().lang }),
+			);
 		return order;
 	}
 
