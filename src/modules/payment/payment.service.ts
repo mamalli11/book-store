@@ -11,6 +11,7 @@ import { randomInt } from "crypto";
 import { Repository } from "typeorm";
 import { REQUEST } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 
 import { PaymentDto } from "./dto/payment.dto";
 import { OrderService } from "../order/order.service";
@@ -25,6 +26,7 @@ export class PaymentService {
 		@InjectRepository(PaymentEntity) private paymentRepository: Repository<PaymentEntity>,
 		@Inject(REQUEST) private req: Request,
 		private orderService: OrderService,
+		private readonly i18n: I18nService,
 		private basketService: BasketService,
 		private zarinpalService: ZarinpalService,
 	) {}
@@ -52,14 +54,28 @@ export class PaymentService {
 			await this.paymentRepository.save(payment);
 			return { gatewayURL, code };
 		}
-		return { message: "payment successfully" };
+		return {
+			message: this.i18n.t("tr.BasketMessage.PaymentAlreadySuccessfully", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async verify(authority: string, status: string) {
 		const payment = await this.paymentRepository.findOneBy({ authority });
 
-		if (!payment) throw new NotFoundException();
-		if (payment.status) throw new ConflictException("already verified");
+		if (!payment)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundPyment", {
+					lang: I18nContext.current().lang,
+				}),
+			);
+		if (payment.status)
+			throw new ConflictException(
+				this.i18n.t("tr.BasketMessage.PaymentHasAlreadyConfirmed", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		if (status === "OK") {
 			await this.basketService.getBasketDiscount(payment.userId);
 			const order = await this.orderService.findOne(payment.orderId);
@@ -69,9 +85,17 @@ export class PaymentService {
 			await this.basketService.basketDisable(order.userId);
 			payment.status = true;
 		} else {
-			throw new BadRequestException("Payment failed");
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.PaymentFailed", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		}
 		await this.paymentRepository.save(payment);
-		return { message: "Payment was successful" };
+		return {
+			message: this.i18n.t("tr.BasketMessage.PaymentSuccessfully", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 }
