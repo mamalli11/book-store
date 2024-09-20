@@ -10,7 +10,8 @@
 		"InvalidCategories": "Please enter valid categories",
 		"InValidLoginData": "The login information provided is incorrect",
 		"InValidRegisterData": "The registration information provided is incorrect",
-		"OutOfStockOrInactive": "The item is out of stock or inactive"
+		"OutOfStockOrInactive": "The product is out of stock or inactive",
+		"AmountOrPercent": "You must enter either the amount or percentage field"
 	},
 	"AuthMessage": {
 		"TryAgain": "Please try again",
@@ -37,17 +38,19 @@
 		"NotFoundDiscount": "Discount code not found",
 		"NotFoundAddress": "Address not found",
 		"NotFoundComment": "Comment not found",
-		"NotFoundBookSlug": "Book with this slug not found",
-		"NotFoundCategoryBySlug": "Category with this slug not found",
-		"NotFoundCategoryParent": "Parent category not found"
+		"NotFoundBookSlug": "Book with this slug was not found",
+		"NotFoundCategoryBySlug": "Category with this slug was not found",
+		"NotFoundCategoryParent": "Parent category not found",
+		"NotFoundOrder": "Order not found",
+		"NotFoundPyment": "Payment not found"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "The email entered is incorrect",
 		"InvalidPhoneFormat": "The phone number entered is incorrect",
 		"InvalidWorkPhoneFormat": "The landline number entered is incorrect",
-		"InvalidImageFormat": "The selected image format must be jpg or png",
-		"InvalidPasswordFormat": "The password must be at least 8 characters long and contain uppercase and lowercase letters and numbers",
-		"InvalidEmailOrPhone": "The email or phone number entered is incorrect"
+		"InvalidImageFormat": "The selected image format must be either jpg or png",
+		"InvalidPasswordFormat": "The password must be at least 8 characters long and include uppercase, lowercase letters, and numbers",
+		"InvalidEmailOrPhone": "The entered email or phone number is incorrect"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "Discount code removed",
@@ -59,7 +62,14 @@
 		"NotFoundDiscount": "The discount code was not found in this basket",
 		"RemoveItemToBasket": "The item has been removed from the basket",
 		"LimitFullDiscount": "The usage limit for this discount code has been reached",
-		"NotFoundItemFromBasket": "The item is not available in the basket"
+		"NotFoundItemFromBasket": "The desired item is not available in the shopping cart",
+		"BasketIsEmpty": "Your shopping cart is empty",
+		"PaymentSuccessfully": "Payment was successful",
+		"PaymentFailed": "Payment failed",
+		"PaymentCanceled": "Payment was canceled",
+		"PaymentError": "An error occurred during payment",
+		"PaymentAlreadySuccessfully": "Payment has already been successfully made",
+		"PaymentHasAlreadyConfirmed": "Payment has already been confirmed"
 	},
 	"PublicMessage": {
 		"Created": "Successfully created",
@@ -91,6 +101,7 @@
 		"Username": "The username is already in use by someone else",
 		"CategoryTitle": "The category title has already been registered",
 		"CategorySlug": "The category slug has already been registered",
-		"alreadyExistBookSlug": "The book slug has already been registered"
+		"AlreadyExistBookSlug": "The book slug is already registered",
+		"AlreadyExistDiscountCode": "The discount code is already registered"
 	}
 }

@@ -10,7 +10,8 @@
 		"InvalidCategories": "يرجى إدخال الفئات بشكل صحيح",
 		"InValidLoginData": "معلومات تسجيل الدخول غير صحيحة",
 		"InValidRegisterData": "معلومات التسجيل غير صحيحة",
-		"OutOfStockOrInactive": "السلعة نفدت أو غير مفعلة"
+		"OutOfStockOrInactive": "المنتج غير متوفر أو غير نشط",
+		"AmountOrPercent": "يجب إدخال حقل الكمية أو النسبة"
 	},
 	"AuthMessage": {
 		"TryAgain": "يرجى المحاولة مرة أخرى",
@@ -35,13 +36,21 @@
 		"NotFoundTranslator": "لم يتم العثور على المترجم",
 		"NotFoundCategory": "لم يتم العثور على الفئة",
 		"NotFoundDiscount": "لم يتم العثور على كود الخصم",
-		"NotFoundAddress": "لم يتم العثور على العنوان"
+		"NotFoundAddress": "لم يتم العثور على العنوان",
+		"NotFoundComment": "التعليق غير موجود",
+		"NotFoundBookSlug": "الكتاب بهذا السلاج غير موجود",
+		"NotFoundCategoryBySlug": "التصنيف بهذا السلاج غير موجود",
+		"NotFoundCategoryParent": "التصنيف الرئيسي غير موجود",
+		"NotFoundOrder": "الطلب غير موجود",
+		"NotFoundPyment": "الدفع غير موجود"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "البريد الإلكتروني المدخل غير صحيح",
 		"InvalidPhoneFormat": "رقم الهاتف المدخل غير صحيح",
 		"InvalidWorkPhoneFormat": "رقم الهاتف الثابت المدخل غير صحيح",
-		"InvalidImageFormat": "يجب أن يكون تنسيق الصورة المحددة jpg أو png"
+		"InvalidImageFormat": "يجب أن تكون صيغة الصورة المختارة من نوع jpg أو png",
+		"InvalidPasswordFormat": "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل وتشمل حروفًا كبيرة وصغيرة وأرقامًا",
+		"InvalidEmailOrPhone": "البريد الإلكتروني أو رقم الهاتف الذي أدخلته غير صحيح"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "تم حذف كود الخصم",
@@ -53,7 +62,14 @@
 		"NotFoundDiscount": "لم يتم العثور على كود الخصم في هذه السلة",
 		"RemoveItemToBasket": "تمت إزالة العنصر من السلة",
 		"LimitFullDiscount": "تم الوصول إلى الحد الأقصى لاستخدام كود الخصم",
-		"NotFoundItemFromBasket": "العنصر غير موجود في السلة"
+		"NotFoundItemFromBasket": "العنصر المطلوب غير موجود في سلة التسوق",
+		"BasketIsEmpty": "سلة التسوق الخاصة بك فارغة",
+		"PaymentSuccessfully": "تم الدفع بنجاح",
+		"PaymentFailed": "فشل الدفع",
+		"PaymentCanceled": "تم إلغاء الدفع",
+		"PaymentError": "حدث خطأ أثناء الدفع",
+		"PaymentAlreadySuccessfully": "تم الدفع بنجاح مسبقًا",
+		"PaymentHasAlreadyConfirmed": "تم تأكيد الدفع مسبقًا"
 	},
 	"PublicMessage": {
 		"Created": "تم الإنشاء بنجاح",
@@ -84,6 +100,8 @@
 		"Phone": "رقم الهاتف مستخدم من قبل شخص آخر",
 		"Username": "اسم المستخدم مستخدم من قبل شخص آخر",
 		"CategoryTitle": "تم تسجيل عنوان الفئة من قبل",
-		"CategorySlug": "تم تسجيل slug الفئة من قبل"
+		"CategorySlug": "تم تسجيل slug الفئة من قبل",
+		"AlreadyExistBookSlug": "تم تسجيل سلاج الكتاب مسبقًا",
+		"AlreadyExistDiscountCode": "تم تسجيل كود الخصم مسبقًا"
 	}
 }

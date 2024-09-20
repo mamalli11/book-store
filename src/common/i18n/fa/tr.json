@@ -10,7 +10,8 @@
 		"InvalidCategories": "دسته‌بندی‌ها را به درستی وارد کنید",
 		"InValidLoginData": "اطلاعات ارسال شده برای ورود صحیح نمی‌باشد",
 		"InValidRegisterData": "اطلاعات ارسال شده برای ثبت‌نام صحیح نمی‌باشد",
-		"OutOfStockOrInactive": "موجودی کالا تمام شده است یا کالا غیرفعال است"
+		"OutOfStockOrInactive": "موجودی کالا تمام شده است یا کالا غیرفعال است",
+		"AmountOrPercent": "باید یکی از فیلدهای مقدار یا درصد را وارد کنید"
 	},
 	"AuthMessage": {
 		"TryAgain": "دوباره تلاش کنید",
@@ -35,13 +36,21 @@
 		"NotFoundTranslator": "مترجم یافت نشد",
 		"NotFoundCategory": "دسته‌بندی یافت نشد",
 		"NotFoundDiscount": "کد تخفیف یافت نشد",
-		"NotFoundAddress": "آدرس یافت نشد"
+		"NotFoundAddress": "آدرس یافت نشد",
+		"NotFoundComment": "نظر یافت نشد",
+		"NotFoundBookSlug": "کتاب با این اسلاگ یافت نشد",
+		"NotFoundCategoryBySlug": "دسته‌بندی با این اسلاگ یافت نشد",
+		"NotFoundCategoryParent": "دسته‌بندی والد یافت نشد",
+		"NotFoundOrder": "سفارش یافت نشد",
+		"NotFoundPyment": "پرداخت یافت نشد"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "ایمیل وارد شده صحیح نمی‌باشد",
 		"InvalidPhoneFormat": "شماره موبایل وارد شده صحیح نمی‌باشد",
 		"InvalidWorkPhoneFormat": "شماره ثابت وارد شده صحیح نمی‌باشد",
-		"InvalidImageFormat": "فرمت تصویر انتخاب شده باید از نوع jpg و png باشد"
+		"InvalidImageFormat": "فرمت تصویر انتخاب شده باید از نوع jpg و png باشد",
+		"InvalidPasswordFormat": "رمز عبور باید حداقل ۸ کاراکتر و شامل حروف بزرگ و کوچک و عدد باشد",
+		"InvalidEmailOrPhone": "ایمیل یا شماره موبایل وارد شده صحیح نمی‌باشد"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "کد تخفیف حذف شد",
@@ -53,7 +62,14 @@
 		"NotFoundDiscount": "چنین کد تخفیفی در این سبد پیدا نشد",
 		"RemoveItemToBasket": "آیتم مورد نظر از سبد خرید حذف شد",
 		"LimitFullDiscount": "ظرفیت استفاده از این کد تخفیف پر شده است",
-		"NotFoundItemFromBasket": "آیتم موردنظر در سبد خرید موجود نیست"
+		"NotFoundItemFromBasket": "آیتم موردنظر در سبد خرید موجود نیست",
+		"BasketIsEmpty": "سبد خرید شما خالی است",
+		"PaymentSuccessfully": "پرداخت با موفقیت انجام شد",
+		"PaymentFailed": "پرداخت ناموفق بود",
+		"PaymentCanceled": "پرداخت لغو شد",
+		"PaymentError": "خطایی در پرداخت رخ داده است",
+		"PaymentAlreadySuccessfully": "پرداخت قبلا با موفقیت انجام شده است",
+		"PaymentHasAlreadyConfirmed": "پرداخت قبلا تایید شده است"
 	},
 	"PublicMessage": {
 		"Created": "با موفقیت ایجاد شد",
@@ -84,6 +100,8 @@
 		"Phone": "موبایل توسط شخص دیگری استفاده شده است",
 		"Username": "نام کاربری توسط شخص دیگری استفاده شده است",
 		"CategoryTitle": "عنوان دسته‌بندی قبلا ثبت شده است",
-		"CategorySlug": "اسلاگ دسته‌بندی قبلا ثبت شده است"
+		"CategorySlug": "اسلاگ دسته‌بندی قبلا ثبت شده است",
+		"AlreadyExistBookSlug": "اسلاگ کتاب قبلا ثبت شده است",
+		"AlreadyExistDiscountCode": "کد تخفیف قبلا ثبت شده است"
 	}
 }

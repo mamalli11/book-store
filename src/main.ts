@@ -30,7 +30,7 @@ async function bootstrap() {
 				},
 			},
 			frameguard: {
-				action: "sameorigin", // اگر نیاز به فریم‌ها دارید، می‌توانید از 'sameorigin' استفاده کنید
+				action: "sameorigin",
 			},
 			referrerPolicy: { policy: "strict-origin-when-cross-origin" }, // سیاست ارجاع برای امنیت بیشتر
 			hsts: {

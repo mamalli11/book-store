@@ -10,7 +10,8 @@
 		"InvalidCategories": "Veuillez entrer des catégories valides",
 		"InValidLoginData": "Les informations de connexion fournies sont incorrectes",
 		"InValidRegisterData": "Les informations d'inscription fournies sont incorrectes",
-		"OutOfStockOrInactive": "L'article est en rupture de stock ou inactif"
+		"OutOfStockOrInactive": "Le produit est en rupture de stock ou inactif",
+		"AmountOrPercent": "Vous devez entrer soit le champ du montant, soit celui du pourcentage"
 	},
 	"AuthMessage": {
 		"TryAgain": "Veuillez réessayer",
@@ -35,13 +36,21 @@
 		"NotFoundTranslator": "Traducteur introuvable",
 		"NotFoundCategory": "Catégorie introuvable",
 		"NotFoundDiscount": "Code de réduction introuvable",
-		"NotFoundAddress": "Adresse introuvable"
+		"NotFoundAddress": "Adresse introuvable",
+		"NotFoundComment": "Commentaire introuvable",
+		"NotFoundBookSlug": "Le livre avec ce slug est introuvable",
+		"NotFoundCategoryBySlug": "La catégorie avec ce slug est introuvable",
+		"NotFoundCategoryParent": "Catégorie parente introuvable",
+		"NotFoundOrder": "Commande introuvable",
+		"NotFoundPyment": "Paiement introuvable"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "L'email saisi est incorrect",
 		"InvalidPhoneFormat": "Le numéro de téléphone saisi est incorrect",
 		"InvalidWorkPhoneFormat": "Le numéro de téléphone fixe saisi est incorrect",
-		"InvalidImageFormat": "Le format d'image sélectionné doit être jpg ou png"
+		"InvalidImageFormat": "Le format d'image sélectionné doit être en jpg ou png",
+		"InvalidPasswordFormat": "Le mot de passe doit contenir au moins 8 caractères, avec des majuscules, des minuscules et des chiffres",
+		"InvalidEmailOrPhone": "L'email ou le numéro de téléphone entré est incorrect"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "Code de réduction supprimé",
@@ -53,7 +62,14 @@
 		"NotFoundDiscount": "Le code de réduction n'a pas été trouvé dans ce panier",
 		"RemoveItemToBasket": "L'article a été retiré du panier",
 		"LimitFullDiscount": "La limite d'utilisation de ce code de réduction a été atteinte",
-		"NotFoundItemFromBasket": "L'article n'est pas disponible dans le panier"
+		"NotFoundItemFromBasket": "L'article souhaité n'est pas disponible dans le panier",
+		"BasketIsEmpty": "Votre panier est vide",
+		"PaymentSuccessfully": "Le paiement a réussi",
+		"PaymentFailed": "Le paiement a échoué",
+		"PaymentCanceled": "Le paiement a été annulé",
+		"PaymentError": "Une erreur est survenue lors du paiement",
+		"PaymentAlreadySuccessfully": "Le paiement a déjà été effectué avec succès",
+		"PaymentHasAlreadyConfirmed": "Le paiement a déjà été confirmé"
 	},
 	"PublicMessage": {
 		"Created": "Créé avec succès",
@@ -84,6 +100,8 @@
 		"Phone": "Le numéro de téléphone est déjà utilisé par quelqu'un d'autre",
 		"Username": "Le nom d'utilisateur est déjà utilisé par quelqu'un d'autre",
 		"CategoryTitle": "Le titre de la catégorie a déjà été enregistré",
-		"CategorySlug": "Le slug de la catégorie a déjà été enregistré"
+		"CategorySlug": "Le slug de la catégorie a déjà été enregistré",
+		"AlreadyExistBookSlug": "Le slug du livre est déjà enregistré",
+		"AlreadyExistDiscountCode": "Le code de réduction est déjà enregistré"
 	}
 }

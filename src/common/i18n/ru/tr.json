@@ -10,7 +10,8 @@
 		"InvalidCategories": "Введите корректные категории",
 		"InValidLoginData": "Неверные данные для входа",
 		"InValidRegisterData": "Неверные данные для регистрации",
-		"OutOfStockOrInactive": "Товар закончился или неактивен"
+		"OutOfStockOrInactive": "Товар закончился на складе или неактивен",
+		"AmountOrPercent": "Необходимо ввести либо значение суммы, либо процент"
 	},
 	"AuthMessage": {
 		"TryAgain": "Попробуйте снова",
@@ -35,13 +36,21 @@
 		"NotFoundTranslator": "Переводчик не найден",
 		"NotFoundCategory": "Категория не найдена",
 		"NotFoundDiscount": "Код скидки не найден",
-		"NotFoundAddress": "Адрес не найден"
+		"NotFoundAddress": "Адрес не найден",
+		"NotFoundComment": "Комментарий не найден",
+		"NotFoundBookSlug": "Книга с этим слагом не найдена",
+		"NotFoundCategoryBySlug": "Категория с этим слагом не найдена",
+		"NotFoundCategoryParent": "Родительская категория не найдена",
+		"NotFoundOrder": "Заказ не найден",
+		"NotFoundPyment": "Платеж не найден"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "Неправильный формат электронной почты",
 		"InvalidPhoneFormat": "Неправильный формат номера телефона",
 		"InvalidWorkPhoneFormat": "Неправильный формат рабочего телефона",
-		"InvalidImageFormat": "Выбранное изображение должно быть в формате jpg или png"
+		"InvalidImageFormat": "Выбранный формат изображения должен быть jpg или png",
+		"InvalidPasswordFormat": "Пароль должен содержать не менее 8 символов, включая заглавные и строчные буквы и цифры",
+		"InvalidEmailOrPhone": "Введенный email или номер телефона неверен"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "Код скидки удален",
@@ -53,7 +62,14 @@
 		"NotFoundDiscount": "Код скидки не найден в этой корзине",
 		"RemoveItemToBasket": "Товар удален из корзины",
 		"LimitFullDiscount": "Достигнут лимит использования этого кода скидки",
-		"NotFoundItemFromBasket": "Товар не найден в корзине"
+		"NotFoundItemFromBasket": "Желаемого товара нет в корзине",
+		"BasketIsEmpty": "Ваша корзина пуста",
+		"PaymentSuccessfully": "Платеж прошел успешно",
+		"PaymentFailed": "Платеж не удался",
+		"PaymentCanceled": "Платеж был отменен",
+		"PaymentError": "Произошла ошибка при оплате",
+		"PaymentAlreadySuccessfully": "Платеж уже был успешно произведен",
+		"PaymentHasAlreadyConfirmed": "Платеж уже был подтвержден"
 	},
 	"PublicMessage": {
 		"Created": "Успешно создано",
@@ -84,6 +100,8 @@
 		"Phone": "Номер телефона уже используется другим человеком",
 		"Username": "Имя пользователя уже занято",
 		"CategoryTitle": "Название категории уже зарегистрировано",
-		"CategorySlug": "Slug категории уже зарегистрирован"
+		"CategorySlug": "Slug категории уже зарегистрирован",
+		"AlreadyExistBookSlug": "Слаг книги уже зарегистрирован",
+		"AlreadyExistDiscountCode": "Код скидки уже зарегистрирован"
 	}
 }
