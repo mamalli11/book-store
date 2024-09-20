@@ -27,8 +27,7 @@ export class AuthController {
 	@Get("ref-token")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	refreshToken(@Res() res: Response) {
-		// return this.authService.refreshToken(res);
-		return res.json({ message: "The feature has been disabled" });
+		return this.authService.refreshToken(res);
 	}
 
 	@Get("check-login")

@@ -1,4 +1,4 @@
-import path, { join } from "path";
+import * as path from "path";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -24,13 +24,13 @@ import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } fro
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: join(process.cwd(), ".env"),
+			envFilePath: path.join(process.cwd(), ".env"),
 		}),
 		TypeOrmModule.forRoot(TypeOrmConfig()),
 		I18nModule.forRoot({
 			fallbackLanguage: "en",
 			loaderOptions: {
-				path: path.join(__dirname, "/src/common/i18n"),
+				path: path.join(process.cwd(), "/src/common/i18n"),
 				watch: true,
 			},
 			resolvers: [

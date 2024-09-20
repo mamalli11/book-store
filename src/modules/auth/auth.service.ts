@@ -1,5 +1,6 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { isEmail, isMobilePhone } from "class-validator";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { Repository, EntityManager } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
@@ -26,8 +27,9 @@ export class AuthService {
 		@InjectRepository(ProfileEntity) private profileRepository: Repository<ProfileEntity>,
 		@InjectRepository(OtpEntity) private otpRepository: Repository<OtpEntity>,
 		@Inject(REQUEST) private request: Request,
-		private tokenService: TokenService,
 		private mailService: MailService,
+		private readonly i18n: I18nService,
+		private tokenService: TokenService,
 		private smsIrService: Sms_irService,
 	) {}
 
@@ -45,13 +47,15 @@ export class AuthService {
 		const otp = await this.saveOtp(user.id, method);
 		const token = this.tokenService.createOtpToken({ userId: user.id });
 
-		if (method === AuthMethod.Email) {
-			await this.mailService.verificationMail(user.email, otp.code);
-		}
-		if (method === AuthMethod.Phone) {
-			await this.smsIrService.sendVerificationCode(emailOrPhone, [
-				{ name: "Code", value: otp.code },
-			]);
+		if (process.env.NODE_ENV === "production") {
+			if (method === AuthMethod.Email) {
+				await this.mailService.verificationMail(user.email, otp.code);
+			}
+			if (method === AuthMethod.Phone) {
+				await this.smsIrService.sendVerificationCode(emailOrPhone, [
+					{ name: "Code", value: otp.code },
+				]);
+			}
 		}
 		return { token, code: otp.code };
 	}
@@ -59,7 +63,11 @@ export class AuthService {
 	userValidator(method: AuthMethod, username: string) {
 		if (method === AuthMethod.Email && isEmail(username)) return username;
 		if (method === AuthMethod.Phone && isMobilePhone(username, "fa-IR")) return username;
-		throw new BadRequestException("Invalid email or phone format");
+		throw new BadRequestException(
+			this.i18n.t("tr.ValidationMessage.InvalidEmailOrPhone", {
+				lang: I18nContext.current().lang,
+			}),
+		);
 	}
 
 	async checkExistUser(method: AuthMethod, username: string) {
@@ -82,7 +90,12 @@ export class AuthService {
 	async validateAccessToken(token: string) {
 		const { userId } = this.tokenService.verifyAccessToken(token);
 		const user = await this.userRepository.findOneBy({ id: userId });
-		if (!user) throw new UnauthorizedException(AuthMessage.LoginAgain);
+		if (!user)
+			throw new UnauthorizedException(
+				this.i18n.t("tr.AuthMessage.LoginAgain", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return user;
 	}
 
@@ -147,7 +160,13 @@ export class AuthService {
 				manager.update(OtpEntity, otp.id, { refreshToken }),
 			]);
 
-			return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
+			return this.sendResponse(
+				res,
+				{ accessToken, refreshToken },
+				this.i18n.t("tr.PublicMessage.LoggedIn", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		});
 	}
 
@@ -163,7 +182,13 @@ export class AuthService {
 		const { token: accessToken, refreshToken } = this.tokenService.createAccessToken({ userId });
 		await this.otpRepository.update({ id: userId }, { refreshToken });
 
-		return this.sendResponse(res, { accessToken, refreshToken }, PublicMessage.LoggedIn);
+		return this.sendResponse(
+			res,
+			{ accessToken, refreshToken },
+			this.i18n.t("tr.PublicMessage.LoggedIn", {
+				lang: I18nContext.current().lang,
+			}),
+		);
 	}
 
 	async logout(res: Response, req: Request) {
@@ -177,6 +202,10 @@ export class AuthService {
 			.clearCookie(CookieKeys.AccessToken)
 			.clearCookie(CookieKeys.RefreshToken)
 			.status(200)
-			.json({ message: AuthMessage.LogoutSuccessfully });
+			.json({
+				message: this.i18n.t("tr.AuthMessage.LogoutSuccessfully", {
+					lang: I18nContext.current().lang,
+				}),
+			});
 	}
 }
