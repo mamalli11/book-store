@@ -1,13 +1,13 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeepPartial, Repository } from "typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
 import { WriterEntity } from "./entities/writer.entity";
 import { CreateWriterDto } from "./dto/create-writer.dto";
 import { UpdateWriterDto } from "./dto/update-writer.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
-import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 
 @Injectable()
@@ -15,6 +15,7 @@ export class WriterService {
 	constructor(
 		@InjectRepository(WriterEntity) private writerRepository: Repository<WriterEntity>,
 		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createWriterDto: CreateWriterDto, file: Express.Multer.File) {
@@ -27,7 +28,11 @@ export class WriterService {
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
-		return { message: PublicMessage.CreatedWriter };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedWriter", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -46,7 +51,10 @@ export class WriterService {
 
 	async findOne(id: number) {
 		const writer = await this.writerRepository.findOneBy({ id });
-		if (!writer) throw new NotFoundException(NotFoundMessage.NotFoundWriter);
+		if (!writer)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundWriter", { lang: I18nContext.current().lang }),
+			);
 		return writer;
 	}
 
@@ -77,13 +85,17 @@ export class WriterService {
 		if (instagram) updateObject["instagram"] = instagram;
 
 		await this.writerRepository.save(writer);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async remove(id: number) {
 		const writer = await this.findOne(id);
 		if (writer.imageKey) await this.s3Service.deleteFile(writer.imageKey);
 		await this.writerRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", { lang: I18nContext.current().lang }),
+		};
 	}
 }
