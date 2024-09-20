@@ -2,11 +2,11 @@ import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { Inject, Injectable, NotFoundException, Scope } from "@nestjs/common";
 
 import { UserAddressEntity } from "./entities/address.entity";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
-import { NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 import { CreateUserAddressDto, UpdateUserAddressDto } from "./dto/userAddress.dto";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
 
@@ -16,13 +16,19 @@ export class UserAddressService {
 		@InjectRepository(UserAddressEntity)
 		private userAddressRepository: Repository<UserAddressEntity>,
 		@Inject(REQUEST) private request: Request,
+
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createUserAddressDto: CreateUserAddressDto) {
 		const { id } = this.request.user;
 
 		await this.userAddressRepository.insert({ ...createUserAddressDto, userId: id });
-		return { message: PublicMessage.CreatedAddress };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedAddress", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -42,7 +48,10 @@ export class UserAddressService {
 		const userAddr = await this.userAddressRepository.findOne({
 			where: { userId, id },
 		});
-		if (!userAddr) throw new NotFoundException(NotFoundMessage.NotFoundAddress);
+		if (!userAddr)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundAddress", { lang: I18nContext.current().lang }),
+			);
 		return userAddr;
 	}
 
@@ -60,13 +69,17 @@ export class UserAddressService {
 		if (postal_code) updateObject["postal_code"] = postal_code;
 
 		await this.userAddressRepository.update({ id, userId }, updateObject);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async remove(id: number) {
 		const { id: userId } = this.request.user;
 		await this.findOne(id);
 		await this.userAddressRepository.delete({ userId, id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", { lang: I18nContext.current().lang }),
+		};
 	}
 }
