@@ -2,11 +2,11 @@ import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { IsNull, Not, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import { BooksService } from "../books/books.service";
 import { BasketEntity } from "./entities/basket.entity";
-import { BasketMessage } from "src/common/enums/message.enum";
 import { DiscountService } from "../discount/discount.service";
 import { BasketDto, DiscountBasketDto } from "./dto/basket.dto";
 
@@ -16,6 +16,7 @@ export class BasketService {
 		@InjectRepository(BasketEntity) private basketRepository: Repository<BasketEntity>,
 		@Inject(REQUEST) private req: Request,
 
+		private readonly i18n: I18nService,
 		private booksService: BooksService,
 		private discountService: DiscountService,
 	) {}
@@ -35,7 +36,12 @@ export class BasketService {
 			basketItem = this.basketRepository.create({ bookId, userId });
 		}
 		await this.basketRepository.save(basketItem);
-		return { message: BasketMessage.AddItemToBasket };
+
+		return {
+			message: this.i18n.t("tr.BasketMessage.AddItemToBasket", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async removeFromBasket(basketDto: BasketDto) {
@@ -54,9 +60,17 @@ export class BasketService {
 				basketItem.count -= 1;
 				await this.basketRepository.save(basketItem);
 			}
-			return { message: BasketMessage.RemoveItemToBasket };
+			return {
+				message: this.i18n.t("tr.BasketMessage.RemoveItemToBasket", {
+					lang: I18nContext.current().lang,
+				}),
+			};
 		}
-		throw new NotFoundException(BasketMessage.NotFoundItemFromBasket);
+		throw new NotFoundException(
+			this.i18n.t("tr.BasketMessage.NotFoundItemFromBasket", {
+				lang: I18nContext.current().lang,
+			}),
+		);
 	}
 
 	async getBasket() {
@@ -168,12 +182,25 @@ export class BasketService {
 		const { id: userId } = this.req.user;
 		const discount = await this.discountService.findOneByCode(code);
 
-		if (!discount.active) throw new BadRequestException(BasketMessage.NotActiveDiscount);
+		if (!discount.active)
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.NotActiveDiscount", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		if (discount.limit && discount.limit <= discount.usage) {
-			throw new BadRequestException(BasketMessage.LimitFullDiscount);
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.LimitFullDiscount", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		}
 		if (discount?.expires_in && discount?.expires_in?.getTime() <= new Date().getTime()) {
-			throw new BadRequestException(BasketMessage.ExpiredDiscount);
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.ExpiredDiscount", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		}
 
 		const userBasketDiscount = await this.basketRepository.findOneBy({
@@ -182,7 +209,12 @@ export class BasketService {
 			discountId: discount.id,
 		});
 
-		if (userBasketDiscount) throw new BadRequestException(BasketMessage.AlreadyDiscount);
+		if (userBasketDiscount)
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.AlreadyDiscount", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const generalDiscount = await this.basketRepository.findOne({
 			relations: { discount: true },
@@ -196,14 +228,22 @@ export class BasketService {
 		if (generalDiscount) {
 			console.log(generalDiscount);
 			if (generalDiscount?.discount?.code == code) {
-				throw new BadRequestException(BasketMessage.AlreadyDiscount);
+				throw new BadRequestException(
+					this.i18n.t("tr.BasketMessage.AlreadyDiscount", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 			} else if (generalDiscount?.discount?.code != code) {
 				await this.basketRepository.delete({ discountId: generalDiscount.discountId, userId });
 			}
 		}
 
 		await this.basketRepository.insert({ discountId: discount.id, userId, type: "total" });
-		return { message: BasketMessage.AddedDiscount };
+		return {
+			message: this.i18n.t("tr.BasketMessage.AddedDiscount", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async removeDiscount(discountDto: DiscountBasketDto) {
@@ -215,9 +255,18 @@ export class BasketService {
 			where: { discountId: discount.id, is_active: true },
 		});
 
-		if (!basketDiscount) throw new BadRequestException(BasketMessage.NotFoundDiscount);
+		if (!basketDiscount)
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.NotFoundDiscount", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		await this.basketRepository.delete({ discountId: discount.id, userId });
-		return { message: BasketMessage.RemoveDiscount };
+		return {
+			message: this.i18n.t("tr.BasketMessage.RemoveDiscount", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 }
