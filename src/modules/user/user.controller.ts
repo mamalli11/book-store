@@ -12,12 +12,12 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import { Response } from "express";
+import { I18n, I18nContext } from "nestjs-i18n";
 import { ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { UserService } from "./user.service";
 import { CheckOtpDto } from "../auth/dto/auth.dto";
 import { CookieKeys } from "src/common/enums/cookie.enum";
-import { PublicMessage } from "src/common/enums/message.enum";
 import { CookiesOptionsToken } from "src/common/utils/cookie.util";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
@@ -55,12 +55,16 @@ export class UserController {
 
 	@Patch("/change-email")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	async changeEmail(@Body() emailDto: ChangeEmailDto, @Res() res: Response) {
+	async changeEmail(
+		@Res() res: Response,
+		@I18n() i18n: I18nContext,
+		@Body() emailDto: ChangeEmailDto,
+	) {
 		const { code, token, message } = await this.userService.changeEmail(emailDto.email);
 		if (message) return res.json({ message });
 
 		res.cookie(CookieKeys.EmailOTP, token, CookiesOptionsToken());
-		res.json({ message: PublicMessage.SentOtp, code, token });
+		res.json({ message: i18n.t("PublicMessage.SentOtp"), code, token });
 	}
 
 	@Post("/verify-email-otp")
@@ -71,12 +75,16 @@ export class UserController {
 
 	@Patch("/change-phone")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-	async changePhone(@Body() phoneDto: ChangePhoneDto, @Res() res: Response) {
+	async changePhone(
+		@Res() res: Response,
+		@I18n() i18n: I18nContext,
+		@Body() phoneDto: ChangePhoneDto,
+	) {
 		const { code, token, message } = await this.userService.changePhone(phoneDto.phone);
 		if (message) return res.json({ message });
 
 		res.cookie(CookieKeys.PhoneOTP, token, CookiesOptionsToken());
-		res.json({ message: PublicMessage.SentOtp, code, token });
+		res.json({ message: i18n.t("PublicMessage.SentOtp"), code, token });
 	}
 
 	@Post("/verify-phone-otp")
