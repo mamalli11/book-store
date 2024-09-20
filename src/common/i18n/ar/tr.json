@@ -1,0 +1,89 @@
+{
+	"BadRequestMessage": {
+		"NotOwnerComment": "أنت لست صاحب هذا التعليق",
+		"SomeThingWrong": "حدث خطأ، يرجى المحاولة مرة أخرى",
+		"AlreadyRejected": "تم رفض التعليق المحدد سابقًا",
+		"AlreadyAccepted": "تم قبول التعليق المحدد سابقًا",
+		"InvalidEditors": "يرجى إدخال المحررين بشكل صحيح",
+		"InvalidWriters": "يرجى إدخال الكتاب بشكل صحيح",
+		"InvalidPublishers": "يرجى إدخال الناشرين بشكل صحيح",
+		"InvalidCategories": "يرجى إدخال الفئات بشكل صحيح",
+		"InValidLoginData": "معلومات تسجيل الدخول غير صحيحة",
+		"InValidRegisterData": "معلومات التسجيل غير صحيحة",
+		"OutOfStockOrInactive": "السلعة نفدت أو غير مفعلة"
+	},
+	"AuthMessage": {
+		"TryAgain": "يرجى المحاولة مرة أخرى",
+		"InvalidCode": "الرمز المدخل غير صحيح",
+		"NotFoundAccount": "الحساب غير موجود",
+		"LogoutSuccessfully": "تم تسجيل الخروج بنجاح",
+		"ExpiredToken": "الرمز منتهي الصلاحية، لا تحاول مجددًا",
+		"LoginAgain": "يرجى تسجيل الدخول مجددًا",
+		"LoginIsRequired": "يجب عليك تسجيل الدخول",
+		"DeleteAccount": "تم حذف الحساب بنجاح",
+		"Forbidden": "ليس لديك الإذن للقيام بهذه العملية",
+		"ExpiredCode": "رمز التحقق منتهي الصلاحية، يرجى المحاولة مرة أخرى",
+		"AlreadyExistAccount": "الحساب موجود مسبقًا"
+	},
+	"NotFoundMessage": {
+		"NotFound": "لم يتم العثور على شيء",
+		"NotFoundBook": "لم يتم العثور على الكتاب",
+		"NotFoundUser": "لم يتم العثور على المستخدم",
+		"NotFoundWriter": "لم يتم العثور على الكاتب",
+		"NotFoundEditor": "لم يتم العثور على المحرر",
+		"NotFoundPublisher": "لم يتم العثور على الناشر",
+		"NotFoundTranslator": "لم يتم العثور على المترجم",
+		"NotFoundCategory": "لم يتم العثور على الفئة",
+		"NotFoundDiscount": "لم يتم العثور على كود الخصم",
+		"NotFoundAddress": "لم يتم العثور على العنوان"
+	},
+	"ValidationMessage": {
+		"InvalidEmailFormat": "البريد الإلكتروني المدخل غير صحيح",
+		"InvalidPhoneFormat": "رقم الهاتف المدخل غير صحيح",
+		"InvalidWorkPhoneFormat": "رقم الهاتف الثابت المدخل غير صحيح",
+		"InvalidImageFormat": "يجب أن يكون تنسيق الصورة المحددة jpg أو png"
+	},
+	"BasketMessage": {
+		"RemoveDiscount": "تم حذف كود الخصم",
+		"ExpiredDiscount": "كود الخصم منتهي الصلاحية",
+		"AddedDiscount": "تم تطبيق كود الخصم بنجاح",
+		"AlreadyDiscount": "تم تطبيق كود الخصم مسبقًا",
+		"NotActiveDiscount": "كود الخصم غير مفعل",
+		"AddItemToBasket": "تمت إضافة العنصر إلى السلة",
+		"NotFoundDiscount": "لم يتم العثور على كود الخصم في هذه السلة",
+		"RemoveItemToBasket": "تمت إزالة العنصر من السلة",
+		"LimitFullDiscount": "تم الوصول إلى الحد الأقصى لاستخدام كود الخصم",
+		"NotFoundItemFromBasket": "العنصر غير موجود في السلة"
+	},
+	"PublicMessage": {
+		"Created": "تم الإنشاء بنجاح",
+		"Deleted": "تم الحذف بنجاح",
+		"Inserted": "تم الإدراج بنجاح",
+		"Updated": "تم التحديث بنجاح",
+		"Nothing": "لم يتم تنفيذ أي شيء",
+		"Successfuly": "تم تنفيذ الطلب بنجاح",
+		"SentOtp": "تم إرسال كود الاستخدام لمرة واحدة بنجاح",
+		"LoggedIn": "تم تسجيل الدخول بنجاح",
+		"Bookmark": "تمت إضافة الكتاب إلى القائمة المحفوظة",
+		"UnBookmark": "تمت إزالة الكتاب من القائمة المحفوظة",
+		"Wtr": "تمت إضافة الكتاب إلى قائمة المفضلة",
+		"UnWtr": "تمت إزالة الكتاب من قائمة المفضلة",
+		"LikeComment": "تم إعجاب التعليق بنجاح",
+		"DisLikeComment": "تمت إزالة الإعجاب من التعليق",
+		"CreatedBook": "تم إنشاء الكتاب بنجاح",
+		"CreatedWriter": "تم إنشاء الكاتب بنجاح",
+		"CreatedPublisher": "تم إنشاء الناشر بنجاح",
+		"CreatedTranslator": "تم إنشاء المترجم بنجاح",
+		"CreatedComment": "تم تسجيل تعليقك بنجاح",
+		"CreatedDiscount": "تم إنشاء كود الخصم بنجاح",
+		"CreatedCategory": "تم إنشاء الفئة بنجاح",
+		"CreatedAddress": "تم إنشاء العنوان بنجاح"
+	},
+	"ConflictMessage": {
+		"Email": "البريد الإلكتروني مستخدم من قبل شخص آخر",
+		"Phone": "رقم الهاتف مستخدم من قبل شخص آخر",
+		"Username": "اسم المستخدم مستخدم من قبل شخص آخر",
+		"CategoryTitle": "تم تسجيل عنوان الفئة من قبل",
+		"CategorySlug": "تم تسجيل slug الفئة من قبل"
+	}
+}
