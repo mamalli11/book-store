@@ -357,7 +357,7 @@ export class BooksService {
 			const bk = await this.bookRepository.findOneBy({ slug: updateBookDto.slug });
 			if (bk && bk.id !== id)
 				throw new ConflictException(
-					this.i18n.t("tr.ConflictMessage.alreadyExistBookSlug", {
+					this.i18n.t("tr.ConflictMessage.AlreadyExistBookSlug", {
 						lang: I18nContext.current().lang,
 					}),
 				);
@@ -503,7 +503,7 @@ export class BooksService {
 		const bk = await this.bookRepository.findOneBy({ slug });
 		if (bk)
 			throw new ConflictException(
-				this.i18n.t("tr.ConflictMessage.alreadyExistBookSlug", {
+				this.i18n.t("tr.ConflictMessage.AlreadyExistBookSlug", {
 					lang: I18nContext.current().lang,
 				}),
 			);
