@@ -1,0 +1,89 @@
+{
+	"BadRequestMessage": {
+		"NotOwnerComment": "Vous n'êtes pas le propriétaire de ce commentaire",
+		"SomeThingWrong": "Une erreur s'est produite, veuillez réessayer",
+		"AlreadyRejected": "Le commentaire sélectionné a déjà été rejeté",
+		"AlreadyAccepted": "Le commentaire sélectionné a déjà été accepté",
+		"InvalidEditors": "Veuillez entrer des éditeurs valides",
+		"InvalidWriters": "Veuillez entrer des auteurs valides",
+		"InvalidPublishers": "Veuillez entrer des éditeurs valides",
+		"InvalidCategories": "Veuillez entrer des catégories valides",
+		"InValidLoginData": "Les informations de connexion fournies sont incorrectes",
+		"InValidRegisterData": "Les informations d'inscription fournies sont incorrectes",
+		"OutOfStockOrInactive": "L'article est en rupture de stock ou inactif"
+	},
+	"AuthMessage": {
+		"TryAgain": "Veuillez réessayer",
+		"InvalidCode": "Le code saisi est invalide",
+		"NotFoundAccount": "Compte introuvable",
+		"LogoutSuccessfully": "Déconnexion réussie",
+		"ExpiredToken": "Le jeton a expiré, ne tentez pas",
+		"LoginAgain": "Veuillez vous reconnecter",
+		"LoginIsRequired": "Vous devez vous connecter",
+		"DeleteAccount": "Compte supprimé avec succès",
+		"Forbidden": "Vous n'avez pas la permission d'effectuer cette opération",
+		"ExpiredCode": "Le code de vérification a expiré, veuillez réessayer",
+		"AlreadyExistAccount": "Un compte avec ces informations existe déjà"
+	},
+	"NotFoundMessage": {
+		"NotFound": "Non trouvé",
+		"NotFoundBook": "Livre introuvable",
+		"NotFoundUser": "Utilisateur introuvable",
+		"NotFoundWriter": "Auteur introuvable",
+		"NotFoundEditor": "Éditeur introuvable",
+		"NotFoundPublisher": "Éditeur introuvable",
+		"NotFoundTranslator": "Traducteur introuvable",
+		"NotFoundCategory": "Catégorie introuvable",
+		"NotFoundDiscount": "Code de réduction introuvable",
+		"NotFoundAddress": "Adresse introuvable"
+	},
+	"ValidationMessage": {
+		"InvalidEmailFormat": "L'email saisi est incorrect",
+		"InvalidPhoneFormat": "Le numéro de téléphone saisi est incorrect",
+		"InvalidWorkPhoneFormat": "Le numéro de téléphone fixe saisi est incorrect",
+		"InvalidImageFormat": "Le format d'image sélectionné doit être jpg ou png"
+	},
+	"BasketMessage": {
+		"RemoveDiscount": "Code de réduction supprimé",
+		"ExpiredDiscount": "Le code de réduction a expiré",
+		"AddedDiscount": "Code de réduction appliqué avec succès",
+		"AlreadyDiscount": "Le code de réduction a déjà été appliqué",
+		"NotActiveDiscount": "Le code de réduction est désactivé",
+		"AddItemToBasket": "L'article a été ajouté au panier",
+		"NotFoundDiscount": "Le code de réduction n'a pas été trouvé dans ce panier",
+		"RemoveItemToBasket": "L'article a été retiré du panier",
+		"LimitFullDiscount": "La limite d'utilisation de ce code de réduction a été atteinte",
+		"NotFoundItemFromBasket": "L'article n'est pas disponible dans le panier"
+	},
+	"PublicMessage": {
+		"Created": "Créé avec succès",
+		"Deleted": "Supprimé avec succès",
+		"Inserted": "Inséré avec succès",
+		"Updated": "Mis à jour avec succès",
+		"Nothing": "Aucune action n'a été effectuée",
+		"Successfuly": "Demande exécutée avec succès",
+		"SentOtp": "OTP envoyé avec succès",
+		"LoggedIn": "Connexion réussie",
+		"Bookmark": "Le livre a été ajouté à la liste des favoris",
+		"UnBookmark": "Le livre a été retiré de la liste des favoris",
+		"Wtr": "Le livre a été ajouté à vos favoris",
+		"UnWtr": "Le livre a été retiré de vos favoris",
+		"LikeComment": "Commentaire aimé avec succès",
+		"DisLikeComment": "Votre like a été retiré du commentaire",
+		"CreatedBook": "Livre créé avec succès",
+		"CreatedWriter": "Auteur créé avec succès",
+		"CreatedPublisher": "Éditeur créé avec succès",
+		"CreatedTranslator": "Traducteur créé avec succès",
+		"CreatedComment": "Votre commentaire a été soumis avec succès",
+		"CreatedDiscount": "Code de réduction créé avec succès",
+		"CreatedCategory": "Catégorie créée avec succès",
+		"CreatedAddress": "Adresse créée avec succès"
+	},
+	"ConflictMessage": {
+		"Email": "L'email est déjà utilisé par quelqu'un d'autre",
+		"Phone": "Le numéro de téléphone est déjà utilisé par quelqu'un d'autre",
+		"Username": "Le nom d'utilisateur est déjà utilisé par quelqu'un d'autre",
+		"CategoryTitle": "Le titre de la catégorie a déjà été enregistré",
+		"CategorySlug": "Le slug de la catégorie a déjà été enregistré"
+	}
+}
