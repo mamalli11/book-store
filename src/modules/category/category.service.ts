@@ -1,5 +1,6 @@
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { S3Service } from "../s3/s3.service";
@@ -9,13 +10,13 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { toBoolean, isBoolean } from "src/common/utils/function.utils";
 import { paginationGenerator, paginationSolver } from "src/common/utils/pagination.util";
-import { ConflictMessage, NotFoundMessage, PublicMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class CategoryService {
 	constructor(
 		@InjectRepository(CategoryEntity) private categoryRepository: Repository<CategoryEntity>,
 		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 	) {}
 
 	async create(createCategoryDto: CreateCategoryDto, file: Express.Multer.File) {
@@ -34,7 +35,11 @@ export class CategoryService {
 			imageKey: s3Data?.Key ? s3Data.Key : null,
 		});
 
-		return { message: PublicMessage.CreatedCategory };
+		return {
+			message: this.i18n.t("tr.PublicMessage.CreatedCategory", {
+				lang: I18nContext.current().lang,
+			}),
+		};
 	}
 
 	async findAll(paginationDto: PaginationDto) {
@@ -60,7 +65,12 @@ export class CategoryService {
 
 	async findOneById(id: number) {
 		const category = await this.categoryRepository.findOneBy({ id });
-		if (!category) throw new NotFoundException(NotFoundMessage.NotFoundCategory);
+		if (!category)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundCategory", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return category;
 	}
 
@@ -73,7 +83,12 @@ export class CategoryService {
 			where: { slug },
 			relations: { children: true },
 		});
-		if (!category) throw new NotFoundException("not found this category slug ");
+		if (!category)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundCategoryBySlug", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return { category };
 	}
 
@@ -94,33 +109,50 @@ export class CategoryService {
 		if (show && isBoolean(show)) updateObject["show"] = toBoolean(show);
 		if (parentId && !isNaN(parseInt(parentId.toString()))) {
 			const category = await this.findOneById(+parentId);
-			if (!category) throw new NotFoundException("not found category parent");
+			if (!category)
+				throw new NotFoundException(
+					this.i18n.t("tr.NotFoundMessage.NotFoundCategoryParent", {
+						lang: I18nContext.current().lang,
+					}),
+				);
 			updateObject["parentId"] = category.id;
 		}
 		if (slug) {
 			const category = await this.categoryRepository.findOneBy({ slug });
 			if (category && category.id !== id)
-				throw new ConflictException(ConflictMessage.CategorySlug);
+				throw new ConflictException(
+					this.i18n.t("tr.ConflictMessage.CategorySlug", { lang: I18nContext.current().lang }),
+				);
 			updateObject["slug"] = slug;
 		}
 
 		await this.categoryRepository.update({ id }, updateObject);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async remove(id: number) {
 		const category = await this.findOneById(id);
 		if (category.imageKey) await this.s3Service.deleteFile(category.imageKey);
 		await this.categoryRepository.delete({ id });
-		return { message: PublicMessage.Deleted };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Deleted", { lang: I18nContext.current().lang }),
+		};
 	}
 
 	async checkExistAndResolveTitle(title: string, slug: string) {
 		const category = await this.categoryRepository.findOneBy({ title });
-		if (category) throw new ConflictException(ConflictMessage.CategoryTitle);
+		if (category)
+			throw new ConflictException(
+				this.i18n.t("tr.ConflictMessage.CategoryTitle", { lang: I18nContext.current().lang }),
+			);
 
 		const slugCategory = await this.categoryRepository.findOneBy({ slug });
-		if (slugCategory) throw new ConflictException("slug " + ConflictMessage.CategorySlug);
+		if (slugCategory)
+			throw new ConflictException(
+				this.i18n.t("tr.ConflictMessage.CategorySlug", { lang: I18nContext.current().lang }),
+			);
 
 		return true;
 	}
