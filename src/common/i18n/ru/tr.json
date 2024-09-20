@@ -1,0 +1,89 @@
+{
+	"BadRequestMessage": {
+		"NotOwnerComment": "Вы не владелец этого комментария",
+		"SomeThingWrong": "Произошла ошибка, попробуйте еще раз",
+		"AlreadyRejected": "Выбранный комментарий уже был отклонен",
+		"AlreadyAccepted": "Выбранный комментарий уже был принят",
+		"InvalidEditors": "Введите корректных редакторов",
+		"InvalidWriters": "Введите корректных писателей",
+		"InvalidPublishers": "Введите корректных издателей",
+		"InvalidCategories": "Введите корректные категории",
+		"InValidLoginData": "Неверные данные для входа",
+		"InValidRegisterData": "Неверные данные для регистрации",
+		"OutOfStockOrInactive": "Товар закончился или неактивен"
+	},
+	"AuthMessage": {
+		"TryAgain": "Попробуйте снова",
+		"InvalidCode": "Введенный код недействителен",
+		"NotFoundAccount": "Учетная запись не найдена",
+		"LogoutSuccessfully": "Выход успешно выполнен",
+		"ExpiredToken": "Токен истек, не пытайтесь",
+		"LoginAgain": "Войдите в систему снова",
+		"LoginIsRequired": "Вход в систему обязателен",
+		"DeleteAccount": "Аккаунт успешно удален",
+		"Forbidden": "У вас нет прав для выполнения этой операции",
+		"ExpiredCode": "Код подтверждения истек, попробуйте снова",
+		"AlreadyExistAccount": "Учетная запись с такими данными уже существует"
+	},
+	"NotFoundMessage": {
+		"NotFound": "Ничего не найдено",
+		"NotFoundBook": "Книга не найдена",
+		"NotFoundUser": "Пользователь не найден",
+		"NotFoundWriter": "Писатель не найден",
+		"NotFoundEditor": "Редактор не найден",
+		"NotFoundPublisher": "Издатель не найден",
+		"NotFoundTranslator": "Переводчик не найден",
+		"NotFoundCategory": "Категория не найдена",
+		"NotFoundDiscount": "Код скидки не найден",
+		"NotFoundAddress": "Адрес не найден"
+	},
+	"ValidationMessage": {
+		"InvalidEmailFormat": "Неправильный формат электронной почты",
+		"InvalidPhoneFormat": "Неправильный формат номера телефона",
+		"InvalidWorkPhoneFormat": "Неправильный формат рабочего телефона",
+		"InvalidImageFormat": "Выбранное изображение должно быть в формате jpg или png"
+	},
+	"BasketMessage": {
+		"RemoveDiscount": "Код скидки удален",
+		"ExpiredDiscount": "Код скидки истек",
+		"AddedDiscount": "Код скидки успешно применен",
+		"AlreadyDiscount": "Код скидки уже был применен",
+		"NotActiveDiscount": "Код скидки неактивен",
+		"AddItemToBasket": "Товар добавлен в корзину",
+		"NotFoundDiscount": "Код скидки не найден в этой корзине",
+		"RemoveItemToBasket": "Товар удален из корзины",
+		"LimitFullDiscount": "Достигнут лимит использования этого кода скидки",
+		"NotFoundItemFromBasket": "Товар не найден в корзине"
+	},
+	"PublicMessage": {
+		"Created": "Успешно создано",
+		"Deleted": "Успешно удалено",
+		"Inserted": "Успешно вставлено",
+		"Updated": "Успешно обновлено",
+		"Nothing": "Ничего не сделано",
+		"Successfuly": "Запрос успешно выполнен",
+		"SentOtp": "Одноразовый код успешно отправлен",
+		"LoggedIn": "Вы успешно вошли в аккаунт",
+		"Bookmark": "Книга добавлена в сохраненные",
+		"UnBookmark": "Книга удалена из сохраненных",
+		"Wtr": "Книга добавлена в избранное",
+		"UnWtr": "Книга удалена из избранного",
+		"LikeComment": "Комментарий успешно оценен",
+		"DisLikeComment": "Оценка комментария отменена",
+		"CreatedBook": "Книга успешно создана",
+		"CreatedWriter": "Автор успешно создан",
+		"CreatedPublisher": "Издатель успешно создан",
+		"CreatedTranslator": "Переводчик успешно создан",
+		"CreatedComment": "Ваш комментарий успешно добавлен",
+		"CreatedDiscount": "Код скидки успешно создан",
+		"CreatedCategory": "Категория успешно создана",
+		"CreatedAddress": "Адрес успешно создан"
+	},
+	"ConflictMessage": {
+		"Email": "Электронная почта уже используется другим человеком",
+		"Phone": "Номер телефона уже используется другим человеком",
+		"Username": "Имя пользователя уже занято",
+		"CategoryTitle": "Название категории уже зарегистрировано",
+		"CategorySlug": "Slug категории уже зарегистрирован"
+	}
+}
