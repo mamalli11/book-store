@@ -35,13 +35,19 @@
 		"NotFoundTranslator": "Translator not found",
 		"NotFoundCategory": "Category not found",
 		"NotFoundDiscount": "Discount code not found",
-		"NotFoundAddress": "Address not found"
+		"NotFoundAddress": "Address not found",
+		"NotFoundComment": "Comment not found",
+		"NotFoundBookSlug": "Book with this slug not found",
+		"NotFoundCategoryBySlug": "Category with this slug not found",
+		"NotFoundCategoryParent": "Parent category not found"
 	},
 	"ValidationMessage": {
 		"InvalidEmailFormat": "The email entered is incorrect",
 		"InvalidPhoneFormat": "The phone number entered is incorrect",
 		"InvalidWorkPhoneFormat": "The landline number entered is incorrect",
-		"InvalidImageFormat": "The selected image format must be jpg or png"
+		"InvalidImageFormat": "The selected image format must be jpg or png",
+		"InvalidPasswordFormat": "The password must be at least 8 characters long and contain uppercase and lowercase letters and numbers",
+		"InvalidEmailOrPhone": "The email or phone number entered is incorrect"
 	},
 	"BasketMessage": {
 		"RemoveDiscount": "Discount code removed",
@@ -84,6 +90,7 @@
 		"Phone": "The phone number is already in use by someone else",
 		"Username": "The username is already in use by someone else",
 		"CategoryTitle": "The category title has already been registered",
-		"CategorySlug": "The category slug has already been registered"
+		"CategorySlug": "The category slug has already been registered",
+		"alreadyExistBookSlug": "The book slug has already been registered"
 	}
 }
