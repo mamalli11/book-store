@@ -11,14 +11,8 @@ import { REQUEST } from "@nestjs/core";
 import { isDate } from "class-validator";
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { I18nService, I18nContext } from "nestjs-i18n";
 
-import {
-	AuthMessage,
-	PublicMessage,
-	ConflictMessage,
-	NotFoundMessage,
-	BadRequestMessage,
-} from "src/common/enums/message.enum";
 import { S3Service } from "../s3/s3.service";
 import { UpdateUserDto } from "./dto/profile.dto";
 import { GenderType } from "./enums/profile.enum";
@@ -38,14 +32,15 @@ export class UserService {
 		@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
 		@InjectRepository(ProfileEntity) private profileRepository: Repository<ProfileEntity>,
 		@Inject(REQUEST) private request: Request,
+		private s3Service: S3Service,
 		private authService: AuthService,
 		private tokenService: TokenService,
-		private s3Service: S3Service,
+		private readonly i18n: I18nService,
 	) {}
 
-	profile() {
+	async profile() {
 		const { id } = this.request.user;
-		return this.userRepository
+		return await this.userRepository
 			.createQueryBuilder(EntityName.User)
 			.where({ id })
 			.leftJoinAndSelect("user.profile", "profile")
@@ -85,22 +80,30 @@ export class UserService {
 
 		if (!profileId) await this.userRepository.update({ id: userId }, { profileId: profile.id });
 
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 	async removeAccount() {
 		const { id } = this.request.user;
 		await this.userRepository.delete({ id });
 		await this.profileRepository.delete({ userId: id });
 		await this.otpRepository.delete({ userId: id });
-		return { message: AuthMessage.DeleteAccount };
+		return {
+			message: this.i18n.t("tr.AuthMessage.DeleteAccount", { lang: I18nContext.current().lang }),
+		};
 	}
 	async changeEmail(email: string) {
 		const { id } = this.request.user;
 		const user = await this.userRepository.findOneBy({ email });
 		if (user && user?.id !== id) {
-			throw new ConflictException(ConflictMessage.Email);
+			throw new ConflictException(
+				this.i18n.t("tr.ConflictMessage.Email", { lang: I18nContext.current().lang }),
+			);
 		} else if (user && user.id == id) {
-			return { message: PublicMessage.Updated };
+			return {
+				message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+			};
 		}
 
 		await this.userRepository.update({ id }, { new_email: email });
@@ -111,27 +114,45 @@ export class UserService {
 	async verifyEmail(code: string) {
 		const { id: userId, new_email } = this.request.user;
 		const token = this.request.cookies?.[CookieKeys.EmailOTP];
-		if (!token) throw new BadRequestException(AuthMessage.ExpiredCode);
+		if (!token)
+			throw new BadRequestException(
+				this.i18n.t("tr.AuthMessage.ExpiredCode", { lang: I18nContext.current().lang }),
+			);
 		const { email } = this.tokenService.verifyEmailToken(token);
-		if (email !== new_email) throw new BadRequestException(BadRequestMessage.SomeThingWrong);
+		if (email !== new_email)
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.SomeThingWrong", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const otp = await this.checkOtp(userId, code);
 		if (otp.method !== AuthMethod.Email)
-			throw new BadRequestException(BadRequestMessage.SomeThingWrong);
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.SomeThingWrong", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		await this.userRepository.update(
 			{ id: userId },
 			{ email, verify_email: true, new_email: null },
 		);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 	async changePhone(phone: string) {
 		const { id } = this.request.user;
 		const user = await this.userRepository.findOneBy({ phone });
 		if (user && user?.id !== id) {
-			throw new ConflictException(ConflictMessage.Phone);
+			throw new ConflictException(
+				this.i18n.t("tr.ConflictMessage.Phone", { lang: I18nContext.current().lang }),
+			);
 		} else if (user && user.id == id) {
-			return { message: PublicMessage.Updated };
+			return {
+				message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+			};
 		}
 
 		await this.userRepository.update({ id }, { new_phone: phone });
@@ -142,34 +163,69 @@ export class UserService {
 	async verifyPhone(code: string) {
 		const { id: userId, new_phone } = this.request.user;
 		const token = this.request.cookies?.[CookieKeys.PhoneOTP];
-		if (!token) throw new BadRequestException(AuthMessage.ExpiredCode);
+		if (!token)
+			throw new BadRequestException(
+				this.i18n.t("tr.AuthMessage.ExpiredCode", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		const { phone } = this.tokenService.verifyPhoneToken(token);
-		if (phone !== new_phone) throw new BadRequestException(BadRequestMessage.SomeThingWrong);
+		if (phone !== new_phone)
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.SomeThingWrong", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		const otp = await this.checkOtp(userId, code);
 		if (otp.method !== AuthMethod.Phone)
-			throw new BadRequestException(BadRequestMessage.SomeThingWrong);
+			throw new BadRequestException(
+				this.i18n.t("tr.BadRequestMessage.SomeThingWrong", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
 		await this.userRepository.update(
 			{ id: userId },
 			{ phone, verify_phone: true, new_phone: null },
 		);
-		return { message: PublicMessage.Updated };
+		return {
+			message: this.i18n.t("tr.PublicMessage.Updated", { lang: I18nContext.current().lang }),
+		};
 	}
 	async checkOtp(userId: number, code: string) {
 		const otp = await this.otpRepository.findOneBy({ userId });
-		if (!otp) throw new BadRequestException(NotFoundMessage.NotFound);
+		if (!otp)
+			throw new BadRequestException(
+				this.i18n.t("tr.NotFoundMessage.NotFound", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		const now = new Date();
-		if (otp.expiresIn < now) throw new BadRequestException(AuthMessage.ExpiredCode);
-		if (otp.code !== code) throw new BadRequestException(AuthMessage.TryAgain);
+		if (otp.expiresIn < now)
+			throw new BadRequestException(
+				this.i18n.t("tr.AuthMessage.ExpiredCode", {
+					lang: I18nContext.current().lang,
+				}),
+			);
+		if (otp.code !== code)
+			throw new BadRequestException(
+				this.i18n.t("tr.AuthMessage.TryAgain", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 		return otp;
 	}
 	async userProfile(userId: number) {
-		const { id } = this.request.user;
 		const user = await this.userRepository.findOneBy({ id: userId });
-		if (!user) throw new NotFoundException(NotFoundMessage.NotFoundUser);
+		if (!user)
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundUser", {
+					lang: I18nContext.current().lang,
+				}),
+			);
 
-		return this.userRepository.find({
+		return await this.userRepository.find({
 			where: { id: user.id },
 			relations: {
 				profile: true,
