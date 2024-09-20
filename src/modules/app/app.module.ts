@@ -1,4 +1,4 @@
-import { join } from "path";
+import path, { join } from "path";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -18,6 +18,7 @@ import { DiscountModule } from "../discount/discount.module";
 import { CommentsModule } from "../comments/comments.module";
 import { PublisherModule } from "../publisher/publisher.module";
 import { TranslatorModule } from "../translator/translator.module";
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from "nestjs-i18n";
 
 @Module({
 	imports: [
@@ -26,6 +27,18 @@ import { TranslatorModule } from "../translator/translator.module";
 			envFilePath: join(process.cwd(), ".env"),
 		}),
 		TypeOrmModule.forRoot(TypeOrmConfig()),
+		I18nModule.forRoot({
+			fallbackLanguage: "en",
+			loaderOptions: {
+				path: path.join(__dirname, "/src/common/i18n"),
+				watch: true,
+			},
+			resolvers: [
+				new HeaderResolver(["x-custom-lang"]),
+				new QueryResolver(["lang"]),
+				new AcceptLanguageResolver(),
+			],
+		}),
 		AuthModule,
 		UserModule,
 		OrderModule,
