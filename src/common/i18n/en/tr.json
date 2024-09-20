@@ -1,0 +1,89 @@
+{
+	"BadRequestMessage": {
+		"NotOwnerComment": "You are not the owner of this comment",
+		"SomeThingWrong": "An error occurred, please try again",
+		"AlreadyRejected": "The selected comment has already been rejected",
+		"AlreadyAccepted": "The selected comment has already been accepted",
+		"InvalidEditors": "Please enter valid editors",
+		"InvalidWriters": "Please enter valid writers",
+		"InvalidPublishers": "Please enter valid publishers",
+		"InvalidCategories": "Please enter valid categories",
+		"InValidLoginData": "The login information provided is incorrect",
+		"InValidRegisterData": "The registration information provided is incorrect",
+		"OutOfStockOrInactive": "The item is out of stock or inactive"
+	},
+	"AuthMessage": {
+		"TryAgain": "Please try again",
+		"InvalidCode": "The entered code is invalid",
+		"NotFoundAccount": "Account not found",
+		"LogoutSuccessfully": "Successfully logged out",
+		"ExpiredToken": "Token expired, do not attempt",
+		"LoginAgain": "Please log in again",
+		"LoginIsRequired": "You need to log in",
+		"DeleteAccount": "Account successfully deleted",
+		"Forbidden": "You do not have permission for this operation",
+		"ExpiredCode": "The verification code has expired, please try again",
+		"AlreadyExistAccount": "An account with this information already exists"
+	},
+	"NotFoundMessage": {
+		"NotFound": "Not found",
+		"NotFoundBook": "Book not found",
+		"NotFoundUser": "User not found",
+		"NotFoundWriter": "Writer not found",
+		"NotFoundEditor": "Editor not found",
+		"NotFoundPublisher": "Publisher not found",
+		"NotFoundTranslator": "Translator not found",
+		"NotFoundCategory": "Category not found",
+		"NotFoundDiscount": "Discount code not found",
+		"NotFoundAddress": "Address not found"
+	},
+	"ValidationMessage": {
+		"InvalidEmailFormat": "The email entered is incorrect",
+		"InvalidPhoneFormat": "The phone number entered is incorrect",
+		"InvalidWorkPhoneFormat": "The landline number entered is incorrect",
+		"InvalidImageFormat": "The selected image format must be jpg or png"
+	},
+	"BasketMessage": {
+		"RemoveDiscount": "Discount code removed",
+		"ExpiredDiscount": "Discount code has expired",
+		"AddedDiscount": "Discount code successfully applied",
+		"AlreadyDiscount": "Discount code has already been applied",
+		"NotActiveDiscount": "The discount code has been deactivated",
+		"AddItemToBasket": "The item has been added to the basket",
+		"NotFoundDiscount": "The discount code was not found in this basket",
+		"RemoveItemToBasket": "The item has been removed from the basket",
+		"LimitFullDiscount": "The usage limit for this discount code has been reached",
+		"NotFoundItemFromBasket": "The item is not available in the basket"
+	},
+	"PublicMessage": {
+		"Created": "Successfully created",
+		"Deleted": "Successfully deleted",
+		"Inserted": "Successfully inserted",
+		"Updated": "Successfully updated",
+		"Nothing": "No action taken",
+		"Successfuly": "Request successfully processed",
+		"SentOtp": "OTP successfully sent",
+		"LoggedIn": "Successfully logged into your account",
+		"Bookmark": "The book has been added to saved items",
+		"UnBookmark": "The book has been removed from saved items",
+		"Wtr": "The book has been added to your favorites",
+		"UnWtr": "The book has been removed from your favorites",
+		"LikeComment": "Comment successfully liked",
+		"DisLikeComment": "Your like was removed from the comment",
+		"CreatedBook": "Book successfully created",
+		"CreatedWriter": "Writer successfully created",
+		"CreatedPublisher": "Publisher successfully created",
+		"CreatedTranslator": "Translator successfully created",
+		"CreatedComment": "Your comment has been successfully submitted",
+		"CreatedDiscount": "Discount code successfully created",
+		"CreatedCategory": "Category successfully created",
+		"CreatedAddress": "Address successfully created"
+	},
+	"ConflictMessage": {
+		"Email": "The email is already in use by someone else",
+		"Phone": "The phone number is already in use by someone else",
+		"Username": "The username is already in use by someone else",
+		"CategoryTitle": "The category title has already been registered",
+		"CategorySlug": "The category slug has already been registered"
+	}
+}
