@@ -39,109 +39,62 @@ import { paginationGenerator, paginationSolver } from "src/common/utils/paginati
 @Injectable({ scope: Scope.REQUEST })
 export class BooksService {
 	constructor(
-		@InjectRepository(BookEntity) private bookRepository: Repository<BookEntity>,
+		@InjectRepository(BookEntity) private readonly bookRepository: Repository<BookEntity>,
 		@InjectRepository(BookCategorysEntity)
-		private bookCategorysRepository: Repository<BookCategorysEntity>,
+		private readonly bookCategorysRepository: Repository<BookCategorysEntity>,
 		@InjectRepository(BookEditorsEntity)
-		private bookEditorsRepository: Repository<BookEditorsEntity>,
+		private readonly bookEditorsRepository: Repository<BookEditorsEntity>,
 		@InjectRepository(BookPublishersEntity)
-		private bookPublishersRepository: Repository<BookPublishersEntity>,
+		private readonly bookPublishersRepository: Repository<BookPublishersEntity>,
 		@InjectRepository(BookTranslatorsEntity)
-		private bookTranslatorsRepository: Repository<BookTranslatorsEntity>,
+		private readonly bookTranslatorsRepository: Repository<BookTranslatorsEntity>,
 		@InjectRepository(BookWritersEntity)
-		private bookWriterRepository: Repository<BookWritersEntity>,
+		private readonly bookWriterRepository: Repository<BookWritersEntity>,
 		@InjectRepository(ImagesBookEntity)
-		private imagesBookRepository: Repository<ImagesBookEntity>,
+		private readonly imagesBookRepository: Repository<ImagesBookEntity>,
 		@InjectRepository(BookBookmarkEntity)
-		private bookBookmarkRepository: Repository<BookBookmarkEntity>,
+		private readonly bookBookmarkRepository: Repository<BookBookmarkEntity>,
 		@InjectRepository(BookWantToReadEntity)
-		private wantToReadRepository: Repository<BookWantToReadEntity>,
+		private readonly wantToReadRepository: Repository<BookWantToReadEntity>,
+		@Inject(REQUEST) private readonly request: Request,
 
-		@Inject(REQUEST) private request: Request,
-
-		private s3Service: S3Service,
+		private readonly s3Service: S3Service,
 		private readonly i18n: I18nService,
-		private editorService: EditorService,
-		private writerService: WriterService,
-		private categoryService: CategoryService,
-		private publisherService: PublisherService,
-		private translatorService: TranslatorService,
+		private readonly editorService: EditorService,
+		private readonly writerService: WriterService,
+		private readonly categoryService: CategoryService,
+		private readonly publisherService: PublisherService,
+		private readonly translatorService: TranslatorService,
 	) {}
 
 	async create(createBookDto: CreateBookDto, files: BookImagesType) {
-		const { editorId, writerId, categoryId, publisherId, translatorId, slug } = createBookDto;
+		const { slug } = createBookDto;
 
-		await this.checkExsistSlug(slug ? slug.trim().replaceAll(" ", "_") : null);
-
-		if (createBookDto?.discount && createBookDto.discount != 0) {
-			if (createBookDto.discount < 0 || createBookDto.discount > 100) {
-				throw new BadRequestException("مقدار درصد تخفیف مجاز نیست");
-			}
-		}
-
-		await this.checkExistRelationship({
-			editorId,
-			writerId,
-			categoryId,
-			publisherId,
-			translatorId,
-		});
+		await this.validateBookData(createBookDto);
 
 		const book = await this.bookRepository.save(
 			this.bookRepository.create({
 				...createBookDto,
-				slug: slug
-					? slug.trim().replaceAll(" ", "_")
-					: slugify(createBookDto.name, {
-							replacement: "_", // replace spaces with replacement character, defaults to `-`
-							locale: "fa", // language code of the locale to use
-							trim: true, // trim leading and trailing replacement chars, defaults to `true`
-						}),
+				slug: this.generateSlug(slug, createBookDto.name),
 			}),
 		);
 
 		if (files) {
-			Object.keys(files).map(async (k) => {
-				const imageResult = await this.s3Service.uploadFile(files[k][0], "books");
-				await this.imagesBookRepository.save(
-					this.imagesBookRepository.create({
-						image: imageResult.Location,
-						imageKey: imageResult.Key,
-						bookId: book.id,
-					}),
-				);
-			});
-		}
-
-		if (categoryId) {
-			await this.insertEntities(categoryId, this.bookCategorysRepository, book.id, "categoryId");
-		}
-
-		if (editorId) {
-			await this.insertEntities(editorId, this.bookEditorsRepository, book.id, "editorId");
-		}
-
-		if (publisherId) {
-			await this.insertEntities(
-				publisherId,
-				this.bookPublishersRepository,
-				book.id,
-				"publisherId",
+			await Promise.all(
+				Object.keys(files).map(async (key) => {
+					const imageResult = await this.s3Service.uploadFile(files[key][0], "books");
+					await this.imagesBookRepository.save(
+						this.imagesBookRepository.create({
+							image: imageResult.Location,
+							imageKey: imageResult.Key,
+							bookId: book.id,
+						}),
+					);
+				}),
 			);
 		}
 
-		if (writerId) {
-			await this.insertEntities(writerId, this.bookWriterRepository, book.id, "writerId");
-		}
-
-		if (translatorId) {
-			await this.insertEntities(
-				translatorId,
-				this.bookTranslatorsRepository,
-				book.id,
-				"translatorId",
-			);
-		}
+		await this.insertRelations(createBookDto, book.id);
 
 		return {
 			message: this.i18n.t("tr.PublicMessage.CreatedBook", {
@@ -150,24 +103,62 @@ export class BooksService {
 		};
 	}
 
+	private async validateBookData(createBookDto: CreateBookDto) {
+		await this.checkExistSlug(createBookDto.slug?.trim().replaceAll(" ", "_") || null);
+
+		// بررسی تخفیف
+		if (createBookDto.discount && createBookDto.discount !== 0) {
+			if (createBookDto.discount < 0 || createBookDto.discount > 100) {
+				throw new BadRequestException(
+					this.i18n.t("tr.BadRequestMessage.DiscountPercentageNotAllowed", {
+						lang: I18nContext.current().lang,
+					}),
+				);
+			}
+		}
+	}
+
+	private generateSlug(slug: string, name: string) {
+		return slug
+			? slug.trim().replaceAll(" ", "_")
+			: slugify(name, {
+					replacement: "_",
+					locale: "fa",
+					trim: true,
+				});
+	}
+
+	private async insertRelations(createBookDto: CreateBookDto, bookId: number) {
+		const { categoryId, editorId, publisherId, writerId, translatorId } = createBookDto;
+
+		await Promise.all([
+			this.insertEntities(categoryId, this.bookCategorysRepository, bookId, "categoryId"),
+			this.insertEntities(editorId, this.bookEditorsRepository, bookId, "editorId"),
+			this.insertEntities(publisherId, this.bookPublishersRepository, bookId, "publisherId"),
+			this.insertEntities(writerId, this.bookWriterRepository, bookId, "writerId"),
+			this.insertEntities(translatorId, this.bookTranslatorsRepository, bookId, "translatorId"),
+		]);
+	}
+
 	private async insertEntities(
 		ids: string | string[],
-		repository: any,
+		repository: Repository<any>,
 		bookId: number,
 		entityIdKey: string,
 	) {
 		if (typeof ids === "string") {
 			ids = ids.split(",");
 		}
-		for (const id of ids) {
-			const entity = { bookId, [entityIdKey]: +id };
-			await repository.insert(entity);
-		}
+
+		const entities = ids.map((id) => ({ bookId, [entityIdKey]: +id }));
+		await repository.insert(entities);
 	}
 
 	async findAll(paginationDto: PaginationDto, queryDto: QueryDto) {
 		const { sort, sort_feild } = queryDto;
 		const { limit, page, skip } = paginationSolver(paginationDto);
+
+		// کوئری بهینه‌شده برای بازیابی داده‌ها
 		const [books, count] = await this.bookRepository.findAndCount({
 			where: { status: "public" },
 			relations: {
@@ -182,6 +173,7 @@ export class BooksService {
 				id: true,
 				name: true,
 				enName: true,
+				slug: true,
 				type: true,
 				rating: true,
 				price: true,
@@ -189,59 +181,33 @@ export class BooksService {
 				status: true,
 				is_active: true,
 				yearOfPublication: true,
-				images: {
-					id: true,
-					image: true,
-				},
+				images: { id: true, image: true },
 				writers: {
 					id: true,
-					writer: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
+					writer: { id: true, name: true, enName: true, image: true },
 				},
 				editors: {
 					id: true,
-					editor: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
+					editor: { id: true, name: true, enName: true, image: true },
 				},
 				publishers: {
 					id: true,
-					publisher: {
-						id: true,
-						name: true,
-						enName: true,
-						logo: true,
-					},
+					publisher: { id: true, name: true, enName: true, logo: true },
 				},
 				translators: {
 					id: true,
-					translator: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
+					translator: { id: true, name: true, enName: true, image: true },
 				},
 				categorys: {
 					id: true,
-					category: {
-						id: true,
-						slug: true,
-						title: true,
-					},
+					category: { id: true, slug: true, title: true },
 				},
 			},
 			skip,
 			take: limit,
-			order: { id: "DESC" },
+			order: { [sort_feild || "id"]: sort || "DESC" }, // ترتیب مرتب‌سازی
 		});
+
 		return { pagination: paginationGenerator(count, page, limit), books };
 	}
 
@@ -257,63 +223,26 @@ export class BooksService {
 				translators: { translator: true },
 			},
 			select: {
-				images: {
-					id: true,
-					image: true,
-					imageKey: true,
-				},
-				writers: {
-					id: true,
-					writer: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
-				},
-				editors: {
-					id: true,
-					editor: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
-				},
-				publishers: {
-					id: true,
-					publisher: {
-						id: true,
-						name: true,
-						enName: true,
-						logo: true,
-					},
-				},
+				images: { id: true, image: true, imageKey: true },
+				writers: { id: true, writer: { id: true, name: true, enName: true, image: true } },
+				editors: { id: true, editor: { id: true, name: true, enName: true, image: true } },
+				publishers: { id: true, publisher: { id: true, name: true, enName: true, logo: true } },
 				translators: {
 					id: true,
-					translator: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
+					translator: { id: true, name: true, enName: true, image: true },
 				},
-				categorys: {
-					id: true,
-					category: {
-						id: true,
-						slug: true,
-						title: true,
-					},
-				},
+				categorys: { id: true, category: { id: true, slug: true, title: true } },
 			},
 		});
-		if (!book)
+
+		if (!book) {
 			throw new NotFoundException(
 				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
 					lang: I18nContext.current().lang,
 				}),
 			);
+		}
+
 		await this.bookRepository.update({ id }, { view: book.view + 1 });
 		return book;
 	}
@@ -323,6 +252,7 @@ export class BooksService {
 		const updateObject: DeepPartial<BookEntity> = {};
 		const { editorId, writerId, categoryId, publisherId, translatorId } = updateBookDto;
 
+		// بررسی وجود روابط
 		await this.checkExistRelationship({
 			editorId,
 			writerId,
@@ -333,35 +263,41 @@ export class BooksService {
 
 		if (files.media1) {
 			if (book.images) {
-				Object.keys(book.images).map(async (k) => {
-					await this.s3Service.deleteFile(book.images[k].imageKey);
-					await this.bookRepository.delete({ id: book.images[k].id });
-				});
-			}
-
-			Object.keys(files).map(async (k) => {
-				const imageResult = await this.s3Service.uploadFile(files[k][0], "books");
-				await this.imagesBookRepository.save(
-					this.imagesBookRepository.create({
-						image: imageResult.Location,
-						imageKey: imageResult.Key,
-						bookId: book.id,
+				await Promise.all(
+					book.images.map(async (image) => {
+						await this.s3Service.deleteFile(image.imageKey);
+						await this.imagesBookRepository.delete({ id: image.id });
 					}),
 				);
-			});
+			}
+
+			await Promise.all(
+				Object.keys(files).map(async (k) => {
+					const imageResult = await this.s3Service.uploadFile(files[k][0], "books");
+					await this.imagesBookRepository.save(
+						this.imagesBookRepository.create({
+							image: imageResult.Location,
+							imageKey: imageResult.Key,
+							bookId: book.id,
+						}),
+					);
+				}),
+			);
 		}
 
 		if (updateBookDto.name) updateObject["name"] = updateBookDto.name;
 		if (updateBookDto.enName) updateObject["enName"] = updateBookDto.enName;
 		if (updateBookDto.slug) {
-			const bk = await this.bookRepository.findOneBy({ slug: updateBookDto.slug });
-			if (bk && bk.id !== id)
+			const existingBook = await this.bookRepository.findOneBy({ slug: updateBookDto.slug });
+			if (existingBook && existingBook.id !== id) {
 				throw new ConflictException(
 					this.i18n.t("tr.ConflictMessage.AlreadyExistBookSlug", {
 						lang: I18nContext.current().lang,
 					}),
 				);
-			updateObject["slug"] = updateBookDto.slug;
+			}
+			const name = updateBookDto.name || book.name;
+			updateObject["slug"] = this.generateSlug(name, updateBookDto.slug);
 		}
 		if (updateBookDto.introduction) updateObject["introduction"] = updateBookDto.introduction;
 		if (updateBookDto.ISBN) updateObject["ISBN"] = updateBookDto.ISBN;
@@ -422,15 +358,15 @@ export class BooksService {
 	}
 
 	async remove(id: number) {
-		const { images } = await this.bookRepository.findOne({
+		const book = await this.bookRepository.findOne({
 			where: { id },
 			relations: { images: true },
 		});
 
-		if (images) {
-			Object.keys(images).map(async (k) => {
-				await this.s3Service.deleteFile(images[k].imageKey);
-			});
+		if (book?.images?.length) {
+			for (const image of book.images) {
+				await this.s3Service.deleteFile(image.imageKey);
+			}
 		}
 
 		await this.bookRepository.delete({ id });
@@ -443,12 +379,13 @@ export class BooksService {
 
 	async checkExistBookById(id: number) {
 		const book = await this.bookRepository.findOneBy({ id });
-		if (!book)
+		if (!book) {
 			throw new NotFoundException(
 				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
 					lang: I18nContext.current().lang,
 				}),
 			);
+		}
 		return book;
 	}
 
@@ -459,127 +396,139 @@ export class BooksService {
 			ids: string | string[],
 			serviceMethod: (id: number) => Promise<any>,
 		) => {
-			if (!isArray(ids) && typeof ids === "string") {
+			if (typeof ids === "string") {
 				ids = ids.split(",");
-			} else if (!isArray(ids)) {
-				throw new BadRequestException(
-					this.i18n.t("tr.BadRequestMessage.InvalidCategories", {
-						lang: I18nContext.current().lang,
-					}),
-				);
 			}
 			for (const id of ids) {
 				await serviceMethod(+id);
 			}
 		};
 
-		if (categoryId) {
+		if (categoryId)
 			await processIds(categoryId, this.categoryService.findOneById.bind(this.categoryService));
-		}
-
-		if (editorId) {
-			await processIds(editorId, this.editorService.findOne.bind(this.editorService));
-		}
-
-		if (publisherId) {
+		if (editorId) await processIds(editorId, this.editorService.findOne.bind(this.editorService));
+		if (publisherId)
 			await processIds(publisherId, this.publisherService.findOne.bind(this.publisherService));
-		}
-
-		if (writerId) {
-			await processIds(writerId, this.writerService.findOne.bind(this.writerService));
-		}
-
-		if (translatorId) {
+		if (writerId) await processIds(writerId, this.writerService.findOne.bind(this.writerService));
+		if (translatorId)
 			await processIds(
 				translatorId,
 				this.translatorService.findOne.bind(this.translatorService),
 			);
-		}
 
 		return true;
 	}
 
-	async checkExsistSlug(slug: string) {
-		const bk = await this.bookRepository.findOneBy({ slug });
-		if (bk)
+	async checkExistSlug(slug: string) {
+		const book = await this.bookRepository.findOneBy({ slug });
+		if (book) {
 			throw new ConflictException(
 				this.i18n.t("tr.ConflictMessage.AlreadyExistBookSlug", {
 					lang: I18nContext.current().lang,
 				}),
 			);
+		}
 	}
 
 	async findOneBySlug(slug: string) {
 		const book = await this.bookRepository.findOne({
 			where: { slug },
-			relations: {
-				images: true,
-				writers: { writer: true },
-				editors: { editor: true },
-				categorys: { category: true },
-				publishers: { publisher: true },
-				translators: { translator: true },
-			},
-			select: {
-				images: {
-					id: true,
-					image: true,
-					imageKey: true,
-				},
-				writers: {
-					id: true,
-					writer: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
-				},
-				editors: {
-					id: true,
-					editor: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
-				},
-				publishers: {
-					id: true,
-					publisher: {
-						id: true,
-						name: true,
-						enName: true,
-						logo: true,
-					},
-				},
-				translators: {
-					id: true,
-					translator: {
-						id: true,
-						name: true,
-						enName: true,
-						image: true,
-					},
-				},
-				categorys: {
-					id: true,
-					category: {
-						id: true,
-						slug: true,
-						title: true,
-					},
-				},
-			},
+			relations: ["images", "writers", "editors", "categorys", "publishers", "translators"],
 		});
-		if (!book)
+
+		if (!book) {
 			throw new NotFoundException(
 				this.i18n.t("tr.NotFoundMessage.NotFoundBookSlug", {
 					lang: I18nContext.current().lang,
 				}),
 			);
+		}
+
 		await this.bookRepository.update({ id: book.id }, { view: book.view + 1 });
 		return book;
+	}
+
+	async bookmarkToggle(bookId: number) {
+		const userId = this.request.user.id;
+		await this.checkExistBookById(bookId);
+
+		const bookmark = await this.bookBookmarkRepository.findOneBy({ userId, bookId });
+		let message = this.i18n.t("tr.PublicMessage.Bookmark", { lang: I18nContext.current().lang });
+
+		if (bookmark) {
+			await this.bookBookmarkRepository.delete({ id: bookmark.id });
+			message = this.i18n.t("tr.PublicMessage.UnBookmark", { lang: I18nContext.current().lang });
+		} else {
+			await this.bookBookmarkRepository.insert({ bookId, userId });
+		}
+
+		return { message };
+	}
+
+	async wantToReadToggle(bookId: number) {
+		const userId = this.request.user.id;
+		await this.checkExistBookById(bookId);
+
+		const wtr = await this.wantToReadRepository.findOneBy({ userId, bookId });
+		let message = this.i18n.t("tr.PublicMessage.Wtr", { lang: I18nContext.current().lang });
+
+		if (wtr) {
+			await this.wantToReadRepository.delete({ id: wtr.id });
+			message = this.i18n.t("tr.PublicMessage.UnWtr", { lang: I18nContext.current().lang });
+		} else {
+			await this.wantToReadRepository.insert({ bookId, userId });
+		}
+
+		return { message };
+	}
+
+	async findAllBookmark(paginationDto: PaginationDto) {
+		const userId = this.request.user.id;
+		const { limit, page, skip } = paginationSolver(paginationDto);
+
+		const [bookmarks, count] = await this.bookBookmarkRepository.findAndCount({
+			where: { userId },
+			relations: ["book", "book.images"],
+			skip,
+			take: limit,
+			order: { id: "DESC" },
+		});
+
+		return { pagination: paginationGenerator(count, page, limit), bookmarks };
+	}
+
+	async findAllWantToRead(paginationDto: PaginationDto) {
+		const userId = this.request.user.id;
+		const { limit, page, skip } = paginationSolver(paginationDto);
+
+		const [wtrs, count] = await this.wantToReadRepository.findAndCount({
+			where: { userId },
+			relations: ["book", "book.images"],
+			skip,
+			take: limit,
+			order: { id: "DESC" },
+		});
+
+		return { pagination: paginationGenerator(count, page, limit), wtrs };
+	}
+
+	async decrementStockCount(id: number) {
+		const book = await this.bookRepository.findOneBy({ id });
+		if (!book) {
+			throw new NotFoundException(
+				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
+					lang: I18nContext.current().lang,
+				}),
+			);
+		}
+
+		book.stockCount -= 1;
+		if (book.stockCount <= 0) {
+			book.is_active = false;
+			book.status = "endOfInventory";
+		}
+
+		await this.bookRepository.save(book);
 	}
 
 	async getOne(id: number) {
@@ -591,108 +540,5 @@ export class BooksService {
 				}),
 			);
 		return book;
-	}
-
-	async bookmarkToggle(bookId: number) {
-		const { id: userId } = this.request.user;
-		await this.checkExistBookById(bookId);
-		const isBookmarked = await this.bookBookmarkRepository.findOneBy({ userId, bookId });
-		let message = this.i18n.t("tr.PublicMessage.Bookmark", {
-			lang: I18nContext.current().lang,
-		});
-		if (isBookmarked) {
-			await this.bookBookmarkRepository.delete({ id: isBookmarked.id });
-			message = this.i18n.t("tr.PublicMessage.UnBookmark", {
-				lang: I18nContext.current().lang,
-			});
-		} else {
-			await this.bookBookmarkRepository.insert({ bookId, userId });
-		}
-		return { message };
-	}
-
-	async WantToReadToggle(bookId: number) {
-		const { id: userId } = this.request.user;
-		await this.checkExistBookById(bookId);
-		const isWTR = await this.wantToReadRepository.findOneBy({ userId, bookId });
-		let message = this.i18n.t("tr.PublicMessage.Wtr", {
-			lang: I18nContext.current().lang,
-		});
-		if (isWTR) {
-			await this.wantToReadRepository.delete({ id: isWTR.id });
-			message = this.i18n.t("tr.PublicMessage.UnWtr", {
-				lang: I18nContext.current().lang,
-			});
-		} else {
-			await this.wantToReadRepository.insert({ bookId, userId });
-		}
-		return { message };
-	}
-
-	async findAllBookmark(paginationDto: PaginationDto) {
-		const { id: userId } = this.request.user;
-		const { limit, page, skip } = paginationSolver(paginationDto);
-		const [bookBookmark, count] = await this.bookBookmarkRepository.findAndCount({
-			where: { userId },
-			relations: {
-				book: { images: true },
-			},
-			select: {
-				userId: false,
-				book: {
-					name: true,
-					enName: true,
-					images: true,
-					price: true,
-					discount: true,
-				},
-			},
-			skip,
-			take: limit,
-			order: { id: "DESC" },
-		});
-		return { pagination: paginationGenerator(count, page, limit), bookBookmark };
-	}
-
-	async findAllWantToRead(paginationDto: PaginationDto) {
-		const { id: userId } = this.request.user;
-		const { limit, page, skip } = paginationSolver(paginationDto);
-
-		const [wtrs, count] = await this.wantToReadRepository.findAndCount({
-			where: { userId },
-			relations: {
-				book: { images: true },
-			},
-			select: {
-				userId: false,
-				book: {
-					name: true,
-					enName: true,
-					images: true,
-					price: true,
-					discount: true,
-				},
-			},
-			skip,
-			take: limit,
-			order: { id: "DESC" },
-		});
-		return { pagination: paginationGenerator(count, page, limit), wtrs };
-	}
-
-	async decrementStockCount(id: number) {
-		const book = await this.bookRepository.findOneBy({ id });
-		if (!book)
-			throw new NotFoundException(
-				this.i18n.t("tr.NotFoundMessage.NotFoundBook", {
-					lang: I18nContext.current().lang,
-				}),
-			);
-		book.stockCount -= 1;
-		if (book.stockCount <= 0) {
-			book.is_active = false;
-			book.status = "endOfInventory";
-		}
-		await this.bookRepository.save(book);
 	}
 }
