@@ -110,7 +110,7 @@ export class BooksController {
 	@Put("/wtr/:id")
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	WantToReadToggle(@Param("id", ParseIntPipe) id: number) {
-		return this.booksService.WantToReadToggle(id);
+		return this.booksService.wantToReadToggle(id);
 	}
 
 	@Post("/bookmarks")
