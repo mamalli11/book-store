@@ -70,7 +70,9 @@
 		"PaymentCanceled": "Payment was canceled",
 		"PaymentError": "An error occurred during payment",
 		"PaymentAlreadySuccessfully": "Payment has already been successfully made",
-		"PaymentHasAlreadyConfirmed": "Payment has already been confirmed"
+		"PaymentHasAlreadyConfirmed": "Payment has already been confirmed",
+		"GatewayError": "An error occurred while communicating with the payment gateway",
+		"InvalidBasket": "Invalid shopping cart"
 	},
 	"PublicMessage": {
 		"Created": "Successfully created",

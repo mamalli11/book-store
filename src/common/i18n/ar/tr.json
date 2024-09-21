@@ -70,7 +70,9 @@
 		"PaymentCanceled": "تم إلغاء الدفع",
 		"PaymentError": "حدث خطأ أثناء الدفع",
 		"PaymentAlreadySuccessfully": "تم الدفع بنجاح مسبقًا",
-		"PaymentHasAlreadyConfirmed": "تم تأكيد الدفع مسبقًا"
+		"PaymentHasAlreadyConfirmed": "تم تأكيد الدفع مسبقًا",
+		"GatewayError": "حدث خطأ أثناء التواصل مع بوابة الدفع",
+		"InvalidBasket": "سلة التسوق غير صالحة"
 	},
 	"PublicMessage": {
 		"Created": "تم الإنشاء بنجاح",

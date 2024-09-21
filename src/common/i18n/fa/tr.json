@@ -70,7 +70,9 @@
 		"PaymentCanceled": "پرداخت لغو شد",
 		"PaymentError": "خطایی در پرداخت رخ داده است",
 		"PaymentAlreadySuccessfully": "پرداخت قبلا با موفقیت انجام شده است",
-		"PaymentHasAlreadyConfirmed": "پرداخت قبلا تایید شده است"
+		"PaymentHasAlreadyConfirmed": "پرداخت قبلا تایید شده است",
+		"GatewayError": "خطایی در ارتباط با درگاه پرداخت رخ داده است",
+		"InvalidBasket": "سبد خرید نامعتبر است"
 	},
 	"PublicMessage": {
 		"Created": "با موفقیت ایجاد شد",
