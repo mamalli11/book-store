@@ -9,7 +9,6 @@ import {
 import slugify from "slugify";
 import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
-import { isArray } from "class-validator";
 import { DeepPartial, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { I18nService, I18nContext } from "nestjs-i18n";
@@ -58,8 +57,8 @@ export class BooksService {
 		private readonly wantToReadRepository: Repository<BookWantToReadEntity>,
 		@Inject(REQUEST) private readonly request: Request,
 
-		private readonly s3Service: S3Service,
 		private readonly i18n: I18nService,
+		private readonly s3Service: S3Service,
 		private readonly editorService: EditorService,
 		private readonly writerService: WriterService,
 		private readonly categoryService: CategoryService,

@@ -5,6 +5,7 @@ import {
 	ConflictException,
 	NotFoundException,
 	BadRequestException,
+	InternalServerErrorException,
 } from "@nestjs/common";
 import { Request } from "express";
 import { randomInt } from "crypto";
@@ -25,6 +26,7 @@ export class PaymentService {
 	constructor(
 		@InjectRepository(PaymentEntity) private paymentRepository: Repository<PaymentEntity>,
 		@Inject(REQUEST) private req: Request,
+
 		private orderService: OrderService,
 		private readonly i18n: I18nService,
 		private basketService: BasketService,
@@ -35,25 +37,44 @@ export class PaymentService {
 		const { id: userId, email, phone } = this.req.user;
 
 		const basket = await this.basketService.getBasket();
+		if (!basket || basket.payment_amount <= 0) {
+			throw new BadRequestException(
+				this.i18n.t("tr.BasketMessage.InvalidBasket", {
+					lang: I18nContext.current().lang,
+				}),
+			);
+		}
+
 		const order = await this.orderService.create(basket, paymentDto);
+
 		const payment = this.paymentRepository.create({
 			userId,
 			orderId: order.id,
 			amount: basket.payment_amount,
-			status: basket.payment_amount === 0,
+			status: basket.payment_amount === 0, // برای سفارشات رایگان
 			invoice_number: new Date().getTime().toString() + randomInt(10000, 99999).toString(),
 		});
 
 		if (!payment.status) {
-			const { authority, code, gatewayURL } = await this.zarinpalService.sendRequest({
-				amount: basket.payment_amount,
-				description: "PAYMENT ORDER",
-				user: { email, mobile: phone },
-			});
-			payment.authority = authority;
-			await this.paymentRepository.save(payment);
-			return { gatewayURL, code };
+			try {
+				const { authority, code, gatewayURL } = await this.zarinpalService.sendRequest({
+					amount: basket.payment_amount,
+					description: "PAYMENT ORDER",
+					user: { email, mobile: phone },
+				});
+
+				payment.authority = authority;
+				await this.paymentRepository.save(payment);
+				return { gatewayURL, code };
+			} catch (error) {
+				throw new InternalServerErrorException(
+					this.i18n.t("tr.BasketMessage.GatewayError", {
+						lang: I18nContext.current().lang,
+					}),
+				);
+			}
 		}
+
 		return {
 			message: this.i18n.t("tr.BasketMessage.PaymentAlreadySuccessfully", {
 				lang: I18nContext.current().lang,
@@ -63,27 +84,41 @@ export class PaymentService {
 
 	async verify(authority: string, status: string) {
 		const payment = await this.paymentRepository.findOneBy({ authority });
-
-		if (!payment)
+		if (!payment) {
 			throw new NotFoundException(
 				this.i18n.t("tr.NotFoundMessage.NotFoundPyment", {
 					lang: I18nContext.current().lang,
 				}),
 			);
-		if (payment.status)
+		}
+
+		if (payment.status) {
 			throw new ConflictException(
 				this.i18n.t("tr.BasketMessage.PaymentHasAlreadyConfirmed", {
 					lang: I18nContext.current().lang,
 				}),
 			);
+		}
+
 		if (status === "OK") {
-			await this.basketService.getBasketDiscount(payment.userId);
-			const order = await this.orderService.findOne(payment.orderId);
-			order.status = OrderStatus.Paid;
-			await this.orderService.save(order);
-			await this.orderService.updateOrderItem(order.id, OrderItemStatus.Sent);
-			await this.basketService.basketDisable(order.userId);
-			payment.status = true;
+			try {
+				await this.basketService.getBasketDiscount(payment.userId);
+
+				const order = await this.orderService.findOne(payment.orderId);
+				order.status = OrderStatus.Paid;
+				await this.orderService.save(order);
+				await this.orderService.updateOrderItem(order.id, OrderItemStatus.Sent);
+				await this.basketService.basketDisable(order.userId);
+
+				payment.status = true;
+				await this.paymentRepository.save(payment);
+			} catch (error) {
+				throw new InternalServerErrorException(
+					this.i18n.t("tr.BasketMessage.PaymentError", {
+						lang: I18nContext.current().lang,
+					}),
+				);
+			}
 		} else {
 			throw new BadRequestException(
 				this.i18n.t("tr.BasketMessage.PaymentFailed", {
@@ -91,7 +126,7 @@ export class PaymentService {
 				}),
 			);
 		}
-		await this.paymentRepository.save(payment);
+
 		return {
 			message: this.i18n.t("tr.BasketMessage.PaymentSuccessfully", {
 				lang: I18nContext.current().lang,
