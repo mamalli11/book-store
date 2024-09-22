@@ -12,7 +12,8 @@
 		"InValidRegisterData": "اطلاعات ارسال شده برای ثبت‌نام صحیح نمی‌باشد",
 		"OutOfStockOrInactive": "موجودی کالا تمام شده است یا کالا غیرفعال است",
 		"AmountOrPercent": "باید یکی از فیلدهای مقدار یا درصد را وارد کنید",
-		"DiscountPercentageNotAllowed": "درصد تخفیف نباید بیشتر از ۱۰۰ باشد"
+		"DiscountPercentageNotAllowed": "درصد تخفیف نباید بیشتر از ۱۰۰ باشد",
+		"InvalidNameTags": "نام الزامی است و باید حداقل 2 کاراکتر داشته باشد"
 	},
 	"AuthMessage": {
 		"TryAgain": "دوباره تلاش کنید",
@@ -96,7 +97,8 @@
 		"CreatedComment": "نظر شما با موفقیت ثبت شد",
 		"CreatedDiscount": "کد تخفیف با موفقیت ایجاد شد",
 		"CreatedCategory": "دسته‌بندی با موفقیت ایجاد شد",
-		"CreatedAddress": "آدرس با موفقیت ایجاد شد"
+		"CreatedAddress": "آدرس با موفقیت ایجاد شد",
+		"CreatedTags": "برچسب‌ها با موفقیت ایجاد شد"
 	},
 	"ConflictMessage": {
 		"Email": "ایمیل توسط شخص دیگری استفاده شده است",

@@ -12,7 +12,8 @@
 		"InValidRegisterData": "The registration information provided is incorrect",
 		"OutOfStockOrInactive": "The product is out of stock or inactive",
 		"AmountOrPercent": "You must enter either the amount or percentage field",
-		"DiscountPercentageNotAllowed": "The discount percentage should not exceed 100"
+		"DiscountPercentageNotAllowed": "The discount percentage should not exceed 100",
+		"InvalidNameTags": "Name is required and must be at least 2 characters long"
 	},
 	"AuthMessage": {
 		"TryAgain": "Please try again",
@@ -96,7 +97,8 @@
 		"CreatedComment": "Your comment has been successfully submitted",
 		"CreatedDiscount": "Discount code successfully created",
 		"CreatedCategory": "Category successfully created",
-		"CreatedAddress": "Address successfully created"
+		"CreatedAddress": "Address successfully created",
+		"CreatedTags": "Tags successfully created"
 	},
 	"ConflictMessage": {
 		"Email": "The email is already in use by someone else",

@@ -12,7 +12,8 @@
 		"InValidRegisterData": "Неверные данные для регистрации",
 		"OutOfStockOrInactive": "Товар закончился на складе или неактивен",
 		"AmountOrPercent": "Необходимо ввести либо значение суммы, либо процент",
-		"DiscountPercentageNotAllowed": "Процент скидки не должен превышать 100"
+		"DiscountPercentageNotAllowed": "Процент скидки не должен превышать 100",
+		"InvalidNameTags": "Имя обязательно и должно содержать не менее 2 символов"
 	},
 	"AuthMessage": {
 		"TryAgain": "Попробуйте снова",
@@ -96,7 +97,8 @@
 		"CreatedComment": "Ваш комментарий успешно добавлен",
 		"CreatedDiscount": "Код скидки успешно создан",
 		"CreatedCategory": "Категория успешно создана",
-		"CreatedAddress": "Адрес успешно создан"
+		"CreatedAddress": "Адрес успешно создан",
+		"CreatedTags": "Теги успешно созданы"
 	},
 	"ConflictMessage": {
 		"Email": "Электронная почта уже используется другим человеком",

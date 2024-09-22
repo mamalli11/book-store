@@ -12,7 +12,8 @@
 		"InValidRegisterData": "معلومات التسجيل غير صحيحة",
 		"OutOfStockOrInactive": "المنتج غير متوفر أو غير نشط",
 		"AmountOrPercent": "يجب إدخال حقل الكمية أو النسبة",
-		"DiscountPercentageNotAllowed": "نسبة الخصم لا يجب أن تتجاوز 100"
+		"DiscountPercentageNotAllowed": "نسبة الخصم لا يجب أن تتجاوز 100",
+		"InvalidNameTags": "الاسم مطلوب ويجب أن يكون طوله 2 حرف على الأقل"
 	},
 	"AuthMessage": {
 		"TryAgain": "يرجى المحاولة مرة أخرى",
@@ -96,7 +97,8 @@
 		"CreatedComment": "تم تسجيل تعليقك بنجاح",
 		"CreatedDiscount": "تم إنشاء كود الخصم بنجاح",
 		"CreatedCategory": "تم إنشاء الفئة بنجاح",
-		"CreatedAddress": "تم إنشاء العنوان بنجاح"
+		"CreatedAddress": "تم إنشاء العنوان بنجاح",
+		"CreatedTags": "تم إنشاء العلامات بنجاح"
 	},
 	"ConflictMessage": {
 		"Email": "البريد الإلكتروني مستخدم من قبل شخص آخر",
