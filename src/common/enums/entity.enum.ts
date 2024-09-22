@@ -24,4 +24,5 @@ export enum EntityName {
 	BookPublishers = "book_publishers",
 	BookWantToRead = "book_want_to_read",
 	BookTranslators = "book_translators",
+	FrequentSearch = "frequent_searches",
 }
