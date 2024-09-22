@@ -2,12 +2,13 @@ import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { SearchDto } from "./dto/search.dto";
 import { BookEntity } from "../books/entities/book.entity";
 import { WriterEntity } from "../writer/entities/writer.entity";
 import { EditorEntity } from "../editor/entities/editor.entity";
 import { PublisherEntity } from "../publisher/entities/publisher.entity";
+import { FrequentSearchEntity } from "./entities/FrequentSearches.entity";
 import { TranslatorEntity } from "../translator/entities/translator.entity";
-import { SearchDto } from "./dto/search.dto";
 
 @Injectable()
 export class SearchService {
@@ -26,6 +27,9 @@ export class SearchService {
 
 		@InjectRepository(TranslatorEntity)
 		private readonly translatorRepository: Repository<TranslatorEntity>,
+
+		@InjectRepository(FrequentSearchEntity)
+		private readonly frequentSearchRepository: Repository<FrequentSearchEntity>,
 	) {}
 
 	async search(query: string) {
@@ -82,101 +86,136 @@ export class SearchService {
 	}
 
 	async advancedSearch(searchDto: SearchDto) {
-		const { filters, query, order, page, sortBy, pageSize } = searchDto;
+		const { query } = searchDto;
+		let frequentSearch = await this.frequentSearchRepository.findOne({ where: { query } });
 
-		// ساخت شرایط جستجو و پارامترها
-		const searchConditions = this.getSearchConditions("book", query);
-		const searchParams = this.getQueryParams(query);
+		if (frequentSearch) {
+			frequentSearch.searchCount++;
+			await this.frequentSearchRepository.save(frequentSearch);
+		} else {
+			frequentSearch = this.frequentSearchRepository.create({ query, searchCount: 1 });
+			await this.frequentSearchRepository.save(frequentSearch);
+		}
 
-		// جستجوی کتاب‌ها
-		const booksQuery = this.bookRepository
-			.createQueryBuilder("book")
-			.leftJoinAndSelect("book.images", "images")
-			.addSelect(["book.id", "book.name", "book.enName", "book.slug"])
-			.where(searchConditions, searchParams)
-			.andWhere(this.getFilters("book", filters))
-			.orderBy(sortBy ? `book.${sortBy}` : "book.created_at", order)
-			.skip((page - 1) * pageSize)
-			.take(pageSize);
-
-		const books = await booksQuery.getMany();
-
-		// جستجوی نویسندگان
-		const writersQuery = this.writerRepository
-			.createQueryBuilder("writer")
-			.addSelect(["writer.id", "writer.name", "writer.enName"])
-			.where(this.getSearchConditions("writer", query))
-			.andWhere(this.getFilters("writer", filters))
-			.orderBy(sortBy ? `writer.${sortBy}` : "writer.created_at", order)
-			.skip((page - 1) * pageSize)
-			.take(pageSize);
-
-		const writers = await writersQuery.getMany();
-
-		// جستجوی ناشران
-		const publishersQuery = this.publisherRepository
-			.createQueryBuilder("publisher")
-			.addSelect(["publisher.id", "publisher.name", "publisher.enName"])
-			.where(this.getSearchConditions("publisher", query))
-			.andWhere(this.getFilters("publisher", filters))
-			.orderBy(sortBy ? `publisher.${sortBy}` : "publisher.created_at", order)
-			.skip((page - 1) * pageSize)
-			.take(pageSize);
-
-		const publishers = await publishersQuery.getMany();
-
-		// جستجوی ویراستاران
-		const editorsQuery = this.editorRepository
-			.createQueryBuilder("editor")
-			.addSelect(["editor.id", "editor.name", "editor.enName"])
-			.where(this.getSearchConditions("editor", query))
-			.andWhere(this.getFilters("editor", filters))
-			.orderBy(sortBy ? `editor.${sortBy}` : "editor.created_at", order)
-			.skip((page - 1) * pageSize)
-			.take(pageSize);
-
-		const editors = await editorsQuery.getMany();
-
-		// جستجوی مترجمان
-		const translatorsQuery = this.translatorRepository
-			.createQueryBuilder("translator")
-			.addSelect(["translator.id", "translator.name", "translator.enName"])
-			.where(this.getSearchConditions("translator", query))
-			.andWhere(this.getFilters("translator", filters))
-			.orderBy(sortBy ? `translator.${sortBy}` : "translator.created_at", order)
-			.skip((page - 1) * pageSize)
-			.take(pageSize);
-
-		const translators = await translatorsQuery.getMany();
+		const books = await this.searchBooks(searchDto);
+		const writers = await this.searchWriters(searchDto);
+		const publishers = await this.searchPublishers(searchDto);
+		const editors = await this.searchEditors(searchDto);
+		const translators = await this.searchTranslators(searchDto);
 
 		return {
-			books: books.map((book) => ({
-				id: book.id,
-				name: book.name,
-				enName: book.enName,
-				image: book.images, // این قسمت بسته به ساختار فیلد image باید بررسی شود
-			})),
+			books,
 			writers,
-			publishers,
 			editors,
+			publishers,
 			translators,
 		};
 	}
 
-	// ساخت شرایط جستجو
+	private async searchBooks(searchDto: SearchDto) {
+		const { query, filters, page, pageSize, sortBy, order } = searchDto;
+
+		const searchConditions = this.getSearchConditions("book", query);
+		const searchParams = this.getQueryParams(query);
+
+		const booksQuery = this.bookRepository
+			.createQueryBuilder("book")
+			.leftJoinAndSelect("book.images", "images")
+			.select([
+				"book.id",
+				"book.name",
+				"book.enName",
+				"book.slug",
+				"images.image",
+				"book.created_at",
+			])
+			.where(searchConditions, searchParams)
+			.andWhere(this.getFilters("book", filters))
+			.orderBy(sortBy ? `book.${sortBy}` : "book.created_at", order || "DESC")
+			.skip((page - 1) * pageSize)
+			.take(pageSize);
+
+		return await booksQuery.getMany();
+	}
+
+	private async searchWriters(searchDto: SearchDto) {
+		const { query, filters, page, pageSize, sortBy, order } = searchDto;
+
+		const searchParams = this.getQueryParams(query);
+
+		const writersQuery = this.writerRepository
+			.createQueryBuilder("writer")
+			.select(["writer.id", "writer.name", "writer.enName", "writer.created_at"])
+			.where(this.getSearchConditions("writer", query), searchParams)
+			.andWhere(this.getFilters("writer", filters))
+			.orderBy(sortBy ? `writer.${sortBy}` : "writer.created_at", order || "DESC")
+			.skip((page - 1) * pageSize)
+			.take(pageSize);
+
+		return await writersQuery.getMany();
+	}
+
+	private async searchPublishers(searchDto: SearchDto) {
+		const { query, filters, page, pageSize, sortBy, order } = searchDto;
+
+		const searchParams = this.getQueryParams(query);
+
+		const publishersQuery = this.publisherRepository
+			.createQueryBuilder("publisher")
+			.select(["publisher.id", "publisher.name", "publisher.enName", "publisher.created_at"])
+			.where(this.getSearchConditions("publisher", query), searchParams)
+			.andWhere(this.getFilters("publisher", filters))
+			.orderBy(sortBy ? `publisher.${sortBy}` : "publisher.created_at", order || "DESC")
+			.skip((page - 1) * pageSize)
+			.take(pageSize);
+
+		return await publishersQuery.getMany();
+	}
+
+	private async searchEditors(searchDto: SearchDto) {
+		const { query, filters, page, pageSize, sortBy, order } = searchDto;
+
+		const searchParams = this.getQueryParams(query);
+
+		const editorsQuery = this.editorRepository
+			.createQueryBuilder("editor")
+			.select(["editor.id", "editor.name", "editor.enName", "editor.created_at"])
+			.where(this.getSearchConditions("editor", query), searchParams)
+			.andWhere(this.getFilters("editor", filters))
+			.orderBy(sortBy ? `editor.${sortBy}` : "editor.created_at", order || "DESC")
+			.skip((page - 1) * pageSize)
+			.take(pageSize);
+
+		return await editorsQuery.getMany();
+	}
+
+	private async searchTranslators(searchDto: SearchDto) {
+		const { query, filters, page, pageSize, sortBy, order } = searchDto;
+
+		const searchParams = this.getQueryParams(query);
+
+		const translatorsQuery = this.translatorRepository
+			.createQueryBuilder("translator")
+			.select(["translator.id", "translator.name", "translator.enName", "translator.created_at"])
+			.where(this.getSearchConditions("translator", query), searchParams)
+			.andWhere(this.getFilters("translator", filters))
+			.orderBy(sortBy ? `translator.${sortBy}` : "translator.created_at", order || "DESC")
+			.skip((page - 1) * pageSize)
+			.take(pageSize);
+
+		return await translatorsQuery.getMany();
+	}
+
 	private getSearchConditions(alias: string, query: string): string {
 		const words = query.split(" ");
 		return words
 			.map(
 				(word, index) =>
-					`(${alias}.name ILIKE :query${index} OR ${alias}.enName ILIKE :query${index}` +
-					(alias === "book" ? ` OR ${alias}.slug ILIKE :query${index}` : "") +
-					`)`,
+					`(${alias}.name ILIKE :query${index} OR ${alias}.enName ILIKE :query${index} )`,
 			)
 			.join(" AND ");
 	}
 
-	// مقداردهی به پارامترهای جستجو
 	private getQueryParams(query: string): any {
 		const words = query.split(" ");
 		const params = {};
