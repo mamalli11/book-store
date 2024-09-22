@@ -36,7 +36,7 @@ export class SearchService {
 		const books = await this.bookRepository
 			.createQueryBuilder("book")
 			.select(["book.id", "book.name", "book.enName", "book.slug"])
-			.leftJoinAndSelect("book.images", "images") // استفاده از leftJoinAndSelect برای رابطه تصاویر
+			.leftJoinAndSelect("book.images", "images")
 			.where("book.name ILIKE :query", { query: `%${query}%` })
 			.orWhere("book.enName ILIKE :query", { query: `%${query}%` })
 			.orWhere("book.slug ILIKE :query", { query: `%${query}%` })
