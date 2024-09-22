@@ -12,6 +12,7 @@ import { HttpApiModule } from "../http/http.module";
 import { EditorModule } from "../editor/editor.module";
 import { WriterModule } from "../writer/writer.module";
 import { BasketModule } from "../basket/basket.module";
+import { SearchModule } from "../search/search.module";
 import { PaymentModule } from "../payment/payment.module";
 import { TypeOrmConfig } from "src/config/typeorm.config";
 import { CategoryModule } from "../category/category.module";
@@ -43,6 +44,7 @@ import { TranslatorModule } from "../translator/translator.module";
 		UserModule,
 		OrderModule,
 		BooksModule,
+		SearchModule,
 		WriterModule,
 		EditorModule,
 		BasketModule,
