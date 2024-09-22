@@ -20,6 +20,7 @@ import { DiscountModule } from "../discount/discount.module";
 import { CommentsModule } from "../comments/comments.module";
 import { PublisherModule } from "../publisher/publisher.module";
 import { TranslatorModule } from "../translator/translator.module";
+import { TagsModule } from "../tags/tags.module";
 
 @Module({
 	imports: [
@@ -42,6 +43,7 @@ import { TranslatorModule } from "../translator/translator.module";
 		}),
 		AuthModule,
 		UserModule,
+		TagsModule,
 		OrderModule,
 		BooksModule,
 		SearchModule,
