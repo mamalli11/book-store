@@ -9,6 +9,7 @@ import { BooksController } from "./books.controller";
 import { WriterService } from "../writer/writer.service";
 import { EditorService } from "../editor/editor.service";
 import { ImagesBookEntity } from "./entities/images.entity";
+import { BookTagsEntity } from "./entities/bookTags.entity";
 import { CategoryService } from "../category/category.service";
 import { EditorEntity } from "../editor/entities/editor.entity";
 import { WriterEntity } from "../writer/entities/writer.entity";
@@ -32,6 +33,7 @@ import { TranslatorEntity } from "../translator/entities/translator.entity";
 			BookEntity,
 			EditorEntity,
 			WriterEntity,
+			BookTagsEntity,
 			CategoryEntity,
 			PublisherEntity,
 			ImagesBookEntity,

@@ -22,6 +22,7 @@ import { RelationShipType } from "./types/relationship";
 import { EditorService } from "../editor/editor.service";
 import { WriterService } from "../writer/writer.service";
 import { ImagesBookEntity } from "./entities/images.entity";
+import { BookTagsEntity } from "./entities/bookTags.entity";
 import { CategoryService } from "../category/category.service";
 import { BookBookmarkEntity } from "./entities/bookmark.entity";
 import { PublisherService } from "../publisher/publisher.service";
@@ -55,6 +56,8 @@ export class BooksService {
 		private readonly bookBookmarkRepository: Repository<BookBookmarkEntity>,
 		@InjectRepository(BookWantToReadEntity)
 		private readonly wantToReadRepository: Repository<BookWantToReadEntity>,
+		@InjectRepository(BookTagsEntity)
+		private readonly bookTagsRepository: Repository<BookTagsEntity>,
 		@Inject(REQUEST) private readonly request: Request,
 
 		private readonly i18n: I18nService,
@@ -105,7 +108,6 @@ export class BooksService {
 	private async validateBookData(createBookDto: CreateBookDto) {
 		await this.checkExistSlug(createBookDto.slug?.trim().replaceAll(" ", "_") || null);
 
-		// بررسی تخفیف
 		if (createBookDto.discount && createBookDto.discount !== 0) {
 			if (createBookDto.discount < 0 || createBookDto.discount > 100) {
 				throw new BadRequestException(
@@ -128,14 +130,16 @@ export class BooksService {
 	}
 
 	private async insertRelations(createBookDto: CreateBookDto, bookId: number) {
-		const { categoryId, editorId, publisherId, writerId, translatorId } = createBookDto;
-
+		const { categoryId, editorId, publisherId, writerId, translatorId, tagId } = createBookDto;
+		console.log(tagId);
+		
 		await Promise.all([
 			this.insertEntities(categoryId, this.bookCategorysRepository, bookId, "categoryId"),
 			this.insertEntities(editorId, this.bookEditorsRepository, bookId, "editorId"),
 			this.insertEntities(publisherId, this.bookPublishersRepository, bookId, "publisherId"),
 			this.insertEntities(writerId, this.bookWriterRepository, bookId, "writerId"),
 			this.insertEntities(translatorId, this.bookTranslatorsRepository, bookId, "translatorId"),
+			this.insertEntities(tagId, this.bookTagsRepository, bookId, "tagId"),
 		]);
 	}
 
@@ -157,7 +161,6 @@ export class BooksService {
 		const { sort, sort_feild } = queryDto;
 		const { limit, page, skip } = paginationSolver(paginationDto);
 
-		// کوئری بهینه‌شده برای بازیابی داده‌ها
 		const [books, count] = await this.bookRepository.findAndCount({
 			where: { status: "public" },
 			relations: {
@@ -204,7 +207,7 @@ export class BooksService {
 			},
 			skip,
 			take: limit,
-			order: { [sort_feild || "id"]: sort || "DESC" }, // ترتیب مرتب‌سازی
+			order: { [sort_feild || "id"]: sort || "DESC" },
 		});
 
 		return { pagination: paginationGenerator(count, page, limit), books };
@@ -249,9 +252,8 @@ export class BooksService {
 	async update(id: number, updateBookDto: UpdateBookDto, files: BookImagesType) {
 		const book = await this.findOne(id);
 		const updateObject: DeepPartial<BookEntity> = {};
-		const { editorId, writerId, categoryId, publisherId, translatorId } = updateBookDto;
+		const { editorId, writerId, categoryId, publisherId, translatorId, tagId } = updateBookDto;
 
-		// بررسی وجود روابط
 		await this.checkExistRelationship({
 			editorId,
 			writerId,
@@ -346,6 +348,11 @@ export class BooksService {
 				book.id,
 				"translatorId",
 			);
+		}
+
+		if (tagId) {
+			await this.bookTagsRepository.delete(book.tags.map((i) => i.id));
+			await this.insertEntities(tagId, this.bookTagsRepository, book.id, "tagId");
 		}
 
 		await this.bookRepository.update({ id }, updateObject);
