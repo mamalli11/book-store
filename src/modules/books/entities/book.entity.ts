@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, UpdateDateColumn } from "typeorm";
 
 import { ImagesBookEntity } from "./images.entity";
+import { BookTagsEntity } from "./bookTags.entity";
 import { BookBookmarkEntity } from "./bookmark.entity";
 import { BookEditorsEntity } from "./bookEditors.entity";
 import { BookWritersEntity } from "./bookWriters.entity";
@@ -117,4 +118,7 @@ export class BookEntity extends BaseEntity {
 
 	@OneToMany(() => OrderItemEntity, (order) => order.book)
 	orders: OrderItemEntity[];
+
+	@OneToMany(() => BookTagsEntity, (tags) => tags.book)
+	tags: BookTagsEntity[];
 }

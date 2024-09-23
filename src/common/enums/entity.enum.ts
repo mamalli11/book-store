@@ -12,6 +12,7 @@ export enum EntityName {
 	Payment = "payment",
 	Discount = "discount",
 	Category = "category",
+	BookTags = "book_tags",
 	Publisher = "publisher",
 	OrderItem = "order_item",
 	Translator = "translator",
