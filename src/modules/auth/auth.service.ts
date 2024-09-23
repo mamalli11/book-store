@@ -55,6 +55,7 @@ export class AuthService {
 					{ name: "Code", value: otp.code },
 				]);
 			}
+			return { token };
 		}
 		return { token, code: otp.code };
 	}
