@@ -46,6 +46,9 @@ export class CreateBookDto {
 	@ApiProperty({ type: String, isArray: true, description: "دسته بندی های کتاب", example: [""] })
 	categoryId: string[] | string;
 
+	@ApiProperty({ type: String, isArray: true, description: "برچسب های کتاب", example: [""] })
+	tagId: string[] | string;
+
 	@ApiProperty({ example: "1234567891023" })
 	@IsString()
 	@Length(12, 15)
