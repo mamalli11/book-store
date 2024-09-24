@@ -6,11 +6,16 @@ import { AuthModule } from "../auth/auth.module";
 import { BooksModule } from "../books/books.module";
 import { BasketController } from "./basket.controller";
 import { BasketEntity } from "./entities/basket.entity";
+import { OrderEntity } from "../order/entities/order.entity";
 import { DiscountService } from "../discount/discount.service";
 import { DiscountEntity } from "../discount/entities/discount.entity";
 
 @Module({
-	imports: [AuthModule, BooksModule, TypeOrmModule.forFeature([BasketEntity, DiscountEntity])],
+	imports: [
+		AuthModule,
+		BooksModule,
+		TypeOrmModule.forFeature([BasketEntity, DiscountEntity, OrderEntity]),
+	],
 	controllers: [BasketController],
 	providers: [BasketService, DiscountService],
 })
