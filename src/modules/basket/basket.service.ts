@@ -154,24 +154,41 @@ export class BasketService {
 	}
 
 	async basketDisable(userId: number) {
-		const basketItems = await this.basketRepository.find({ where: { userId, is_active: true } });
-		const books = basketItems.filter((item) => item.bookId);
-		for (const item of books) {
-			await this.booksService.decrementStockCount(item.bookId);
-		}
-		await this.basketRepository.update({ userId, is_active: true }, { is_active: false });
-		return true;
-	}
-
-	async getBasketDiscount(userId: number) {
 		const basketItems = await this.basketRepository.find({
 			where: { userId, is_active: true },
 			relations: { discount: true },
 		});
+		const books = basketItems.filter((item) => item.bookId);
+		const generalDiscounts = basketItems.find((item) => item?.discount?.id);
+
+		for (const item of books) {
+			await this.booksService.decrementStockCount(item.bookId);
+		}
+		await this.basketRepository.update({ userId, is_active: true }, { is_active: false });
+
+		// Update discount usage count
+		await this.discountService.incrementUsage(generalDiscounts.discountId);
+		return true;
+	}
+
+	async getBasketDiscount(userId: number, totalAmount: number) {
+		const basketItems = await this.basketRepository.find({
+			where: { userId, is_active: true },
+			relations: { discount: true },
+		});
+		if (!basketItems) return false;
+
+		// Calculate the total price of items in the basket
+		// let totalPrice = 0;
+		// for (const item of basketItems) {
+		// 	totalPrice += item.book.price * item.count;
+		// }
 
 		const generalDiscounts = basketItems.find((item) => item?.discount?.id);
+
+		const { userId: geDisUserId, discount } = generalDiscounts;
 		if (generalDiscounts?.discount) {
-			await this.discountService.useDiscount(generalDiscounts?.discount?.code);
+			await this.discountService.useDiscount(discount?.code, geDisUserId, totalAmount);
 			return true;
 		}
 		return false;
@@ -180,29 +197,29 @@ export class BasketService {
 	async addDiscount(discountDto: DiscountBasketDto) {
 		const { code } = discountDto;
 		const { id: userId } = this.req.user;
+
+		// check if the basket is empty
+		const Basket = await this.basketRepository.findOneBy({ userId, is_active: true });
+		if (Basket == null)
+			throw new BadRequestException(this.i18n.t("tr.BasketMessage.EmptyBasket"));
+
+		// Find and validate discount
 		const discount = await this.discountService.findOneByCode(code);
 
 		if (!discount.active)
-			throw new BadRequestException(
-				this.i18n.t("tr.BasketMessage.NotActiveDiscount", {
-					lang: I18nContext.current().lang,
-				}),
-			);
+			throw new BadRequestException(this.i18n.t("tr.BasketMessage.NotActiveDiscount"));
+
 		if (discount.limit && discount.limit <= discount.usage) {
-			throw new BadRequestException(
-				this.i18n.t("tr.BasketMessage.LimitFullDiscount", {
-					lang: I18nContext.current().lang,
-				}),
-			);
-		}
-		if (discount?.expires_in && discount?.expires_in?.getTime() <= new Date().getTime()) {
-			throw new BadRequestException(
-				this.i18n.t("tr.BasketMessage.ExpiredDiscount", {
-					lang: I18nContext.current().lang,
-				}),
-			);
+			throw new BadRequestException(this.i18n.t("tr.BasketMessage.LimitFullDiscount"));
 		}
 
+		// Check if user already used this discount
+		const hasUsedDiscount = await this.discountService.hasUserUsedDiscount(userId, discount.code);
+		if (hasUsedDiscount) {
+			throw new BadRequestException(this.i18n.t("tr.BasketMessage.AlreadyDiscount"));
+		}
+
+		// Handle basket-level discount
 		const userBasketDiscount = await this.basketRepository.findOneBy({
 			userId,
 			is_active: true,
@@ -210,40 +227,19 @@ export class BasketService {
 		});
 
 		if (userBasketDiscount)
-			throw new BadRequestException(
-				this.i18n.t("tr.BasketMessage.AlreadyDiscount", {
-					lang: I18nContext.current().lang,
-				}),
-			);
+			throw new BadRequestException(this.i18n.t("tr.BasketMessage.AlreadyDiscount"));
 
-		const generalDiscount = await this.basketRepository.findOne({
-			relations: { discount: true },
-			where: {
-				userId,
-				is_active: true,
-				discount: { id: Not(IsNull()) },
-			},
+		// Remove any other active discount
+		await this.basketRepository.delete({
+			userId,
+			is_active: true,
+			discountId: Not(IsNull()),
 		});
 
-		if (generalDiscount) {
-			console.log(generalDiscount);
-			if (generalDiscount?.discount?.code == code) {
-				throw new BadRequestException(
-					this.i18n.t("tr.BasketMessage.AlreadyDiscount", {
-						lang: I18nContext.current().lang,
-					}),
-				);
-			} else if (generalDiscount?.discount?.code != code) {
-				await this.basketRepository.delete({ discountId: generalDiscount.discountId, userId });
-			}
-		}
-
+		// Insert the new discount
 		await this.basketRepository.insert({ discountId: discount.id, userId, type: "total" });
-		return {
-			message: this.i18n.t("tr.BasketMessage.AddedDiscount", {
-				lang: I18nContext.current().lang,
-			}),
-		};
+
+		return { message: this.i18n.t("tr.BasketMessage.AddedDiscount") };
 	}
 
 	async removeDiscount(discountDto: DiscountBasketDto) {
