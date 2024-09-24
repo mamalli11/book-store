@@ -36,6 +36,16 @@ export class PaymentService {
 	async getGatewayUrl(paymentDto: PaymentDto) {
 		const { id: userId, email, phone } = this.req.user;
 
+		const checkPay = await this.paymentRepository.findOneBy({ userId, status: false });
+		if (checkPay) {
+			throw new ConflictException({
+				gatewayURL: `${process.env.ZARINPAL_GATEWAY_URL}/${checkPay.authority}`,
+				message: this.i18n.t("tr.ConflictMessage.PaymentAlreadyExists", {
+					lang: I18nContext.current().lang,
+				}),
+			});
+		}
+
 		const basket = await this.basketService.getBasket();
 		if (!basket || basket.payment_amount <= 0) {
 			throw new BadRequestException(
@@ -51,7 +61,7 @@ export class PaymentService {
 			userId,
 			orderId: order.id,
 			amount: basket.payment_amount,
-			status: basket.payment_amount === 0, // برای سفارشات رایگان
+			status: basket.payment_amount === 0,
 			invoice_number: new Date().getTime().toString() + randomInt(10000, 99999).toString(),
 		});
 
@@ -91,7 +101,6 @@ export class PaymentService {
 				}),
 			);
 		}
-
 		if (payment.status) {
 			throw new ConflictException(
 				this.i18n.t("tr.BasketMessage.PaymentHasAlreadyConfirmed", {
@@ -99,17 +108,14 @@ export class PaymentService {
 				}),
 			);
 		}
-
 		if (status === "OK") {
 			try {
-				await this.basketService.getBasketDiscount(payment.userId);
-
+				await this.basketService.getBasketDiscount(payment.userId, payment.amount);
 				const order = await this.orderService.findOne(payment.orderId);
 				order.status = OrderStatus.Paid;
 				await this.orderService.save(order);
 				await this.orderService.updateOrderItem(order.id, OrderItemStatus.Sent);
 				await this.basketService.basketDisable(order.userId);
-
 				payment.status = true;
 				await this.paymentRepository.save(payment);
 			} catch (error) {
@@ -126,7 +132,6 @@ export class PaymentService {
 				}),
 			);
 		}
-
 		return {
 			message: this.i18n.t("tr.BasketMessage.PaymentSuccessfully", {
 				lang: I18nContext.current().lang,
