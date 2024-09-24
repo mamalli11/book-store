@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
 
 import { DiscountType } from "../enums/discount.enum";
@@ -11,7 +11,7 @@ export class CreateDiscountDto {
 	@IsEnum(DiscountType)
 	type: DiscountType;
 
-	@ApiProperty({ example: "2024-07-28T12:01:26.487Z" })
+	@ApiProperty({ example: new Date().toISOString() })
 	start_at: Date;
 
 	@ApiPropertyOptional({ example: "", description: "تعداد روز فعال بودن کد" })
@@ -26,3 +26,5 @@ export class CreateDiscountDto {
 	@ApiPropertyOptional({ example: "" })
 	limit: number;
 }
+
+export class UpdateDiscountDto extends PartialType(CreateDiscountDto) {}
