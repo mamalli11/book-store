@@ -1,13 +1,23 @@
-import { Controller, Get, Post, Body, Param, Delete, Query } from "@nestjs/common";
+import {
+	Put,
+	Get,
+	Post,
+	Body,
+	Param,
+	Query,
+	Delete,
+	Controller,
+	ParseIntPipe,
+} from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "src/common/enums/role.enum";
 import { DiscountService } from "./discount.service";
-import { CreateDiscountDto } from "./dto/create-discount.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CanAccess } from "src/common/decorators/role.decorator";
 import { AuthDecorator } from "src/common/decorators/auth.decorator";
 import { SwaggerConsumes } from "src/common/enums/swagger-consumes.enum";
+import { CreateDiscountDto, UpdateDiscountDto } from "./dto/create-discount.dto";
 
 @Controller("discount")
 @ApiTags("Discount")
@@ -37,6 +47,14 @@ export class DiscountController {
 	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
 	findOne(@Param("id") id: string) {
 		return this.discountService.findOne(+id);
+	}
+
+	@Put(":id")
+	@CanAccess(Roles.Admin)
+	@ApiOperation({ summary: "For the admin role" })
+	@ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+	update(@Param("id", ParseIntPipe) id: number, @Body() updateDiscountDto: UpdateDiscountDto) {
+		return this.discountService.updateDiscount(id, updateDiscountDto);
 	}
 
 	@Delete(":id")
