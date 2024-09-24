@@ -73,7 +73,8 @@
 		"PaymentAlreadySuccessfully": "پرداخت قبلا با موفقیت انجام شده است",
 		"PaymentHasAlreadyConfirmed": "پرداخت قبلا تایید شده است",
 		"GatewayError": "خطایی در ارتباط با درگاه پرداخت رخ داده است",
-		"InvalidBasket": "سبد خرید نامعتبر است"
+		"InvalidBasket": "سبد خرید نامعتبر است",
+		"EmptyBasket": "سبد خرید خالی است"
 	},
 	"PublicMessage": {
 		"Created": "با موفقیت ایجاد شد",
@@ -107,6 +108,7 @@
 		"CategoryTitle": "عنوان دسته‌بندی قبلا ثبت شده است",
 		"CategorySlug": "اسلاگ دسته‌بندی قبلا ثبت شده است",
 		"AlreadyExistBookSlug": "اسلاگ کتاب قبلا ثبت شده است",
-		"AlreadyExistDiscountCode": "کد تخفیف قبلا ثبت شده است"
+		"AlreadyExistDiscountCode": "کد تخفیف قبلا ثبت شده است",
+		"PaymentAlreadyExists": "سبد خرید پرداخت نشده از قبل موجود است"
 	}
 }

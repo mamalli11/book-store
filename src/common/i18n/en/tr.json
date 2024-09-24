@@ -73,7 +73,8 @@
 		"PaymentAlreadySuccessfully": "Payment has already been successfully made",
 		"PaymentHasAlreadyConfirmed": "Payment has already been confirmed",
 		"GatewayError": "An error occurred while communicating with the payment gateway",
-		"InvalidBasket": "Invalid shopping cart"
+		"InvalidBasket": "Invalid shopping cart",
+		"EmptyBasket": "The shopping cart is empty"
 	},
 	"PublicMessage": {
 		"Created": "Successfully created",
@@ -107,6 +108,7 @@
 		"CategoryTitle": "The category title has already been registered",
 		"CategorySlug": "The category slug has already been registered",
 		"AlreadyExistBookSlug": "The book slug is already registered",
-		"AlreadyExistDiscountCode": "The discount code is already registered"
+		"AlreadyExistDiscountCode": "The discount code is already registered",
+		"PaymentAlreadyExists": "The unpaid shopping cart already exists"
 	}
 }

@@ -73,7 +73,8 @@
 		"PaymentAlreadySuccessfully": "Le paiement a déjà été effectué avec succès",
 		"PaymentHasAlreadyConfirmed": "Le paiement a déjà été confirmé",
 		"GatewayError": "Une erreur s'est produite lors de la communication avec la passerelle de paiement",
-		"InvalidBasket": "Panier invalide"
+		"InvalidBasket": "Panier invalide",
+		"EmptyBasket": "Le panier est vide"
 	},
 	"PublicMessage": {
 		"Created": "Créé avec succès",
@@ -107,6 +108,7 @@
 		"CategoryTitle": "Le titre de la catégorie a déjà été enregistré",
 		"CategorySlug": "Le slug de la catégorie a déjà été enregistré",
 		"AlreadyExistBookSlug": "Le slug du livre est déjà enregistré",
-		"AlreadyExistDiscountCode": "Le code de réduction est déjà enregistré"
+		"AlreadyExistDiscountCode": "Le code de réduction est déjà enregistré",
+		"PaymentAlreadyExists": "Le panier non payé existe déjà"
 	}
 }

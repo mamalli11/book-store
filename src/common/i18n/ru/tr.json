@@ -73,7 +73,8 @@
 		"PaymentAlreadySuccessfully": "Платеж уже был успешно произведен",
 		"PaymentHasAlreadyConfirmed": "Платеж уже был подтвержден",
 		"GatewayError": "Произошла ошибка при общении с платежным шлюзом",
-		"InvalidBasket": "Недействительная корзина"
+		"InvalidBasket": "Недействительная корзина",
+		"EmptyBasket": "Корзина пуста"
 	},
 	"PublicMessage": {
 		"Created": "Успешно создано",
@@ -107,6 +108,7 @@
 		"CategoryTitle": "Название категории уже зарегистрировано",
 		"CategorySlug": "Slug категории уже зарегистрирован",
 		"AlreadyExistBookSlug": "Слаг книги уже зарегистрирован",
-		"AlreadyExistDiscountCode": "Код скидки уже зарегистрирован"
+		"AlreadyExistDiscountCode": "Код скидки уже зарегистрирован",
+		"PaymentAlreadyExists": "Неподтвержденная корзина уже существует"
 	}
 }

@@ -73,7 +73,8 @@
 		"PaymentAlreadySuccessfully": "تم الدفع بنجاح مسبقًا",
 		"PaymentHasAlreadyConfirmed": "تم تأكيد الدفع مسبقًا",
 		"GatewayError": "حدث خطأ أثناء التواصل مع بوابة الدفع",
-		"InvalidBasket": "سلة التسوق غير صالحة"
+		"InvalidBasket": "سلة التسوق غير صالحة",
+		"EmptyBasket": "سلة التسوق فارغة"
 	},
 	"PublicMessage": {
 		"Created": "تم الإنشاء بنجاح",
@@ -107,6 +108,7 @@
 		"CategoryTitle": "تم تسجيل عنوان الفئة من قبل",
 		"CategorySlug": "تم تسجيل slug الفئة من قبل",
 		"AlreadyExistBookSlug": "تم تسجيل سلاج الكتاب مسبقًا",
-		"AlreadyExistDiscountCode": "تم تسجيل كود الخصم مسبقًا"
+		"AlreadyExistDiscountCode": "تم تسجيل كود الخصم مسبقًا",
+		"PaymentAlreadyExists": "السلة غير المدفوعة موجودة بالفعل"
 	}
 }
