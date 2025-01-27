@@ -1,0 +1,48 @@
+version: "2.0"
+
+name: "bookstore"
+
+networks:
+   bookstore-network:
+      driver: bridge
+
+volumes:
+   postgres_data: {}
+
+services:
+   postgres:
+      image: "postgres:16.1-alpine"
+      container_name: "postgresdb"
+      restart: always
+      shm_size: 256mb
+      ports:
+         - "5433:5432"
+      environment:
+         POSTGRES_PASSWORD: root
+         POSTGRES_USER: postgres
+         POSTGRES_DB: book-store
+         TZ: Asia/Tehran
+      volumes:
+         - postgres_data:/var/lib/postgresql/data
+      healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U postgres"]
+         interval: 5s
+         timeout: 3s
+         retries: 5
+      networks:
+         - bookstore-network
+
+   bookstore:
+      build:
+         context: .
+         dockerfile: Dockerfile
+      container_name: "bkstore_container"
+      restart: always
+      ports:
+         - "3000:3000"
+      env_file: ".env"
+      depends_on:
+         postgres:
+            condition: service_healthy
+      networks:
+         - bookstore-network
