@@ -9,7 +9,7 @@ import { PublisherEntity } from "src/modules/publisher/entities/publisher.entity
 export class BookPublishersEntity extends BaseEntity {
 	@Column()
 	bookId: number;
-	@ManyToOne(() => BookEntity, (book) => book.writers, { onDelete: "CASCADE" })
+	@ManyToOne(() => BookEntity, (book) => book.publishers, { onDelete: "CASCADE" })
 	book: BookEntity;
 
 	@Column()
