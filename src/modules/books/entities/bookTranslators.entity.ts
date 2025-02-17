@@ -9,7 +9,7 @@ import { TranslatorEntity } from "src/modules/translator/entities/translator.ent
 export class BookTranslatorsEntity extends BaseEntity {
 	@Column()
 	bookId: number;
-	@ManyToOne(() => BookEntity, (book) => book.writers, { onDelete: "CASCADE" })
+	@ManyToOne(() => BookEntity, (book) => book.translators, { onDelete: "CASCADE" })
 	book: BookEntity;
 
 	@Column()
