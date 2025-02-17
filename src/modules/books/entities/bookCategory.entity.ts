@@ -9,7 +9,7 @@ import { CategoryEntity } from "src/modules/category/entities/category.entity";
 export class BookCategorysEntity extends BaseEntity {
 	@Column()
 	bookId: number;
-	@ManyToOne(() => BookEntity, (book) => book.writers, { onDelete: "CASCADE" })
+	@ManyToOne(() => BookEntity, (book) => book.categorys, { onDelete: "CASCADE" })
 	book: BookEntity;
 
 	@Column()
