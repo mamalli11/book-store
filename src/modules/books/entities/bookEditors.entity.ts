@@ -9,7 +9,7 @@ import { EditorEntity } from "src/modules/editor/entities/editor.entity";
 export class BookEditorsEntity extends BaseEntity {
 	@Column()
 	bookId: number;
-	@ManyToOne(() => BookEntity, (book) => book.writers, { onDelete: "CASCADE" })
+	@ManyToOne(() => BookEntity, (book) => book.editors, { onDelete: "CASCADE" })
 	book: BookEntity;
 
 	@Column()
